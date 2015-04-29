@@ -16,7 +16,7 @@ class ProductsController extends AppController {
      * @var array
      */
     public $components = array('Paginator', 'Session', 'Image');
-    public $uses = array('Product', 'Vendorcontact', 'Vendor', 'Category', 'Subcategory', 'Productstone', 'Productimage', 'Size', 'Metalcolor', 'Metal', 'Diamond', 'Clarity', 'Color', 'Carat', 'Shape', 'Settingtype', 'Purity', 'Productmetal', 'Productgemstone', 'Productdiamond', 'Gemstone', 'Price','Collectiontype');
+    public $uses = array('Product', 'Vendorcontact', 'Vendor', 'Category', 'Subcategory', 'Productstone', 'Productimage', 'Size', 'Metalcolor', 'Metal', 'Diamond', 'Clarity', 'Color', 'Carat', 'Shape', 'Settingtype', 'Purity', 'Productmetal', 'Productgemstone', 'Productdiamond', 'Gemstone', 'Price', 'Collectiontype', 'Order', 'Franchiseebrokerage');
     public $layout = 'admin';
 
     public function admin_index() {
@@ -106,9 +106,9 @@ class ProductsController extends AppController {
         $this->set('type', $type);
         $gem = $this->Gemstone->find('all', array('conditions' => array('status' => 'Active'), 'order' => 'gemstone_id ASC'));
         $this->set('gem', $gem);
-		$collectiontype=$this->Collectiontype->find('all',array('conditions'=>'','order'=>'collectiontype_id ASC' ));
-		$this->set('collectiontype',$collectiontype);
-		
+        $collectiontype = $this->Collectiontype->find('all', array('conditions' => '', 'order' => 'collectiontype_id ASC'));
+        $this->set('collectiontype', $collectiontype);
+
         if ($this->request->is('post')) {
             $product = $this->Product->find('first', array('conditions' => array('vendor_product_code' => $this->request->data['Product']['vendor_product_code'], 'status !=' => 'Trash')));
             if (empty($product)) {
@@ -121,18 +121,18 @@ class ProductsController extends AppController {
                     $this->request->data['Product']['metal_color'] = implode(",", $this->request->data['Product']['metal_color']);
                 }
                 $this->request->data['Product']['vendor_id'] = $this->request->data['Product']['vendor_id'];
-                if(!empty($this->request->data['Product']['product_type'])){
-                $this->request->data['Product']['product_type'] = implode(",", $this->request->data['Product']['product_type']);
-				}
-				if(!empty($this->request->data['Product']['collection_type'])){
-				$this->request->data['Product']['collection_type'] = implode(",", $this->request->data['Product']['collection_type']);
-				}
-				if(!empty($this->request->data['Product']['product_view_type'])){
-				$this->request->data['Product']['product_view_type'] = implode(",", $this->request->data['Product']['product_view_type']);
-				}
-				if(!empty($this->request->data['Product']['best_seller'])){
-				$this->request->data['Product']['best_seller'] = $this->request->data['Product']['best_seller'];
-				} 
+                if (!empty($this->request->data['Product']['product_type'])) {
+                    $this->request->data['Product']['product_type'] = implode(",", $this->request->data['Product']['product_type']);
+                }
+                if (!empty($this->request->data['Product']['collection_type'])) {
+                    $this->request->data['Product']['collection_type'] = implode(",", $this->request->data['Product']['collection_type']);
+                }
+                if (!empty($this->request->data['Product']['product_view_type'])) {
+                    $this->request->data['Product']['product_view_type'] = implode(",", $this->request->data['Product']['product_view_type']);
+                }
+                if (!empty($this->request->data['Product']['best_seller'])) {
+                    $this->request->data['Product']['best_seller'] = $this->request->data['Product']['best_seller'];
+                }
                 $this->request->data['Product']['status'] = 'Active';
                 if (!empty($this->request->data['Product']['certificate_image']['name'])) {
                     $this->request->data['Product']['certificate_image'] = $this->Image->upload_image_and_thumbnail($this->request->data['Product']['certificate_image'], 800, 800, 215, 133, "certificate", '1');
@@ -154,6 +154,13 @@ class ProductsController extends AppController {
                 $this->request->data['Product']['metal_purity'] = $this->request->data['Productmetal']['purity'][0];
                 /* saran */
                 //$this->request->data['Product']['product_size']=$this->request->data['Productmetal']['size'][0];
+                
+                
+                //added by prakash
+                $this->request->data['Product']['metal_fineness'] = !empty($this->data['Product']['metal_fineness']) ? implode(",", $this->data['Product']['metal_fineness']) : 0;
+                $this->request->data['Product']['submenu_ids'] = !empty($this->data['Product']['submenu_ids']) ? implode(",", $this->data['Product']['submenu_ids']) : '';
+                $this->request->data['Product']['offer_ids'] = !empty($this->data['Product']['offer_ids']) ? implode(",", $this->data['Product']['offer_ids']) : '';
+                //
                 $this->Product->save($this->request->data);
                 $product_id = $this->Product->getLastInsertID();
                 if (!empty($this->request->data['Productmetal'])) {
@@ -274,8 +281,8 @@ class ProductsController extends AppController {
         $this->set('new_metal', $new_metal);
         $vendor = $this->Vendor->find('all', array('conditions' => array('vendor_id' => $product['Product']['vendor_id'])));
         $this->set('vendor', $vendor);
-		$collectiontype=$this->Collectiontype->find('all',array('conditions'=>'','order'=>'collectiontype_id ASC' ));
-		$this->set('collectiontype',$collectiontype);
+        $collectiontype = $this->Collectiontype->find('all', array('conditions' => '', 'order' => 'collectiontype_id ASC'));
+        $this->set('collectiontype', $collectiontype);
         $product_id = $product['Product']['product_id'];
 
         if ($this->request->is('post')) {
@@ -287,7 +294,7 @@ class ProductsController extends AppController {
                 } else {
                     $this->request->data['Product']['certificate_image'] = $product['Product']['certificate_image'];
                 }
-				
+
                 if (!empty($this->request->data['Product']['metal_color'])) {
                     $metal_color = $this->request->data['Product']['metal_color'][0];
                     $this->request->data['Product']['metal_color'] = implode(",", $this->request->data['Product']['metal_color']);
@@ -301,20 +308,24 @@ class ProductsController extends AppController {
                 $this->request->data['Product']['metal_purity'] = $this->request->data['Productmetal']['purity'][0];
                 /* saran */
                 //$this->request->data['Product']['product_size']=$this->request->data['Productmetal']['size'][0];
-                if(!empty($this->request->data['Product']['product_type'])){
-               		 $this->request->data['Product']['product_type'] = implode(",", $this->request->data['Product']['product_type']);
-			     }
-				 if(!empty($this->request->data['Product']['collection_type'])){
-				$this->request->data['Product']['collection_type'] = implode(",", $this->request->data['Product']['collection_type']);
-				}
-				if(!empty($this->request->data['Product']['product_view_type'])){
-				$this->request->data['Product']['product_view_type'] = implode(",", $this->request->data['Product']['product_view_type']);
-				}
-              if(empty($this->request->data['Product']['best_seller'])){
-				$this->request->data['Product']['best_seller'] =0;
-			  }
-			   
-			   
+                if (!empty($this->request->data['Product']['product_type'])) {
+                    $this->request->data['Product']['product_type'] = implode(",", $this->request->data['Product']['product_type']);
+                }
+                if (!empty($this->request->data['Product']['collection_type'])) {
+                    $this->request->data['Product']['collection_type'] = implode(",", $this->request->data['Product']['collection_type']);
+                }
+                if (!empty($this->request->data['Product']['product_view_type'])) {
+                    $this->request->data['Product']['product_view_type'] = implode(",", $this->request->data['Product']['product_view_type']);
+                }
+                if (empty($this->request->data['Product']['best_seller'])) {
+                    $this->request->data['Product']['best_seller'] = 0;
+                }
+
+                //added by prakash
+                $this->request->data['Product']['metal_fineness'] = !empty($this->data['Product']['metal_fineness']) ? implode(",", $this->data['Product']['metal_fineness']) : 0;
+                $this->request->data['Product']['submenu_ids'] = !empty($this->data['Product']['submenu_ids']) ? implode(",", $this->data['Product']['submenu_ids']) : '';
+                $this->request->data['Product']['offer_ids'] = !empty($this->data['Product']['offer_ids']) ? implode(",", $this->data['Product']['offer_ids']) : '';
+                //
                 $this->Product->save($this->request->data);
                 if (!empty($this->request->data['Productmetal'])) {
                     if (!empty($this->request->data['Productmetal']['size'])) {
@@ -1082,4 +1093,55 @@ class ProductsController extends AppController {
         }
     }
 
+    public function admin_get_brokerage_amount($productid, $cartid) {
+        $product = $this->Product->findByProductId($productid);
+        $this->Shoppingcart->bindModel(
+                array(
+                    'belongsTo' => array(
+                        'Order' => array(
+                            'type' => 'Inner',
+                            'conditions' => array('Shoppingcart.order_id = Order.order_id'),
+                            'foreignKey' => false,
+                        ),
+                        'User' => array(
+                            'type' => 'Inner',
+                            'conditions' => array('Order.user_id = User.user_id'),
+                            'foreignKey' => false,
+                        ),
+                    )
+                ), false
+        );
+        $cart = $this->Shoppingcart->findByCartId($cartid);
+        $brokerage_amount = $making_charge = 0;
+        if(!empty($product) && !empty($cart)){
+            $netamt = $cart['Shoppingcart']['total'] * $cart['Shoppingcart']['quantity'];
+            
+            //vendor brokerage
+            if($cart['User']['user_type'] == 0){
+                $special_charge = $product['Product']['special_work_charge'];
+                if($product['Product']['vendor_making_charge_calc'] == 'PER'){
+                    $making_charge = $netamt * ($product['Product']['vendor_making_charge'] / 100);
+                }elseif($product['Product']['vendor_making_charge_calc'] == 'INR'){
+                    $making_charge = $product['Product']['vendor_making_charge'];
+                }
+            //franchisee brokerage
+            }elseif($cart['User']['user_type'] == 1){
+                $frans_brkge = $this->Franchiseebrokerage->findByFranchiseeBrkgeUserId($cart['User']['user_id']);
+                $special_charge = 0;
+                
+                if($cart['User']['pincode'] == $cart['Order']['pincode']){
+                    $frans_brkge_charge = $frans_brkge['Franchiseebrokerage']['pincodewise_brkge_value'];
+                }else{
+                    $frans_brkge_charge = $frans_brkge['Franchiseebrokerage']['general_brkge_value'];
+                }
+                if($frans_brkge['Franchiseebrokerage']['brkge_calc'] == 'PER'){
+                    $making_charge = $netamt * ($frans_brkge_charge / 100);
+                }elseif($frans_brkge['Franchiseebrokerage']['brkge_calc'] == 'INR'){
+                    $making_charge = $frans_brkge_charge;
+                }
+            }
+            $brokerage_amount = $special_charge + $making_charge;
+        }
+        return $brokerage_amount;
+    }
 }
