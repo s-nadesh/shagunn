@@ -149,7 +149,8 @@ class WebpagesController extends AppController {
         $this->set('shape', $shapes);
         $type = $this->Settingtype->find('all', array('conditions' => array('status' => 'Active'), 'order' => 'settingtype_id ASC'));
         $this->set('type', $type);
-
+        $this->set('collections', $this->Collectiontype->find('all'));
+        //IF(Product.category_id=1,(SELECT SUM() ))
         //modified by prakash for metal fineness calculations
         $field = array('ROUND(ROUND((metal_purity/24)*(SELECT price FROM sha_price WHERE metal_id=1 AND metalcolor_id=Product.metal_color_id AND metal_fineness=Product.metal_fineness))*metal_weight) AS metalprice',
             '(SELECT price FROM sha_price WHERE metal_id=1 AND metalcolor_id=Product.metal_color_id AND metal_fineness=Product.metal_fineness) AS price',
@@ -163,43 +164,54 @@ class WebpagesController extends AppController {
 		 IF(stone=\'Yes\',ROUND(stoneweight*(SELECT price FROM sha_price WHERE clarity_id=Product.stone_clarity_id AND color_id=Product.stone_color_id AND status=\'Active\' AND metal_fineness=Product.metal_fineness)),0)+
 		 IF(Product.gemstone=\'Yes\',ROUND((SELECT SUM(Productgemstone.stone_weight*Productgemstone.stone_price) FROM sha_productgemstone AS Productgemstone WHERE product_id=Product.product_id)),0))*vat_cst/100)) AS totprice',
             'Product.*');
-//        $field = array('ROUND(ROUND((metal_purity/24)*(SELECT price FROM sha_price WHERE metal_id=1 AND metalcolor_id=Product.metal_color_id))*metal_weight) AS metalprice',
-//            '(SELECT price FROM sha_price WHERE metal_id=1 AND metalcolor_id=Product.metal_color_id) AS price',
-//            'IF(stone=\'Yes\',ROUND(stoneweight*(SELECT price FROM sha_price WHERE clarity_id=Product.stone_clarity_id AND color_id=Product.stone_color_id AND status=\'Active\')),0) AS stoneprice', 'IF(Product.gemstone=\'Yes\',ROUND((SELECT SUM(Productgemstone.stone_weight*Productgemstone.stone_price) FROM sha_productgemstone AS Productgemstone WHERE product_id=Product.product_id)),0) AS gemstoneprice,Product.making_charge AS mc,Product.vat_cst As vat',
-//            '(ROUND(ROUND((metal_purity/24)*(SELECT price FROM sha_price WHERE metal_id=1 AND metalcolor_id=Product.metal_color_id))*metal_weight)+
-//		 ROUND(ROUND(ROUND((metal_purity/24)*(SELECT price FROM sha_price WHERE metal_id=1 AND metalcolor_id=Product.metal_color_id))*metal_weight)*making_charge/100)+
-//		 IF(stone=\'Yes\',ROUND(stoneweight*(SELECT price FROM sha_price WHERE clarity_id=Product.stone_clarity_id AND color_id=Product.stone_color_id AND status=\'Active\')),0)+
-//		 IF(Product.gemstone=\'Yes\',ROUND((SELECT SUM(Productgemstone.stone_weight*Productgemstone.stone_price) FROM sha_productgemstone AS Productgemstone WHERE product_id=Product.product_id)),0)+
-//		 ROUND((ROUND(ROUND((metal_purity/24)*(SELECT price FROM sha_price WHERE metal_id=1 AND metalcolor_id=Product.metal_color_id))*metal_weight)+
-//		 ROUND(ROUND(ROUND((metal_purity/24)*(SELECT price FROM sha_price WHERE metal_id=1 AND metalcolor_id=Product.metal_color_id))*metal_weight)*making_charge/100)+
-//		 IF(stone=\'Yes\',ROUND(stoneweight*(SELECT price FROM sha_price WHERE clarity_id=Product.stone_clarity_id AND color_id=Product.stone_color_id AND status=\'Active\')),0)+
-//		 IF(Product.gemstone=\'Yes\',ROUND((SELECT SUM(Productgemstone.stone_weight*Productgemstone.stone_price) FROM sha_productgemstone AS Productgemstone WHERE product_id=Product.product_id)),0))*vat_cst/100)) AS totprice',
+        
+        //Issue query . Takes more time to retrieve. so commented.
+//       $field = array('ROUND(ROUND((' . (isset($_REQUEST['goldpurity']) ? $_REQUEST['goldpurity'] : '(SELECT value FROM sha_productmetal AS Productmetal  WHERE type=\'Purity\' AND Productmetal.product_id=Product.product_id  ORDER BY value ASC LIMIT 0,1)') . '/24)*(SELECT price FROM sha_price WHERE metal_id=1 AND metalcolor_id=Product.metal_color_id AND metal_fineness=Product.metal_fineness))* Product.metal_weight) AS metalprice',
+//            '(SELECT price FROM sha_price WHERE metal_id=1 AND metalcolor_id=Product.metal_color_id AND metal_fineness=Product.metal_fineness) AS price',
+//            'IF(stone=\'Yes\',ROUND((SELECT SUM(Productdiamond.stone_weight) FROM sha_productdiamond AS Productdiamond WHERE Productdiamond.product_id=Product.product_id GROUP BY clarity, color ORDER BY FIELD(`clarity`,\'SI\',\'VS\',\'VVS\'),FIELD(`color`,\'IJ\',\'GH\',\'EF\') LIMIT 0,1)*(SELECT price FROM sha_price WHERE clarity_id=(SELECT clarity_id FROM sha_clarity WHERE clarity=(SELECT clarity FROM sha_productdiamond AS Productdiamond WHERE Productdiamond.product_id=Product.product_id GROUP BY clarity, color ORDER BY FIELD(`clarity`,\'SI\',\'VS\',\'VVS\'),FIELD(`color`,\'IJ\',\'GH\',\'EF\') LIMIT 0,1)) AND color_id=(SELECT color_id FROM sha_color WHERE clarity=(SELECT clarity FROM sha_productdiamond AS Productdiamond WHERE Productdiamond.product_id=Product.product_id GROUP BY clarity, color ORDER BY FIELD(`clarity`,\'SI\',\'VS\',\'VVS\'),FIELD(`color`,\'IJ\',\'GH\',\'EF\') LIMIT 0,1) AND color=(SELECT color FROM sha_productdiamond AS Productdiamond WHERE Productdiamond.product_id=Product.product_id GROUP BY clarity, color ORDER BY FIELD(`clarity`,\'SI\',\'VS\',\'VVS\'),FIELD(`color`,\'IJ\',\'GH\',\'EF\') LIMIT 0,1)) AND status=\'Active\')),0) AS stoneprice',
+//            'IF(Product.gemstone=\'Yes\',ROUND((SELECT SUM(Productgemstone.stone_weight*(SELECT Price.price FROM sha_price AS Price WHERE Price.gemstone_id=(SELECT Gemstone.gemstone_id FROM sha_gemstone AS Gemstone WHERE Gemstone.stone=Productgemstone.gemstone) AND Price.gemstoneshape=(SELECT Shape.shape_id FROM sha_shape AS Shape WHERE Shape.shape = Productgemstone.shape ))) FROM sha_productgemstone AS Productgemstone WHERE product_id=Product.product_id)),0) AS gemstoneprice,
+//		Product.making_charge AS mc,
+//		Product.vat_cst As vat',
+//            '((ROUND(ROUND((' . (isset($_REQUEST['goldpurity']) ? $_REQUEST['goldpurity'] : '(SELECT value FROM sha_productmetal AS Productmetal WHERE type=\'Purity\' AND Productmetal.product_id=Product.product_id   ORDER BY value ASC LIMIT 0,1)') . '/24)*(SELECT price FROM sha_price WHERE metal_id=1 AND metalcolor_id=Product.metal_color_id AND metal_fineness=Product.metal_fineness))*Product.metal_weight)+
+//		 ROUND(ROUND(ROUND((' . (isset($_REQUEST['goldpurity']) ? $_REQUEST['goldpurity'] : '(SELECT value FROM sha_productmetal AS Productmetal  WHERE type=\'Purity\' AND Productmetal.product_id=Product.product_id  ORDER BY value ASC LIMIT 0,1)') . '/24)*(SELECT price FROM sha_price WHERE metal_id=1 AND metalcolor_id=Product.metal_color_id AND metal_fineness=Product.metal_fineness))*Product.metal_weight)*making_charge/100)+
+//		 IF(stone=\'Yes\',(ROUND((SELECT SUM(Productdiamond.stone_weight) FROM sha_productdiamond AS Productdiamond WHERE Productdiamond.product_id=Product.product_id GROUP BY clarity, color ORDER BY FIELD(`clarity`,\'SI\',\'VS\',\'VVS\'),FIELD(`color`,\'IJ\',\'GH\',\'EF\') LIMIT 0,1)*(SELECT price FROM sha_price WHERE clarity_id=(SELECT clarity_id FROM sha_clarity WHERE clarity=(SELECT clarity FROM sha_productdiamond AS Productdiamond WHERE Productdiamond.product_id=Product.product_id GROUP BY clarity, color ORDER BY FIELD(`clarity`,\'SI\',\'VS\',\'VVS\'),FIELD(`color`,\'IJ\',\'GH\',\'EF\') LIMIT 0,1)) AND color_id=(SELECT color_id FROM sha_color WHERE clarity=(SELECT clarity FROM sha_productdiamond AS Productdiamond WHERE Productdiamond.product_id=Product.product_id GROUP BY clarity, color ORDER BY FIELD(`clarity`,\'SI\',\'VS\',\'VVS\'),FIELD(`color`,\'IJ\',\'GH\',\'EF\') LIMIT 0,1) AND color=(SELECT color FROM sha_productdiamond AS Productdiamond WHERE Productdiamond.product_id=Product.product_id GROUP BY clarity, color ORDER BY FIELD(`clarity`,\'SI\',\'VS\',\'VVS\'),FIELD(`color`,\'IJ\',\'GH\',\'EF\') LIMIT 0,1)) AND status=\'Active\'))),0)+
+//		 IF(Product.gemstone=\'Yes\',ROUND((SELECT SUM(Productgemstone.stone_weight*(SELECT Price.price FROM sha_price AS Price WHERE Price.gemstone_id=(SELECT Gemstone.gemstone_id FROM sha_gemstone AS Gemstone WHERE Gemstone.stone=Productgemstone.gemstone) AND Price.gemstoneshape=(SELECT Shape.shape_id FROM sha_shape AS Shape WHERE Shape.shape = Productgemstone.shape ))) FROM sha_productgemstone AS Productgemstone WHERE product_id=Product.product_id)),0))*vat_cst/100) AS vatprice',
+//            'ROUND(ROUND(ROUND((' . (isset($_REQUEST['goldpurity']) ? $_REQUEST['goldpurity'] : '(SELECT value FROM sha_productmetal AS Productmetal  WHERE type=\'Purity\' AND Productmetal.product_id=Product.product_id  ORDER BY value ASC LIMIT 0,1)') . '/24)*(SELECT price FROM sha_price WHERE metal_id=1 AND metalcolor_id=Product.metal_color_id AND metal_fineness=Product.metal_fineness))*Product.metal_weight)*making_charge/100) AS makingprice',
+//            '(ROUND(ROUND((' . (isset($_REQUEST['goldpurity']) ? $_REQUEST['goldpurity'] : '(SELECT value FROM sha_productmetal AS Productmetal  WHERE type=\'Purity\' AND Productmetal.product_id=Product.product_id  ORDER BY value ASC LIMIT 0,1)') . '/24)*(SELECT price FROM sha_price WHERE metal_id=1 AND metalcolor_id=Product.metal_color_id AND metal_fineness=Product.metal_fineness))*Product.metal_weight)+
+//		 ROUND(ROUND(ROUND((' . (isset($_REQUEST['goldpurity']) ? $_REQUEST['goldpurity'] : '(SELECT value FROM sha_productmetal AS Productmetal  WHERE type=\'Purity\' AND Productmetal.product_id=Product.product_id  ORDER BY value ASC LIMIT 0,1)') . '/24)*(SELECT price FROM sha_price WHERE metal_id=1 AND metalcolor_id=Product.metal_color_id AND metal_fineness=Product.metal_fineness))*Product.metal_weight)*making_charge/100)+
+//		 IF(stone=\'Yes\',ROUND((SELECT SUM(Productdiamond.stone_weight) FROM sha_productdiamond AS Productdiamond WHERE Productdiamond.product_id=Product.product_id GROUP BY clarity, color ORDER BY FIELD(`clarity`,\'SI\',\'VS\',\'VVS\'),FIELD(`color`,\'IJ\',\'GH\',\'EF\') LIMIT 0,1)*(SELECT price FROM sha_price WHERE clarity_id=(SELECT clarity_id FROM sha_clarity WHERE clarity=(SELECT clarity FROM sha_productdiamond AS Productdiamond WHERE Productdiamond.product_id=Product.product_id GROUP BY clarity, color ORDER BY FIELD(`clarity`,\'SI\',\'VS\',\'VVS\'),FIELD(`color`,\'IJ\',\'GH\',\'EF\') LIMIT 0,1)) AND color_id=(SELECT color_id FROM sha_color WHERE clarity=(SELECT clarity FROM sha_productdiamond AS Productdiamond WHERE Productdiamond.product_id=Product.product_id GROUP BY clarity, color ORDER BY FIELD(`clarity`,\'SI\',\'VS\',\'VVS\'),FIELD(`color`,\'IJ\',\'GH\',\'EF\') LIMIT 0,1) AND color=(SELECT color FROM sha_productdiamond AS Productdiamond WHERE Productdiamond.product_id=Product.product_id GROUP BY clarity, color ORDER BY FIELD(`clarity`,\'SI\',\'VS\',\'VVS\'),FIELD(`color`,\'IJ\',\'GH\',\'EF\') LIMIT 0,1)) AND status=\'Active\')),0)+
+//		 IF(Product.gemstone=\'Yes\',ROUND((SELECT SUM(Productgemstone.stone_weight*(SELECT Price.price FROM sha_price AS Price WHERE Price.gemstone_id=(SELECT Gemstone.gemstone_id FROM sha_gemstone AS Gemstone WHERE Gemstone.stone=Productgemstone.gemstone) AND Price.gemstoneshape=(SELECT Shape.shape_id FROM sha_shape AS Shape WHERE Shape.shape = Productgemstone.shape ))) FROM sha_productgemstone AS Productgemstone WHERE product_id=Product.product_id)),0)+
+//		 ROUND((ROUND(ROUND((' . (isset($_REQUEST['goldpurity']) ? $_REQUEST['goldpurity'] : '(SELECT value FROM sha_productmetal AS Productmetal WHERE type=\'Purity\' AND Productmetal.product_id=Product.product_id   ORDER BY value ASC LIMIT 0,1)') . '/24)*(SELECT price FROM sha_price WHERE metal_id=1 AND metalcolor_id=Product.metal_color_id AND metal_fineness=Product.metal_fineness))*Product.metal_weight)+
+//		 ROUND(ROUND(ROUND((' . (isset($_REQUEST['goldpurity']) ? $_REQUEST['goldpurity'] : '(SELECT value FROM sha_productmetal AS Productmetal  WHERE type=\'Purity\' AND Productmetal.product_id=Product.product_id  ORDER BY value ASC LIMIT 0,1)') . '/24)*(SELECT price FROM sha_price WHERE metal_id=1 AND metalcolor_id=Product.metal_color_id AND metal_fineness=Product.metal_fineness))*Product.metal_weight)*making_charge/100)+
+//		 IF(stone=\'Yes\',(ROUND((SELECT SUM(Productdiamond.stone_weight) FROM sha_productdiamond AS Productdiamond WHERE Productdiamond.product_id=Product.product_id GROUP BY clarity, color ORDER BY FIELD(`clarity`,\'SI\',\'VS\',\'VVS\'),FIELD(`color`,\'IJ\',\'GH\',\'EF\') LIMIT 0,1)*(SELECT price FROM sha_price WHERE clarity_id=(SELECT clarity_id FROM sha_clarity WHERE clarity=(SELECT clarity FROM sha_productdiamond AS Productdiamond WHERE Productdiamond.product_id=Product.product_id GROUP BY clarity, color ORDER BY FIELD(`clarity`,\'SI\',\'VS\',\'VVS\'),FIELD(`color`,\'IJ\',\'GH\',\'EF\') LIMIT 0,1)) AND color_id=(SELECT color_id FROM sha_color WHERE clarity=(SELECT clarity FROM sha_productdiamond AS Productdiamond WHERE Productdiamond.product_id=Product.product_id GROUP BY clarity, color ORDER BY FIELD(`clarity`,\'SI\',\'VS\',\'VVS\'),FIELD(`color`,\'IJ\',\'GH\',\'EF\') LIMIT 0,1) AND color=(SELECT color FROM sha_productdiamond AS Productdiamond WHERE Productdiamond.product_id=Product.product_id GROUP BY clarity, color ORDER BY FIELD(`clarity`,\'SI\',\'VS\',\'VVS\'),FIELD(`color`,\'IJ\',\'GH\',\'EF\') LIMIT 0,1)) AND status=\'Active\'))),0)+
+//		 IF(Product.gemstone=\'Yes\',ROUND((SELECT SUM(Productgemstone.stone_weight*(SELECT Price.price FROM sha_price AS Price WHERE Price.gemstone_id=(SELECT Gemstone.gemstone_id FROM sha_gemstone AS Gemstone WHERE Gemstone.stone=Productgemstone.gemstone) AND Price.gemstoneshape=(SELECT Shape.shape_id FROM sha_shape AS Shape WHERE Shape.shape = Productgemstone.shape ))) FROM sha_productgemstone AS Productgemstone WHERE product_id=Product.product_id)),0))*vat_cst/100)) AS totprice',
 //            'Product.*');
+       
         $joins = $group = $order = '';
-
+        $joins = array();
         if (!empty($this->params['pass']['0'])) {
             $cat = $this->Category->find('first', array('conditions' => array('LOWER(category)' => str_replace('_', ' ', $this->params['pass']['0']))));
             if (!empty($cat)) {
-                $conditions['category_id'] = $cat['Category']['category_id'];
+                $conditions['Product.category_id'] = $cat['Category']['category_id'];
                 if (!empty($this->params['pass']['1'])) {
-                    $subcategory = str_replace(array('0_5','_',), array('0.5',' '), $this->params['pass']['1']);
+                    $subcategory = str_replace(array('0_5', '_',), array('0.5', ' '), $this->params['pass']['1']);
                     $sub_cat = $this->Subcategory->find('first', array('conditions' => array('LOWER(subcategory)' => $subcategory, 'category_id' => $cat['Category']['category_id'])));
                     if (!empty($sub_cat)) {
-                        $conditions['subcategory_id'] = $sub_cat['Subcategory']['subcategory_id'];
+                        $conditions['Product.subcategory_id'] = $sub_cat['Subcategory']['subcategory_id'];
                     }
                 }
             }
         }
-        $conditions['status'] = 'Active';
+        $conditions['Product.status'] = 'Active';
         if (!empty($_GET)) {
             if (!empty($_GET['category'])) {
                 $cat = $this->Category->find('first', array('conditions' => array('LOWER(category)' => str_replace('_', ' ', $_GET['category']))));
                 if (!empty($cat)) {
-                    $conditions['category_id'] = $cat['Category']['category_id'];
+                    $conditions['Product.category_id'] = $cat['Category']['category_id'];
                     if (!empty($_GET['subcategory'])) {
                         $sub_cat = $this->Subcategory->find('first', array('conditions' => array('LOWER(subcategory)' => str_replace('_', ' ', $_GET['subcategory']), 'category_id' => $cat['Category']['category_id'])));
                         if (!empty($sub_cat)) {
-                            $conditions['subcategory_id'] = $sub_cat['Subcategory']['subcategory_id'];
+                            $conditions['Product.subcategory_id'] = $sub_cat['Subcategory']['subcategory_id'];
                         }
                     }
                 }
@@ -212,14 +224,14 @@ class WebpagesController extends AppController {
                     foreach ($category as $category) {
                         $search_cat[] = $category['Category']['category_id'];
                     }
-                    $conditions['category_id'] = $search_cat;
+                    $conditions['Product.category_id'] = $search_cat;
                 } else {
                     $subcategory = $this->Subcategory->find('all', array('conditions' => array('subcategory LIKE ' => '%' . $_GET['search'] . '%', 'status' => 'Active')));
                     if (!empty($subcategory)) {
                         foreach ($subcategory as $subcategory) {
                             $search_cat[] = $subcategory['Subcategory']['subcategory_id'];
                         }
-                        $conditions['subcategory_id'] = $search_cat;
+                        $conditions['Product.subcategory_id'] = $search_cat;
                     } else {
                         $conditions['product_name LIKE'] = '%' . $_GET['search'] . '%';
                     }
@@ -237,24 +249,35 @@ class WebpagesController extends AppController {
             }
 
             if (!empty($_GET['collection'])) {
-                if ($_GET['collection'] == "enchanted") {
-                    $conditions[] = 'FIND_IN_SET(1,Product.collection_type)';
-                } elseif ($_GET['collection'] == "sapphire") {
-                    $conditions[] = 'FIND_IN_SET(2,Product.collection_type)';
-                } elseif ($_GET['collection'] == "emerald") {
-                    $conditions[] = 'FIND_IN_SET(3,Product.collection_type)';
-                } elseif ($_GET['collection'] == "jewellery_below_20k") {
-                    $conditions[] = 'FIND_IN_SET(4,Product.collection_type)';
-                } elseif ($_GET['collection'] == "ready_to_ship") {
-                    $conditions[] = 'FIND_IN_SET(5,Product.collection_type)';
+                $collection = $this->Collectiontype->find('first', array('conditions' => array('LOWER(collection_name)' => str_replace('_', ' ', $_GET['collection']))));
+                if (!empty($collection)) {
+                    $conditions[] = 'FIND_IN_SET(' . $collection['Collectiontype']['collectiontype_id'] . ',Product.collection_type)';
                 }
+                /* if($_GET['collection']=="enchanted"){
+                  $conditions[]='FIND_IN_SET(1,Product.collection_type)';
+                  }elseif($_GET['collection']=="sapphire"){
+                  $conditions[]='FIND_IN_SET(2,Product.collection_type)';
+                  }elseif($_GET['collection']=="emerald"){
+                  $conditions[]='FIND_IN_SET(3,Product.collection_type)';
+                  }elseif($_GET['collection']=="jewellery_below_20k"){
+                  $conditions[]='FIND_IN_SET(4,Product.collection_type)';
+                  }elseif($_GET['collection']=="ready_to_ship"){
+                  $conditions[]='FIND_IN_SET(5,Product.collection_type)';
+                  } */
             }
 
             if (!empty($_GET['metal'])) {
                 $conditions['metal'] = $_GET['metal'];
             }
             if (!empty($_GET['goldpurity'])) {
-                $conditions['metal_purity'] = $_GET['goldpurity'];
+                //$conditions['metal_purity']=$_GET['goldpurity'];
+                $joins[] = array(
+                    'table' => 'productmetal',
+                    'alias' => 'Productmetal',
+                    'type' => 'inner',
+                    'foreignKey' => false,
+                    'conditions' => array('`Productmetal.product_id`=`Product.product_id`', 'Productmetal.value' => $_GET['goldpurity'], 'Productmetal.type' => 'Purity')
+                );
             }
             if (!empty($_GET['diamond'])) {
                 $conditions['stone'] = 'Yes';
@@ -262,13 +285,13 @@ class WebpagesController extends AppController {
             if (!empty($_GET['gemstone'])) {
                 $conditions['Product.gemstone'] = 'Yes';
                 //$conditions[]='product_id IN (SELECT Productgemstone.product_id FROM sha_productgemstone AS Productgemstone WHERE Productgemstone.product_id=Product.product_id AND Productgemstone.gemstone=\''.$_GET['gemstone'].'\')';
-                $joins = array(array(
-                        'table' => 'productgemstone',
-                        'alias' => 'Productgemstone',
-                        'type' => 'inner',
-                        'foreignKey' => false,
-                        'conditions' => array('`Productgemstone.product_id`=`Product.product_id`', 'Productgemstone.gemstone' => $_GET['gemstone'])
-                ));
+                $joins[] = array(
+                'table' => 'productgemstone',
+                'alias' => 'Productgemstone',
+                'type' => 'inner',
+                'foreignKey' => false,
+                'conditions' => array('`Productgemstone.product_id`=`Product.product_id`', 'Productgemstone.gemstone' => $_GET['gemstone'])
+                );
             }
             if (!empty($_GET['shape'])) {
                 if (!empty($_GET['gemstone'])) {
@@ -276,19 +299,20 @@ class WebpagesController extends AppController {
                 } else {
                     $gdetails = '';
                 }
-                $joins = array(array(
-                        'table' => 'productgemstone',
-                        'alias' => 'Productgemstone',
-                        'type' => 'inner',
-                        'foreignKey' => false,
-                        'conditions' => array('`Productgemstone.product_id`=`Product.product_id`', 'Productgemstone.shape' => $_GET['shape'], $gdetails)
-                    ), array(
-                        'table' => 'productdiamond',
-                        'alias' => 'Productdiamond',
-                        'type' => 'inner',
-                        'foreignKey' => false,
-                        'conditions' => array('`Productdiamond.product_id`=`Product.product_id`', 'Productdiamond.shape' => $_GET['shape'])
-                ));
+                $joins[] = array(
+                'table' => 'productgemstone',
+                'alias' => 'Productgemstone',
+                'type' => 'inner',
+                'foreignKey' => false,
+                'conditions' => array('`Productgemstone.product_id`=`Product.product_id`', 'Productgemstone.shape' => $_GET['shape'], $gdetails)
+                );
+                $joins[] = array(
+                    'table' => 'productdiamond',
+                    'alias' => 'Productdiamond',
+                    'type' => 'inner',
+                    'foreignKey' => false,
+                    'conditions' => array('`Productdiamond.product_id`=`Product.product_id`', 'Productdiamond.shape' => $_GET['shape'])
+                );
                 //$conditions[]='product_id IN (SELECT Productgemstone.product_id FROM sha_productgemstone AS Productgemstone WHERE Productgemstone.product_id=Product.product_id AND Productgemstone.gemstone=\''.$_GET['gemstone'].'\')';
             }
             if (!empty($_GET['price'])) {
@@ -307,7 +331,6 @@ class WebpagesController extends AppController {
                     $cod = '> 50000';
                 }
                 //$conditions[]='status =\'Active\' HAVING metalprice+stoneprice+gemstoneprice+ROUND(metalprice*mc/100)+ ROUND((metalprice+stoneprice+gemstoneprice+ROUND(metalprice* mc/100))* vat/100) '.$cod;
-                
                 //modified by prakash for metal fineness calculations
                 $conditions[] = '(ROUND(ROUND((metal_purity/24)*(SELECT price FROM sha_price WHERE metal_id=1 AND metalcolor_id=Product.metal_color_id AND metal_fineness=Product.metal_fineness))*metal_weight)+
 		 ROUND(ROUND(ROUND((metal_purity/24)*(SELECT price FROM sha_price WHERE metal_id=1 AND metalcolor_id=Product.metal_color_id AND metal_fineness=Product.metal_fineness))*metal_weight)*making_charge/100)+
@@ -317,6 +340,15 @@ class WebpagesController extends AppController {
 		 ROUND(ROUND(ROUND((metal_purity/24)*(SELECT price FROM sha_price WHERE metal_id=1 AND metalcolor_id=Product.metal_color_id AND metal_fineness=Product.metal_fineness))*metal_weight)*making_charge/100)+
 		 IF(stone=\'Yes\',ROUND(stoneweight*(SELECT price FROM sha_price WHERE clarity_id=Product.stone_clarity_id AND color_id=Product.stone_color_id AND status=\'Active\' AND metal_fineness=Product.metal_fineness)),0)+
 		 IF(Product.gemstone=\'Yes\',ROUND((SELECT SUM(Productgemstone.stone_weight*Productgemstone.stone_price) FROM sha_productgemstone AS Productgemstone WHERE product_id=Product.product_id)),0))*vat_cst/100)) ' . $cod;
+                //Issue query . Takes more time to retrieve. so commented.
+//                $conditions[] = '(ROUND(ROUND((' . (isset($_REQUEST['goldpurity']) ? $_REQUEST['goldpurity'] : '(SELECT value FROM sha_productmetal AS Productmetal WHERE type=\'Purity\' AND Productmetal.product_id=Product.product_id ORDER BY value ASC LIMIT 0,1)') . '/24)*(SELECT price FROM sha_price WHERE metal_id=1 AND metalcolor_id=Product.metal_color_id AND metal_fineness=Product.metal_fineness))*Product.metal_weight)+
+//		 ROUND(ROUND(ROUND((' . (isset($_REQUEST['goldpurity']) ? $_REQUEST['goldpurity'] : '(SELECT value FROM sha_productmetal AS Productmetal  WHERE type=\'Purity\'  AND Productmetal.product_id=Product.product_id  ORDER BY value ASC LIMIT 0,1)') . '/24)*(SELECT price FROM sha_price WHERE metal_id=1 AND metalcolor_id=Product.metal_color_id AND metal_fineness=Product.metal_fineness))*metal_weight)*making_charge/100)+
+//		 IF(stone=\'Yes\',ROUND((SELECT SUM(Productdiamond.stone_weight) FROM sha_productdiamond AS Productdiamond WHERE Productdiamond.product_id=Product.product_id GROUP BY clarity, color ORDER BY FIELD(`clarity`,\'SI\',\'VS\',\'VVS\'),FIELD(`color`,\'IJ\',\'GH\',\'EF\') LIMIT 0,1)*(SELECT price FROM sha_price WHERE clarity_id=(SELECT clarity_id FROM sha_clarity WHERE clarity=(SELECT clarity FROM sha_productdiamond AS Productdiamond WHERE Productdiamond.product_id=Product.product_id GROUP BY clarity, color ORDER BY FIELD(`clarity`,\'SI\',\'VS\',\'VVS\'),FIELD(`color`,\'IJ\',\'GH\',\'EF\') LIMIT 0,1)) AND color_id=(SELECT color_id FROM sha_color WHERE clarity=(SELECT clarity FROM sha_productdiamond AS Productdiamond WHERE Productdiamond.product_id=Product.product_id GROUP BY clarity, color ORDER BY FIELD(`clarity`,\'SI\',\'VS\',\'VVS\'),FIELD(`color`,\'IJ\',\'GH\',\'EF\') LIMIT 0,1) AND color=(SELECT color FROM sha_productdiamond AS Productdiamond WHERE Productdiamond.product_id=Product.product_id GROUP BY clarity, color ORDER BY FIELD(`clarity`,\'SI\',\'VS\',\'VVS\'),FIELD(`color`,\'IJ\',\'GH\',\'EF\') LIMIT 0,1)) AND status=\'Active\')),0)+
+//		 IF(Product.gemstone=\'Yes\',ROUND((SELECT SUM(Productgemstone.stone_weight*(SELECT Price.price FROM sha_price AS Price WHERE Price.gemstone_id=(SELECT Gemstone.gemstone_id FROM sha_gemstone AS Gemstone WHERE Gemstone.stone=Productgemstone.gemstone) AND Price.gemstoneshape=(SELECT Shape.shape_id FROM sha_shape AS Shape WHERE Shape.shape = Productgemstone.shape ))) FROM sha_productgemstone AS Productgemstone WHERE product_id=Product.product_id)),0)+
+//		 ROUND((ROUND(ROUND((' . (isset($_REQUEST['goldpurity']) ? $_REQUEST['goldpurity'] : '(SELECT value FROM sha_productmetal AS Productmetal  WHERE type=\'Purity\' AND Productmetal.product_id=Product.product_id  ORDER BY value ASC LIMIT 0,1)') . '/24)*(SELECT price FROM sha_price WHERE metal_id=1 AND metalcolor_id=Product.metal_color_id AND metal_fineness=Product.metal_fineness))*Product.metal_weight)+
+//		 ROUND(ROUND(ROUND((' . (isset($_REQUEST['goldpurity']) ? $_REQUEST['goldpurity'] : '(SELECT value FROM sha_productmetal AS Productmetal WHERE type=\'Purity\' AND Productmetal.product_id=Product.product_id  ORDER BY value ASC LIMIT 0,1)') . '/24)*(SELECT price FROM sha_price WHERE metal_id=1 AND metalcolor_id=Product.metal_color_id AND metal_fineness=Product.metal_fineness))*Product.metal_weight)*making_charge/100)+
+//		 IF(stone=\'Yes\',ROUND((SELECT SUM(Productdiamond.stone_weight) FROM sha_productdiamond AS Productdiamond WHERE Productdiamond.product_id=Product.product_id GROUP BY clarity, color ORDER BY FIELD(`clarity`,\'SI\',\'VS\',\'VVS\'),FIELD(`color`,\'IJ\',\'GH\',\'EF\') LIMIT 0,1)*(SELECT price FROM sha_price WHERE clarity_id=(SELECT clarity_id FROM sha_clarity WHERE clarity=(SELECT clarity FROM sha_productdiamond AS Productdiamond WHERE Productdiamond.product_id=Product.product_id GROUP BY clarity, color ORDER BY FIELD(`clarity`,\'SI\',\'VS\',\'VVS\'),FIELD(`color`,\'IJ\',\'GH\',\'EF\') LIMIT 0,1)) AND color_id=(SELECT color_id FROM sha_color WHERE clarity=(SELECT clarity FROM sha_productdiamond AS Productdiamond WHERE Productdiamond.product_id=Product.product_id GROUP BY clarity, color ORDER BY FIELD(`clarity`,\'SI\',\'VS\',\'VVS\'),FIELD(`color`,\'IJ\',\'GH\',\'EF\') LIMIT 0,1) AND color=(SELECT color FROM sha_productdiamond AS Productdiamond WHERE Productdiamond.product_id=Product.product_id GROUP BY clarity, color ORDER BY FIELD(`clarity`,\'SI\',\'VS\',\'VVS\'),FIELD(`color`,\'IJ\',\'GH\',\'EF\') LIMIT 0,1)) AND status=\'Active\')),0)+
+//		 IF(Product.gemstone=\'Yes\',ROUND((SELECT SUM(Productgemstone.stone_weight*(SELECT Price.price FROM sha_price AS Price WHERE Price.gemstone_id=(SELECT Gemstone.gemstone_id FROM sha_gemstone AS Gemstone WHERE Gemstone.stone=Productgemstone.gemstone) AND Price.gemstoneshape=(SELECT Shape.shape_id FROM sha_shape AS Shape WHERE Shape.shape = Productgemstone.shape ))) FROM sha_productgemstone AS Productgemstone WHERE product_id=Product.product_id)),0))*vat_cst/100)) ' . $cod;
             }
 
             if (!empty($_GET['filter'])) {
@@ -337,25 +369,33 @@ class WebpagesController extends AppController {
                     $order = 'totprice ' . (isset($_GET['order']) ? $_GET['order'] : 'ASC');
                 }
             }
-            
+        }
+
+            if (empty($joins)) {
+                $joins = '';
+            }
+
+            $product = $this->Product->find('all', array('conditions' => $conditions, 'fields' => $field, 'limit' => '6', 'group' => $group, 'joins' => $joins, 'order' => $order));
+
+
             //added by prakash
-            if(isset($_GET['submenu'])){
+            if (isset($_GET['submenu'])) {
                 $conditions[] = "FIND_IN_SET({$_GET['submenu']},Product.submenu_ids)";
                 $submenu = $this->Submenu->findBySubmenuId($_GET['submenu']);
-                $this->set('n_filter', $submenu['Menu']['menu_name'].' ('.$submenu['Submenu']['submenu_name'].')');
+                $this->set('n_filter', $submenu['Menu']['menu_name'] . ' (' . $submenu['Submenu']['submenu_name'] . ')');
             }
-            
-            if(isset($_GET['goldfineness'])){
+
+            if (isset($_GET['goldfineness'])) {
                 $conditions[] = "FIND_IN_SET({$_GET['goldfineness']},Product.metal_fineness)";
                 $this->set('n_filter', "24K {$_GET['goldfineness']}");
             }
-            
-            if(isset($_GET['offers'])){
+
+            if (isset($_GET['offers'])) {
                 $conditions[] = "FIND_IN_SET({$_GET['offers']},Product.offer_ids)";
                 $offer = $this->Offer->findByOfferId($_GET['offers']);
-                $this->set('n_filter', $offer['Submenu']['submenu_name'].' ('.$offer['Offer']['offer_name'].')');
+                $this->set('n_filter', $offer['Submenu']['submenu_name'] . ' (' . $offer['Offer']['offer_name'] . ')');
             }
-            
+
             if (!empty($_GET['pricefilter'])) {
                 if ($_GET['pricefilter'] == 2) {
                     $cod = 'between 10001 AND 25000';
@@ -378,10 +418,15 @@ class WebpagesController extends AppController {
 		 ROUND(ROUND(ROUND((metal_purity/24)*(SELECT price FROM sha_price WHERE metal_id=1 AND metalcolor_id=Product.metal_color_id AND metal_fineness=Product.metal_fineness))*metal_weight)*making_charge/100)+
 		 IF(stone=\'Yes\',ROUND(stoneweight*(SELECT price FROM sha_price WHERE clarity_id=Product.stone_clarity_id AND color_id=Product.stone_color_id AND status=\'Active\' AND metal_fineness=Product.metal_fineness)),0)+
 		 IF(Product.gemstone=\'Yes\',ROUND((SELECT SUM(Productgemstone.stone_weight*Productgemstone.stone_price) FROM sha_productgemstone AS Productgemstone WHERE product_id=Product.product_id)),0))*vat_cst/100)) ' . $cod;
+//                $conditions[] = '(ROUND(ROUND((' . (isset($_REQUEST['goldpurity']) ? $_REQUEST['goldpurity'] : '(SELECT value FROM sha_productmetal AS Productmetal WHERE type=\'Purity\' AND Productmetal.product_id=Product.product_id ORDER BY value ASC LIMIT 0,1)') . '/24)*(SELECT price FROM sha_price WHERE metal_id=1 AND metalcolor_id=Product.metal_color_id AND metal_fineness=Product.metal_fineness))*Product.metal_weight)+
+//		 ROUND(ROUND(ROUND((' . (isset($_REQUEST['goldpurity']) ? $_REQUEST['goldpurity'] : '(SELECT value FROM sha_productmetal AS Productmetal  WHERE type=\'Purity\'  AND Productmetal.product_id=Product.product_id  ORDER BY value ASC LIMIT 0,1)') . '/24)*(SELECT price FROM sha_price WHERE metal_id=1 AND metalcolor_id=Product.metal_color_id AND metal_fineness=Product.metal_fineness))*metal_weight)*making_charge/100)+
+//		 IF(stone=\'Yes\',ROUND((SELECT SUM(Productdiamond.stone_weight) FROM sha_productdiamond AS Productdiamond WHERE Productdiamond.product_id=Product.product_id GROUP BY clarity, color ORDER BY FIELD(`clarity`,\'SI\',\'VS\',\'VVS\'),FIELD(`color`,\'IJ\',\'GH\',\'EF\') LIMIT 0,1)*(SELECT price FROM sha_price WHERE clarity_id=(SELECT clarity_id FROM sha_clarity WHERE clarity=(SELECT clarity FROM sha_productdiamond AS Productdiamond WHERE Productdiamond.product_id=Product.product_id GROUP BY clarity, color ORDER BY FIELD(`clarity`,\'SI\',\'VS\',\'VVS\'),FIELD(`color`,\'IJ\',\'GH\',\'EF\') LIMIT 0,1)) AND color_id=(SELECT color_id FROM sha_color WHERE clarity=(SELECT clarity FROM sha_productdiamond AS Productdiamond WHERE Productdiamond.product_id=Product.product_id GROUP BY clarity, color ORDER BY FIELD(`clarity`,\'SI\',\'VS\',\'VVS\'),FIELD(`color`,\'IJ\',\'GH\',\'EF\') LIMIT 0,1) AND color=(SELECT color FROM sha_productdiamond AS Productdiamond WHERE Productdiamond.product_id=Product.product_id GROUP BY clarity, color ORDER BY FIELD(`clarity`,\'SI\',\'VS\',\'VVS\'),FIELD(`color`,\'IJ\',\'GH\',\'EF\') LIMIT 0,1)) AND status=\'Active\')),0)+
+//		 IF(Product.gemstone=\'Yes\',ROUND((SELECT SUM(Productgemstone.stone_weight*(SELECT Price.price FROM sha_price AS Price WHERE Price.gemstone_id=(SELECT Gemstone.gemstone_id FROM sha_gemstone AS Gemstone WHERE Gemstone.stone=Productgemstone.gemstone) AND Price.gemstoneshape=(SELECT Shape.shape_id FROM sha_shape AS Shape WHERE Shape.shape = Productgemstone.shape ))) FROM sha_productgemstone AS Productgemstone WHERE product_id=Product.product_id)),0)+
+//		 ROUND((ROUND(ROUND((' . (isset($_REQUEST['goldpurity']) ? $_REQUEST['goldpurity'] : '(SELECT value FROM sha_productmetal AS Productmetal  WHERE type=\'Purity\' AND Productmetal.product_id=Product.product_id  ORDER BY value ASC LIMIT 0,1)') . '/24)*(SELECT price FROM sha_price WHERE metal_id=1 AND metalcolor_id=Product.metal_color_id AND metal_fineness=Product.metal_fineness))*Product.metal_weight)+
+//		 ROUND(ROUND(ROUND((' . (isset($_REQUEST['goldpurity']) ? $_REQUEST['goldpurity'] : '(SELECT value FROM sha_productmetal AS Productmetal WHERE type=\'Purity\' AND Productmetal.product_id=Product.product_id  ORDER BY value ASC LIMIT 0,1)') . '/24)*(SELECT price FROM sha_price WHERE metal_id=1 AND metalcolor_id=Product.metal_color_id AND metal_fineness=Product.metal_fineness))*Product.metal_weight)*making_charge/100)+
+//		 IF(stone=\'Yes\',ROUND((SELECT SUM(Productdiamond.stone_weight) FROM sha_productdiamond AS Productdiamond WHERE Productdiamond.product_id=Product.product_id GROUP BY clarity, color ORDER BY FIELD(`clarity`,\'SI\',\'VS\',\'VVS\'),FIELD(`color`,\'IJ\',\'GH\',\'EF\') LIMIT 0,1)*(SELECT price FROM sha_price WHERE clarity_id=(SELECT clarity_id FROM sha_clarity WHERE clarity=(SELECT clarity FROM sha_productdiamond AS Productdiamond WHERE Productdiamond.product_id=Product.product_id GROUP BY clarity, color ORDER BY FIELD(`clarity`,\'SI\',\'VS\',\'VVS\'),FIELD(`color`,\'IJ\',\'GH\',\'EF\') LIMIT 0,1)) AND color_id=(SELECT color_id FROM sha_color WHERE clarity=(SELECT clarity FROM sha_productdiamond AS Productdiamond WHERE Productdiamond.product_id=Product.product_id GROUP BY clarity, color ORDER BY FIELD(`clarity`,\'SI\',\'VS\',\'VVS\'),FIELD(`color`,\'IJ\',\'GH\',\'EF\') LIMIT 0,1) AND color=(SELECT color FROM sha_productdiamond AS Productdiamond WHERE Productdiamond.product_id=Product.product_id GROUP BY clarity, color ORDER BY FIELD(`clarity`,\'SI\',\'VS\',\'VVS\'),FIELD(`color`,\'IJ\',\'GH\',\'EF\') LIMIT 0,1)) AND status=\'Active\')),0)+
+//		 IF(Product.gemstone=\'Yes\',ROUND((SELECT SUM(Productgemstone.stone_weight*(SELECT Price.price FROM sha_price AS Price WHERE Price.gemstone_id=(SELECT Gemstone.gemstone_id FROM sha_gemstone AS Gemstone WHERE Gemstone.stone=Productgemstone.gemstone) AND Price.gemstoneshape=(SELECT Shape.shape_id FROM sha_shape AS Shape WHERE Shape.shape = Productgemstone.shape ))) FROM sha_productgemstone AS Productgemstone WHERE product_id=Product.product_id)),0))*vat_cst/100)) ' . $cod;
             }
-
-        }
-
 
         $product = $this->Product->find('all', array('conditions' => $conditions, 'fields' => $field, 'limit' => '6', 'group' => $group, 'joins' => $joins, 'order' => $order));
         $productcount = $this->Product->find('all', array('conditions' => $conditions, 'fields' => $field, 'group' => $group, 'joins' => $joins, 'order' => $order));
@@ -479,7 +524,7 @@ class WebpagesController extends AppController {
         }
     }
 
-public function admin_homeenquries_export() {
+    public function admin_homeenquries_export() {
 
         $this->layout = '';
         $this->render(false);
@@ -490,26 +535,27 @@ public function admin_homeenquries_export() {
 
         header('Content-type: application/csv');
         header('Content-Disposition: attachment; filename="' . $filename . '"');
-        $results = $this->Enquries->find('all',array('conditions'=>array('status !='=>'Trash'))); 
-        $header_row = array("S.No","Name","Phone","City","Pincode","Created Date");
+        $results = $this->Enquries->find('all', array('conditions' => array('status !=' => 'Trash')));
+        $header_row = array("S.No", "Name", "Phone", "City", "Pincode", "Created Date");
         fputcsv($csv_file, $header_row, ',', '"');
         $i = 1;
         foreach ($results as $results) {
-           
+
             $row = array(
                 $i,
                 $results['Enquries']['name'],
                 $results['Enquries']['phone'],
                 $results['Enquries']['city'],
-				$results['Enquries']['pincode'],
+                $results['Enquries']['pincode'],
                 $results['Enquries']['created_date'],
-                );
+            );
 
             $i++;
             fputcsv($csv_file, $row, ',', '"');
         }
         fclose($csv_file);
     }
+
     public function admin_delete() {
         $this->checkadmin();
         if (!empty($this->params['pass']['0'])) {
@@ -584,7 +630,7 @@ public function admin_homeenquries_export() {
         $this->set('product', $product);
     }
 
-	public function admin_question_export() {
+    public function admin_question_export() {
 
         $this->layout = '';
         $this->render(false);
@@ -595,29 +641,30 @@ public function admin_homeenquries_export() {
 
         header('Content-type: application/csv');
         header('Content-Disposition: attachment; filename="' . $filename . '"');
-        $results = $this->Question->find('all',array('conditions'=>array('status !='=>'Trash'))); 
-        $header_row = array("S.No","Name","Product Name","Email","Phone","Message","Created Date");
+        $results = $this->Question->find('all', array('conditions' => array('status !=' => 'Trash')));
+        $header_row = array("S.No", "Name", "Product Name", "Email", "Phone", "Message", "Created Date");
         fputcsv($csv_file, $header_row, ',', '"');
         $i = 1;
         foreach ($results as $results) {
-           
-		   $productdetails=$this->Product->find('first',array('conditions'=>array('product_id'=>$results['Question']['product_id'])));
-		   $productname=$productdetails['Product']['product_name'];
+
+            $productdetails = $this->Product->find('first', array('conditions' => array('product_id' => $results['Question']['product_id'])));
+            $productname = $productdetails['Product']['product_name'];
             $row = array(
                 $i,
                 $results['Question']['name'],
-				$productname,
+                $productname,
                 $results['Question']['email'],
                 $results['Question']['contact_no'],
-				$results['Question']['question'],
+                $results['Question']['question'],
                 $results['Question']['created_date'],
-                );
+            );
 
             $i++;
             fputcsv($csv_file, $row, ',', '"');
         }
         fclose($csv_file);
     }
+
     public function admin_view() {
         $this->layout = "admin";
         $this->checkadmin();
@@ -771,13 +818,13 @@ public function admin_homeenquries_export() {
         $this->render(false);
         if ($this->Session->read('loginid')) {
             //$whish = $this->Whislist->find('first', array('conditions' => array('user_id' => $this->Session->read('loginid'), 'image_id' => $this->params['pass']['2'])));
-			 $whish = $this->Whislist->find("all", array('conditions' => array('Whislist.user_id' => $this->Session->read('User.user_id'),'Whislist.status'=>'Active','Whislist.product_id'=>$this->params['pass']['1'],'Whislist.product_id NOT IN (SELECT Shoppingcart.product_id FROM sha_shoppingcarts AS Shoppingcart WHERE Shoppingcart.order_id IN (SELECT Orders.order_id FROM `sha_orders` AS `Orders` WHERE Orders.user_id='.$this->Session->read('User.user_id').' AND (Orders.status=\'Paid\' OR Orders.status=\'Partialpaid\') AND Orders.created_date >= Whislist.created_date))'),'joins'=>array(array(
-				'table'=>'products',
-				'alias'=>'Product',
-				'type'=>'inner',
-				 'foreignKey' => false,
-				'conditions' => array('`Product.product_id`=`Whislist.product_id`','Product.status'=>'Active')
-				)),'group'=>'Whislist.whislist_id'));
+            $whish = $this->Whislist->find("all", array('conditions' => array('Whislist.user_id' => $this->Session->read('User.user_id'), 'Whislist.status' => 'Active', 'Whislist.product_id' => $this->params['pass']['1'], 'Whislist.product_id NOT IN (SELECT Shoppingcart.product_id FROM sha_shoppingcarts AS Shoppingcart WHERE Shoppingcart.order_id IN (SELECT Orders.order_id FROM `sha_orders` AS `Orders` WHERE Orders.user_id=' . $this->Session->read('User.user_id') . ' AND (Orders.status=\'Paid\' OR Orders.status=\'Partialpaid\') AND Orders.created_date >= Whislist.created_date))'), 'joins' => array(array(
+                        'table' => 'products',
+                        'alias' => 'Product',
+                        'type' => 'inner',
+                        'foreignKey' => false,
+                        'conditions' => array('`Product.product_id`=`Whislist.product_id`', 'Product.status' => 'Active')
+                    )), 'group' => 'Whislist.whislist_id'));
             if (empty($whish)) {
                 $this->request->data['Whislist']['user_id'] = $this->Session->read('loginid');
                 $this->request->data['Whislist']['product_id'] = $this->params['pass']['1'];
@@ -886,8 +933,8 @@ public function admin_homeenquries_export() {
             $mcolor = $this->Metalcolor->find('first', array('conditions' => array('metalcolor' => $gcolor, 'status' => 'Active')));
             //modified by prakash
             $goldprice = $this->Price->find('first', array('conditions' => array('metalcolor_id' => $mcolor['Metalcolor']['metalcolor_id'], 'metal_id' => '1', 'metal_fineness' => $product['Product']['metal_fineness'])));
-            $gprice = $goldprice['Price']['price'];
-            
+            $gprice = !empty($goldprice['Price']['price']) ? $goldprice['Price']['price'] : 0;
+
             $gold_price = round(round($gprice * ($material[0] / 24)) * $tot_weight);
 //            $gold_price = round(round($goldprice['Price']['price'] * ($material[0] / 24)) * $tot_weight);
             $purity = $material[0];
@@ -907,7 +954,7 @@ public function admin_homeenquries_export() {
             $clarities = $this->Clarity->find('first', array('conditions' => array('clarity' => $clarity)));
             $colors = $this->Color->find('first', array('conditions' => array('color' => $color, 'clarity' => $clarity)));
             $stoneprice = $this->Price->find('first', array('conditions' => array('clarity_id' => $clarities['Clarity']['clarity_id'], 'color_id' => $colors['Color']['color_id'])));
-            $stone_price = round($stoneprice['Price']['price'] * $stone_details['0']['sweight']);
+            $stone_price = round($stoneprice['Price']['price'] * $stone_details['0']['sweight'], 0, PHP_ROUND_HALF_DOWN);
             $diamond_wt = $stone_details['0']['sweight'] / 5;
             $all_stone_details = $this->Productdiamond->find('all', array('conditions' => array('clarity' => $clarity, 'color' => $color, 'product_id' => $productid)));
 
@@ -937,15 +984,16 @@ public function admin_homeenquries_export() {
             $gemstone_wt = '';
         }
 
+
         $sub_total = $gold_price + $stone_price + $gemprice;
         $making = 0;
         //addded by prakash
-        if($product['Product']['making_charge_calc'] == 'PER'){
-            $making = round($gold_price * ($making_charge / 100));
-        }elseif($product['Product']['making_charge_calc'] == 'INR'){
+        if ($product['Product']['making_charge_calc'] == 'PER') {
+            $making = round($gold_price * ($making_charge / 100), 0, PHP_ROUND_HALF_DOWN);
+        } elseif ($product['Product']['making_charge_calc'] == 'INR') {
             $making = $making_charge;
         }
-        $vat = round(($sub_total + $making) * ($product['Product']['vat_cst'] / 100));
+        $vat = round(($sub_total + $making) * ($product['Product']['vat_cst'] / 100), 0, PHP_ROUND_HALF_DOWN);
         $total = $sub_total + $making + $vat;
 
         $total_weight = $tot_weight + $diamond_wt + $gemstone_wt;
@@ -961,6 +1009,7 @@ public function admin_homeenquries_export() {
 
     public function load_more() {
         $this->layout = '';
+        //modified by prakash
         $field = array('ROUND(ROUND((metal_purity/24)*(SELECT price FROM sha_price WHERE metal_id=1 AND metalcolor_id=Product.metal_color_id AND metal_fineness=Product.metal_fineness))*metal_weight) AS metalprice',
             '(SELECT price FROM sha_price WHERE metal_id=1 AND metalcolor_id=Product.metal_color_id AND metal_fineness=Product.metal_fineness) AS price',
             'IF(stone=\'Yes\',ROUND(stoneweight*(SELECT price FROM sha_price WHERE clarity_id=Product.stone_clarity_id AND color_id=Product.stone_color_id AND status=\'Active\' AND metal_fineness=Product.metal_fineness)),0) AS stoneprice', 'IF(Product.gemstone=\'Yes\',ROUND((SELECT SUM(Productgemstone.stone_weight*Productgemstone.stone_price) FROM sha_productgemstone AS Productgemstone WHERE product_id=Product.product_id)),0) AS gemstoneprice,Product.making_charge AS mc,Product.vat_cst As vat',
@@ -973,18 +1022,51 @@ public function admin_homeenquries_export() {
 		 IF(stone=\'Yes\',ROUND(stoneweight*(SELECT price FROM sha_price WHERE clarity_id=Product.stone_clarity_id AND color_id=Product.stone_color_id AND status=\'Active\' AND metal_fineness=Product.metal_fineness)),0)+
 		 IF(Product.gemstone=\'Yes\',ROUND((SELECT SUM(Productgemstone.stone_weight*Productgemstone.stone_price) FROM sha_productgemstone AS Productgemstone WHERE product_id=Product.product_id)),0))*vat_cst/100) AS totprice',
             'Product.*');
-        $joins = $group = $joins = $order = '';
-
-        $conditions['status'] = 'Active';
+        //Issue query . Takes more time to retrieve. so commented.
+//        $field = array('ROUND(ROUND((' . (isset($_REQUEST['goldpurity']) ? $_REQUEST['goldpurity'] : '(SELECT value FROM sha_productmetal AS Productmetal  WHERE type=\'Purity\' AND Productmetal.product_id=Product.product_id  ORDER BY value ASC LIMIT 0,1)') . '/24)*(SELECT price FROM sha_price WHERE metal_id=1 AND metalcolor_id=Product.metal_color_id AND metal_fineness=Product.metal_fineness))* Product.metal_weight) AS metalprice',
+//            '(SELECT price FROM sha_price WHERE metal_id=1 AND metalcolor_id=Product.metal_color_id AND metal_fineness=Product.metal_fineness) AS price',
+//            'IF(stone=\'Yes\',ROUND((SELECT SUM(Productdiamond.stone_weight) FROM sha_productdiamond AS Productdiamond WHERE Productdiamond.product_id=Product.product_id GROUP BY clarity, color ORDER BY FIELD(`clarity`,\'SI\',\'VS\',\'VVS\'),FIELD(`color`,\'IJ\',\'GH\',\'EF\') LIMIT 0,1)*(SELECT price FROM sha_price WHERE clarity_id=(SELECT clarity_id FROM sha_clarity WHERE clarity=(SELECT clarity FROM sha_productdiamond AS Productdiamond WHERE Productdiamond.product_id=Product.product_id GROUP BY clarity, color ORDER BY FIELD(`clarity`,\'SI\',\'VS\',\'VVS\'),FIELD(`color`,\'IJ\',\'GH\',\'EF\') LIMIT 0,1)) AND color_id=(SELECT color_id FROM sha_color WHERE clarity=(SELECT clarity FROM sha_productdiamond AS Productdiamond WHERE Productdiamond.product_id=Product.product_id GROUP BY clarity, color ORDER BY FIELD(`clarity`,\'SI\',\'VS\',\'VVS\'),FIELD(`color`,\'IJ\',\'GH\',\'EF\') LIMIT 0,1) AND color=(SELECT color FROM sha_productdiamond AS Productdiamond WHERE Productdiamond.product_id=Product.product_id GROUP BY clarity, color ORDER BY FIELD(`clarity`,\'SI\',\'VS\',\'VVS\'),FIELD(`color`,\'IJ\',\'GH\',\'EF\') LIMIT 0,1)) AND status=\'Active\')),0) AS stoneprice',
+//            'IF(Product.gemstone=\'Yes\',ROUND((SELECT SUM(Productgemstone.stone_weight*(SELECT Price.price FROM sha_price AS Price WHERE Price.gemstone_id=(SELECT Gemstone.gemstone_id FROM sha_gemstone AS Gemstone WHERE Gemstone.stone=Productgemstone.gemstone) AND Price.gemstoneshape=(SELECT Shape.shape_id FROM sha_shape AS Shape WHERE Shape.shape = Productgemstone.shape ))) FROM sha_productgemstone AS Productgemstone WHERE product_id=Product.product_id)),0) AS gemstoneprice,
+//		Product.making_charge AS mc,
+//		Product.vat_cst As vat',
+//            'ROUND((ROUND(ROUND((' . (isset($_REQUEST['goldpurity']) ? $_REQUEST['goldpurity'] : '(SELECT value FROM sha_productmetal AS Productmetal WHERE type=\'Purity\' AND Productmetal.product_id=Product.product_id   ORDER BY value ASC LIMIT 0,1)') . '/24)*(SELECT price FROM sha_price WHERE metal_id=1 AND metalcolor_id=Product.metal_color_id AND metal_fineness=Product.metal_fineness))*Product.metal_weight)+
+//		 ROUND(ROUND(ROUND((' . (isset($_REQUEST['goldpurity']) ? $_REQUEST['goldpurity'] : '(SELECT value FROM sha_productmetal AS Productmetal  WHERE type=\'Purity\' AND Productmetal.product_id=Product.product_id  ORDER BY value ASC LIMIT 0,1)') . '/24)*(SELECT price FROM sha_price WHERE metal_id=1 AND metalcolor_id=Product.metal_color_id AND metal_fineness=Product.metal_fineness))*Product.metal_weight)*making_charge/100)+
+//		 IF(stone=\'Yes\',(ROUND((SELECT SUM(Productdiamond.stone_weight) FROM sha_productdiamond AS Productdiamond WHERE Productdiamond.product_id=Product.product_id GROUP BY clarity, color ORDER BY FIELD(`clarity`,\'SI\',\'VS\',\'VVS\'),FIELD(`color`,\'IJ\',\'GH\',\'EF\') LIMIT 0,1)*(SELECT price FROM sha_price WHERE clarity_id=(SELECT clarity_id FROM sha_clarity WHERE clarity=(SELECT clarity FROM sha_productdiamond AS Productdiamond WHERE Productdiamond.product_id=Product.product_id GROUP BY clarity, color ORDER BY FIELD(`clarity`,\'SI\',\'VS\',\'VVS\'),FIELD(`color`,\'IJ\',\'GH\',\'EF\') LIMIT 0,1)) AND color_id=(SELECT color_id FROM sha_color WHERE clarity=(SELECT clarity FROM sha_productdiamond AS Productdiamond WHERE Productdiamond.product_id=Product.product_id GROUP BY clarity, color ORDER BY FIELD(`clarity`,\'SI\',\'VS\',\'VVS\'),FIELD(`color`,\'IJ\',\'GH\',\'EF\') LIMIT 0,1) AND color=(SELECT color FROM sha_productdiamond AS Productdiamond WHERE Productdiamond.product_id=Product.product_id GROUP BY clarity, color ORDER BY FIELD(`clarity`,\'SI\',\'VS\',\'VVS\'),FIELD(`color`,\'IJ\',\'GH\',\'EF\') LIMIT 0,1)) AND status=\'Active\'))),0)+
+//		 IF(Product.gemstone=\'Yes\',ROUND((SELECT SUM(Productgemstone.stone_weight*(SELECT Price.price FROM sha_price AS Price WHERE Price.gemstone_id=(SELECT Gemstone.gemstone_id FROM sha_gemstone AS Gemstone WHERE Gemstone.stone=Productgemstone.gemstone) AND Price.gemstoneshape=(SELECT Shape.shape_id FROM sha_shape AS Shape WHERE Shape.shape = Productgemstone.shape ))) FROM sha_productgemstone AS Productgemstone WHERE product_id=Product.product_id)),0))*vat_cst/100) AS vatprice',
+//            '(ROUND(ROUND((' . (isset($_REQUEST['goldpurity']) ? $_REQUEST['goldpurity'] : '(SELECT value FROM sha_productmetal AS Productmetal  WHERE type=\'Purity\' AND Productmetal.product_id=Product.product_id  ORDER BY value ASC LIMIT 0,1)') . '/24)*(SELECT price FROM sha_price WHERE metal_id=1 AND metalcolor_id=Product.metal_color_id AND metal_fineness=Product.metal_fineness))*Product.metal_weight)+
+//		 ROUND(ROUND(ROUND((' . (isset($_REQUEST['goldpurity']) ? $_REQUEST['goldpurity'] : '(SELECT value FROM sha_productmetal AS Productmetal  WHERE type=\'Purity\' AND Productmetal.product_id=Product.product_id  ORDER BY value ASC LIMIT 0,1)') . '/24)*(SELECT price FROM sha_price WHERE metal_id=1 AND metalcolor_id=Product.metal_color_id AND metal_fineness=Product.metal_fineness))*Product.metal_weight)*making_charge/100)+
+//		 IF(stone=\'Yes\',ROUND((SELECT SUM(Productdiamond.stone_weight) FROM sha_productdiamond AS Productdiamond WHERE Productdiamond.product_id=Product.product_id GROUP BY clarity, color ORDER BY FIELD(`clarity`,\'SI\',\'VS\',\'VVS\'),FIELD(`color`,\'IJ\',\'GH\',\'EF\') LIMIT 0,1)*(SELECT price FROM sha_price WHERE clarity_id=(SELECT clarity_id FROM sha_clarity WHERE clarity=(SELECT clarity FROM sha_productdiamond AS Productdiamond WHERE Productdiamond.product_id=Product.product_id GROUP BY clarity, color ORDER BY FIELD(`clarity`,\'SI\',\'VS\',\'VVS\'),FIELD(`color`,\'IJ\',\'GH\',\'EF\') LIMIT 0,1)) AND color_id=(SELECT color_id FROM sha_color WHERE clarity=(SELECT clarity FROM sha_productdiamond AS Productdiamond WHERE Productdiamond.product_id=Product.product_id GROUP BY clarity, color ORDER BY FIELD(`clarity`,\'SI\',\'VS\',\'VVS\'),FIELD(`color`,\'IJ\',\'GH\',\'EF\') LIMIT 0,1) AND color=(SELECT color FROM sha_productdiamond AS Productdiamond WHERE Productdiamond.product_id=Product.product_id GROUP BY clarity, color ORDER BY FIELD(`clarity`,\'SI\',\'VS\',\'VVS\'),FIELD(`color`,\'IJ\',\'GH\',\'EF\') LIMIT 0,1)) AND status=\'Active\')),0)+
+//		 IF(Product.gemstone=\'Yes\',ROUND((SELECT SUM(Productgemstone.stone_weight*(SELECT Price.price FROM sha_price AS Price WHERE Price.gemstone_id=(SELECT Gemstone.gemstone_id FROM sha_gemstone AS Gemstone WHERE Gemstone.stone=Productgemstone.gemstone) AND Price.gemstoneshape=(SELECT Shape.shape_id FROM sha_shape AS Shape WHERE Shape.shape = Productgemstone.shape ))) FROM sha_productgemstone AS Productgemstone WHERE product_id=Product.product_id)),0)+
+//		 ROUND((ROUND(ROUND((' . (isset($_REQUEST['goldpurity']) ? $_REQUEST['goldpurity'] : '(SELECT value FROM sha_productmetal AS Productmetal WHERE type=\'Purity\'  AND Productmetal.product_id=Product.product_id   ORDER BY value ASC LIMIT 0,1)') . '/24)*(SELECT price FROM sha_price WHERE metal_id=1 AND metalcolor_id=Product.metal_color_id AND metal_fineness=Product.metal_fineness))*Product.metal_weight)+
+//		 ROUND(ROUND(ROUND((' . (isset($_REQUEST['goldpurity']) ? $_REQUEST['goldpurity'] : '(SELECT value FROM sha_productmetal AS Productmetal  WHERE type=\'Purity\' AND Productmetal.product_id=Product.product_id  ORDER BY value ASC LIMIT 0,1)') . '/24)*(SELECT price FROM sha_price WHERE metal_id=1 AND metalcolor_id=Product.metal_color_id AND metal_fineness=Product.metal_fineness))*Product.metal_weight)*making_charge/100)+
+//		 IF(stone=\'Yes\',(ROUND((SELECT SUM(Productdiamond.stone_weight) FROM sha_productdiamond AS Productdiamond WHERE Productdiamond.product_id=Product.product_id GROUP BY clarity, color ORDER BY FIELD(`clarity`,\'SI\',\'VS\',\'VVS\'),FIELD(`color`,\'IJ\',\'GH\',\'EF\') LIMIT 0,1)*(SELECT price FROM sha_price WHERE clarity_id=(SELECT clarity_id FROM sha_clarity WHERE clarity=(SELECT clarity FROM sha_productdiamond AS Productdiamond WHERE Productdiamond.product_id=Product.product_id GROUP BY clarity, color ORDER BY FIELD(`clarity`,\'SI\',\'VS\',\'VVS\'),FIELD(`color`,\'IJ\',\'GH\',\'EF\') LIMIT 0,1)) AND color_id=(SELECT color_id FROM sha_color WHERE clarity=(SELECT clarity FROM sha_productdiamond AS Productdiamond WHERE Productdiamond.product_id=Product.product_id GROUP BY clarity, color ORDER BY FIELD(`clarity`,\'SI\',\'VS\',\'VVS\'),FIELD(`color`,\'IJ\',\'GH\',\'EF\') LIMIT 0,1) AND color=(SELECT color FROM sha_productdiamond AS Productdiamond WHERE Productdiamond.product_id=Product.product_id GROUP BY clarity, color ORDER BY FIELD(`clarity`,\'SI\',\'VS\',\'VVS\'),FIELD(`color`,\'IJ\',\'GH\',\'EF\') LIMIT 0,1)) AND status=\'Active\'))),0)+
+//		 IF(Product.gemstone=\'Yes\',ROUND((SELECT SUM(Productgemstone.stone_weight*(SELECT Price.price FROM sha_price AS Price WHERE Price.gemstone_id=(SELECT Gemstone.gemstone_id FROM sha_gemstone AS Gemstone WHERE Gemstone.stone=Productgemstone.gemstone) AND Price.gemstoneshape=(SELECT Shape.shape_id FROM sha_shape AS Shape WHERE Shape.shape = Productgemstone.shape ))) FROM sha_productgemstone AS Productgemstone WHERE product_id=Product.product_id)),0))*vat_cst/100)) AS totprice',
+//            'Product.*');
+        
+        $joins = $group = $order = '';
+        $joins = array();
+        if (!empty($this->params['pass']['0'])) {
+            $cat = $this->Category->find('first', array('conditions' => array('LOWER(category)' => str_replace('_', ' ', $this->params['pass']['0']))));
+            if (!empty($cat)) {
+                $conditions['Product.category_id'] = $cat['Category']['category_id'];
+                if (!empty($this->params['pass']['1'])) {
+                    $sub_cat = $this->Subcategory->find('first', array('conditions' => array('LOWER(subcategory)' => str_replace('_', ' ', $this->params['pass']['1']), 'category_id' => $cat['Category']['category_id'])));
+                    if (!empty($sub_cat)) {
+                        $conditions['Product.subcategory_id'] = $sub_cat['Subcategory']['subcategory_id'];
+                    }
+                }
+            }
+        }
+        $conditions['Product.status'] = 'Active';
         if (!empty($_GET)) {
             if (!empty($_GET['category'])) {
                 $cat = $this->Category->find('first', array('conditions' => array('LOWER(category)' => str_replace('_', ' ', $_GET['category']))));
                 if (!empty($cat)) {
-                    $conditions['category_id'] = $cat['Category']['category_id'];
+                    $conditions['Product.category_id'] = $cat['Category']['category_id'];
                     if (!empty($_GET['subcategory'])) {
                         $sub_cat = $this->Subcategory->find('first', array('conditions' => array('LOWER(subcategory)' => str_replace('_', ' ', $_GET['subcategory']), 'category_id' => $cat['Category']['category_id'])));
                         if (!empty($sub_cat)) {
-                            $conditions['subcategory_id'] = $sub_cat['Subcategory']['subcategory_id'];
+                            $conditions['Product.subcategory_id'] = $sub_cat['Subcategory']['subcategory_id'];
                         }
                     }
                 }
@@ -997,14 +1079,14 @@ public function admin_homeenquries_export() {
                     foreach ($category as $category) {
                         $search_cat[] = $category['Category']['category_id'];
                     }
-                    $conditions['category_id'] = $search_cat;
+                    $conditions['Product.category_id'] = $search_cat;
                 } else {
                     $subcategory = $this->Subcategory->find('all', array('conditions' => array('subcategory LIKE ' => '%' . $_GET['search'] . '%', 'status' => 'Active')));
                     if (!empty($subcategory)) {
                         foreach ($subcategory as $subcategory) {
                             $search_cat[] = $subcategory['Subcategory']['subcategory_id'];
                         }
-                        $conditions['subcategory_id'] = $search_cat;
+                        $conditions['Product.subcategory_id'] = $search_cat;
                     } else {
                         $conditions['product_name LIKE'] = '%' . $_GET['search'] . '%';
                     }
@@ -1021,11 +1103,36 @@ public function admin_homeenquries_export() {
                 }
             }
 
+            if (!empty($_GET['collection'])) {
+                $collection = $this->Collectiontype->find('first', array('conditions' => array('LOWER(collection_name)' => str_replace('_', ' ', $_GET['collection']))));
+                if (!empty($collection)) {
+                    $conditions[] = 'FIND_IN_SET(' . $collection['Collectiontype']['collectiontype_id'] . ',Product.collection_type)';
+                }
+                /* if($_GET['collection']=="enchanted"){
+                  $conditions[]='FIND_IN_SET(1,Product.collection_type)';
+                  }elseif($_GET['collection']=="sapphire"){
+                  $conditions[]='FIND_IN_SET(2,Product.collection_type)';
+                  }elseif($_GET['collection']=="emerald"){
+                  $conditions[]='FIND_IN_SET(3,Product.collection_type)';
+                  }elseif($_GET['collection']=="jewellery_below_20k"){
+                  $conditions[]='FIND_IN_SET(4,Product.collection_type)';
+                  }elseif($_GET['collection']=="ready_to_ship"){
+                  $conditions[]='FIND_IN_SET(5,Product.collection_type)';
+                  } */
+            }
+
             if (!empty($_GET['metal'])) {
                 $conditions['metal'] = $_GET['metal'];
             }
             if (!empty($_GET['goldpurity'])) {
-                $conditions['metal_purity'] = $_GET['goldpurity'];
+                //$conditions['metal_purity']=$_GET['goldpurity'];
+                $joins[] = array(
+                    'table' => 'productmetal',
+                    'alias' => 'Productmetal',
+                    'type' => 'inner',
+                    'foreignKey' => false,
+                    'conditions' => array('`Productmetal.product_id`=`Product.product_id`', 'Productmetal.value' => $_GET['goldpurity'], 'Productmetal.type' => 'Purity')
+                );
             }
             if (!empty($_GET['diamond'])) {
                 $conditions['stone'] = 'Yes';
@@ -1033,13 +1140,13 @@ public function admin_homeenquries_export() {
             if (!empty($_GET['gemstone'])) {
                 $conditions['Product.gemstone'] = 'Yes';
                 //$conditions[]='product_id IN (SELECT Productgemstone.product_id FROM sha_productgemstone AS Productgemstone WHERE Productgemstone.product_id=Product.product_id AND Productgemstone.gemstone=\''.$_GET['gemstone'].'\')';
-                $joins = array(array(
+                $joins[] = array(
                         'table' => 'productgemstone',
                         'alias' => 'Productgemstone',
                         'type' => 'inner',
                         'foreignKey' => false,
                         'conditions' => array('`Productgemstone.product_id`=`Product.product_id`', 'Productgemstone.gemstone' => $_GET['gemstone'])
-                ));
+                );
             }
             if (!empty($_GET['shape'])) {
                 if (!empty($_GET['gemstone'])) {
@@ -1047,19 +1154,20 @@ public function admin_homeenquries_export() {
                 } else {
                     $gdetails = '';
                 }
-                $joins = array(array(
+                $joins[] = array(
                         'table' => 'productgemstone',
                         'alias' => 'Productgemstone',
                         'type' => 'inner',
                         'foreignKey' => false,
                         'conditions' => array('`Productgemstone.product_id`=`Product.product_id`', 'Productgemstone.shape' => $_GET['shape'], $gdetails)
-                    ), array(
+                );
+                $joins[] = array(
                         'table' => 'productdiamond',
                         'alias' => 'Productdiamond',
                         'type' => 'inner',
                         'foreignKey' => false,
                         'conditions' => array('`Productdiamond.product_id`=`Product.product_id`', 'Productdiamond.shape' => $_GET['shape'])
-                ));
+                );
                 //$conditions[]='product_id IN (SELECT Productgemstone.product_id FROM sha_productgemstone AS Productgemstone WHERE Productgemstone.product_id=Product.product_id AND Productgemstone.gemstone=\''.$_GET['gemstone'].'\')';
             }
             if (!empty($_GET['price'])) {
@@ -1076,7 +1184,24 @@ public function admin_homeenquries_export() {
                 } else {
                     $cod = '> 50000';
                 }
-                $conditions[] = 'status =\'Active\' HAVING metalprice+stoneprice+gemstoneprice+ROUND(metalprice*mc/100)+ ROUND((metalprice+stoneprice+gemstoneprice+ROUND(metalprice* mc/100))* vat/100) ' . $cod;
+                //$conditions[]='status =\'Active\' HAVING metalprice+stoneprice+gemstoneprice+ROUND(metalprice*mc/100)+ ROUND((metalprice+stoneprice+gemstoneprice+ROUND(metalprice* mc/100))* vat/100) '.$cod;
+                $conditions[] = '(ROUND(ROUND((metal_purity/24)*(SELECT price FROM sha_price WHERE metal_id=1 AND metalcolor_id=Product.metal_color_id AND metal_fineness=Product.metal_fineness))*metal_weight)+
+		 ROUND(ROUND(ROUND((metal_purity/24)*(SELECT price FROM sha_price WHERE metal_id=1 AND metalcolor_id=Product.metal_color_id AND metal_fineness=Product.metal_fineness))*metal_weight)*making_charge/100)+
+		 IF(stone=\'Yes\',ROUND(stoneweight*(SELECT price FROM sha_price WHERE clarity_id=Product.stone_clarity_id AND color_id=Product.stone_color_id AND status=\'Active\' AND metal_fineness=Product.metal_fineness)),0)+
+		 IF(Product.gemstone=\'Yes\',ROUND((SELECT SUM(Productgemstone.stone_weight*Productgemstone.stone_price) FROM sha_productgemstone AS Productgemstone WHERE product_id=Product.product_id)),0)+
+		 ROUND((ROUND(ROUND((metal_purity/24)*(SELECT price FROM sha_price WHERE metal_id=1 AND metalcolor_id=Product.metal_color_id AND metal_fineness=Product.metal_fineness))*metal_weight)+
+		 ROUND(ROUND(ROUND((metal_purity/24)*(SELECT price FROM sha_price WHERE metal_id=1 AND metalcolor_id=Product.metal_color_id AND metal_fineness=Product.metal_fineness))*metal_weight)*making_charge/100)+
+		 IF(stone=\'Yes\',ROUND(stoneweight*(SELECT price FROM sha_price WHERE clarity_id=Product.stone_clarity_id AND color_id=Product.stone_color_id AND status=\'Active\' AND metal_fineness=Product.metal_fineness)),0)+
+		 IF(Product.gemstone=\'Yes\',ROUND((SELECT SUM(Productgemstone.stone_weight*Productgemstone.stone_price) FROM sha_productgemstone AS Productgemstone WHERE product_id=Product.product_id)),0))*vat_cst/100)) ' . $cod;
+        //Issue query . Takes more time to retrieve. so commented.
+//                $conditions[] = '(ROUND(ROUND((' . (isset($_REQUEST['goldpurity']) ? $_REQUEST['goldpurity'] : '(SELECT value FROM sha_productmetal AS Productmetal WHERE type=\'Purity\' AND Productmetal.product_id=Product.product_id ORDER BY value ASC LIMIT 0,1)') . '/24)*(SELECT price FROM sha_price WHERE metal_id=1 AND metalcolor_id=Product.metal_color_id))*Product.metal_weight)+
+//		 ROUND(ROUND(ROUND((' . (isset($_REQUEST['goldpurity']) ? $_REQUEST['goldpurity'] : '(SELECT value FROM sha_productmetal AS Productmetal  WHERE type=\'Purity\'  AND Productmetal.product_id=Product.product_id  ORDER BY value ASC LIMIT 0,1)') . '/24)*(SELECT price FROM sha_price WHERE metal_id=1 AND metalcolor_id=Product.metal_color_id))*metal_weight)*making_charge/100)+
+//		 IF(stone=\'Yes\',ROUND((SELECT SUM(Productdiamond.stone_weight) FROM sha_productdiamond AS Productdiamond WHERE Productdiamond.product_id=Product.product_id GROUP BY clarity, color ORDER BY FIELD(`clarity`,\'SI\',\'VS\',\'VVS\'),FIELD(`color`,\'IJ\',\'GH\',\'EF\') LIMIT 0,1)*(SELECT price FROM sha_price WHERE clarity_id=(SELECT clarity_id FROM sha_clarity WHERE clarity=(SELECT clarity FROM sha_productdiamond AS Productdiamond WHERE Productdiamond.product_id=Product.product_id GROUP BY clarity, color ORDER BY FIELD(`clarity`,\'SI\',\'VS\',\'VVS\'),FIELD(`color`,\'IJ\',\'GH\',\'EF\') LIMIT 0,1)) AND color_id=(SELECT color_id FROM sha_color WHERE clarity=(SELECT clarity FROM sha_productdiamond AS Productdiamond WHERE Productdiamond.product_id=Product.product_id GROUP BY clarity, color ORDER BY FIELD(`clarity`,\'SI\',\'VS\',\'VVS\'),FIELD(`color`,\'IJ\',\'GH\',\'EF\') LIMIT 0,1) AND color=(SELECT color FROM sha_productdiamond AS Productdiamond WHERE Productdiamond.product_id=Product.product_id GROUP BY clarity, color ORDER BY FIELD(`clarity`,\'SI\',\'VS\',\'VVS\'),FIELD(`color`,\'IJ\',\'GH\',\'EF\') LIMIT 0,1)) AND status=\'Active\')),0)+
+//		 IF(Product.gemstone=\'Yes\',ROUND((SELECT SUM(Productgemstone.stone_weight*(SELECT Price.price FROM sha_price AS Price WHERE Price.gemstone_id=(SELECT Gemstone.gemstone_id FROM sha_gemstone AS Gemstone WHERE Gemstone.stone=Productgemstone.gemstone) AND Price.gemstoneshape=(SELECT Shape.shape_id FROM sha_shape AS Shape WHERE Shape.shape = Productgemstone.shape ))) FROM sha_productgemstone AS Productgemstone WHERE product_id=Product.product_id)),0)+
+//		 ROUND((ROUND(ROUND((' . (isset($_REQUEST['goldpurity']) ? $_REQUEST['goldpurity'] : '(SELECT value FROM sha_productmetal AS Productmetal  WHERE type=\'Purity\' AND Productmetal.product_id=Product.product_id  ORDER BY value ASC LIMIT 0,1)') . '/24)*(SELECT price FROM sha_price WHERE metal_id=1 AND metalcolor_id=Product.metal_color_id))*Product.metal_weight)+
+//		 ROUND(ROUND(ROUND((' . (isset($_REQUEST['goldpurity']) ? $_REQUEST['goldpurity'] : '(SELECT value FROM sha_productmetal AS Productmetal WHERE type=\'Purity\' AND Productmetal.product_id=Product.product_id  ORDER BY value ASC LIMIT 0,1)') . '/24)*(SELECT price FROM sha_price WHERE metal_id=1 AND metalcolor_id=Product.metal_color_id))*Product.metal_weight)*making_charge/100)+
+//		 IF(stone=\'Yes\',ROUND((SELECT SUM(Productdiamond.stone_weight) FROM sha_productdiamond AS Productdiamond WHERE Productdiamond.product_id=Product.product_id GROUP BY clarity, color ORDER BY FIELD(`clarity`,\'SI\',\'VS\',\'VVS\'),FIELD(`color`,\'IJ\',\'GH\',\'EF\') LIMIT 0,1)*(SELECT price FROM sha_price WHERE clarity_id=(SELECT clarity_id FROM sha_clarity WHERE clarity=(SELECT clarity FROM sha_productdiamond AS Productdiamond WHERE Productdiamond.product_id=Product.product_id GROUP BY clarity, color ORDER BY FIELD(`clarity`,\'SI\',\'VS\',\'VVS\'),FIELD(`color`,\'IJ\',\'GH\',\'EF\') LIMIT 0,1)) AND color_id=(SELECT color_id FROM sha_color WHERE clarity=(SELECT clarity FROM sha_productdiamond AS Productdiamond WHERE Productdiamond.product_id=Product.product_id GROUP BY clarity, color ORDER BY FIELD(`clarity`,\'SI\',\'VS\',\'VVS\'),FIELD(`color`,\'IJ\',\'GH\',\'EF\') LIMIT 0,1) AND color=(SELECT color FROM sha_productdiamond AS Productdiamond WHERE Productdiamond.product_id=Product.product_id GROUP BY clarity, color ORDER BY FIELD(`clarity`,\'SI\',\'VS\',\'VVS\'),FIELD(`color`,\'IJ\',\'GH\',\'EF\') LIMIT 0,1)) AND status=\'Active\')),0)+
+//		 IF(Product.gemstone=\'Yes\',ROUND((SELECT SUM(Productgemstone.stone_weight*(SELECT Price.price FROM sha_price AS Price WHERE Price.gemstone_id=(SELECT Gemstone.gemstone_id FROM sha_gemstone AS Gemstone WHERE Gemstone.stone=Productgemstone.gemstone) AND Price.gemstoneshape=(SELECT Shape.shape_id FROM sha_shape AS Shape WHERE Shape.shape = Productgemstone.shape ))) FROM sha_productgemstone AS Productgemstone WHERE product_id=Product.product_id)),0))*vat_cst/100)) ' . $cod;
             }
 
             if (!empty($_GET['filter'])) {
@@ -1087,29 +1212,35 @@ public function admin_homeenquries_export() {
                         $scart[] = $shoppingcart['Shoppingcart']['product_id'];
                     }
                     $ordercart = implode(',', $scart);
-                    $order = array("FIELD(`product_id`,$ordercart)" => ' ');
+                    $conditions['Product.product_id'] = $scart;
+                    $order = array("FIELD(Product.product_id,$ordercart)" => ' ');
                     //$order="FIELD(`product_id`,(SELECT Shoppingcart.product_id FROM sha_shoppingcarts AS Shoppingcart WHERE Shoppingcart.product_id=Product.product_id GROUP BY Shoppingcart.product_id ORDER BY COUNT(Shoppingcart.product_id) DESC))";
                     //$order="FIELD(`product_id`,(SELECT Shoppingcart.product_id FROM sha_shoppingcarts AS Shoppingcart WHERE Shoppingcart.product_id=Product.product_id GROUP BY Shoppingcart.product_id ORDER BY COUNT(Shoppingcart.product_id) DESC))";
                 } elseif ($_GET['filter'] == "whats_new") {
                     $order = 'product_id DESC';
                 } elseif ($_GET['filter'] == "price") {
-                    $order = 'totprice ASC';
+                    $order = 'totprice ' . (isset($_GET['order']) ? $_GET['order'] : 'ASC');
                 }
             }
+        }
             
+        if (empty($joins)) {
+            $joins = '';
+        }
+
             //added by prakash
-            if(isset($_GET['submenu'])){
+            if (isset($_GET['submenu'])) {
                 $conditions[] = "FIND_IN_SET({$_GET['submenu']},Product.submenu_ids)";
             }
-            
-            if(isset($_GET['goldfineness'])){
+
+            if (isset($_GET['goldfineness'])) {
                 $conditions[] = "FIND_IN_SET({$_GET['goldfineness']},Product.metal_fineness)";
             }
-            
-            if(isset($_GET['offers'])){
+
+            if (isset($_GET['offers'])) {
                 $conditions[] = "FIND_IN_SET({$_GET['offers']},Product.offer_ids)";
             }
-            
+
             if (!empty($_GET['pricefilter'])) {
                 if ($_GET['pricefilter'] == 2) {
                     $cod = 'between 10001 AND 25000';
@@ -1130,7 +1261,6 @@ public function admin_homeenquries_export() {
 		 IF(stone=\'Yes\',ROUND(stoneweight*(SELECT price FROM sha_price WHERE clarity_id=Product.stone_clarity_id AND color_id=Product.stone_color_id AND status=\'Active\' AND metal_fineness=Product.metal_fineness)),0)+
 		 IF(Product.gemstone=\'Yes\',ROUND((SELECT SUM(Productgemstone.stone_weight*Productgemstone.stone_price) FROM sha_productgemstone AS Productgemstone WHERE product_id=Product.product_id)),0))*vat_cst/100)) ' . $cod;
             }
-        }
         if (!empty($_GET['page'])) {
             $offset = ($_GET['page'] - 1) * 6;
         } else {
@@ -1759,14 +1889,14 @@ public function admin_homeenquries_export() {
         $jsonarray = array('size' => $size, 'purity' => $purity, 'clarity' => $clarity, 'color' => $color, 'gold_price' => indian_number_format($gold_price), 'gold_color' => $gcolor, 'stone_price' => indian_number_format($stone_price), 'making_charge' => indian_number_format($making), 'vat' => indian_number_format($vat), 'total' => indian_number_format($total), 'gemstone' => indian_number_format($gemprice), 'weight' => $total_weight, 'goldweight' => $tot_weight);
 //        return $jsonarray;
         $json = $jsonarray;
-        
+
         $ret_diamond_count = $ret_diamond_weight = $ret_gemstone_count = $ret_gemstone_weight = '';
         if (!empty($stone_details)) {
             //added by prakash
             $ret_diamond_count = $stone_details[0]['Productdiamond']['noofdiamonds'];
             $ret_diamond_weight = $stone_details[0]['Productdiamond']['stone_weight'];
             //
-        
+
             $sd_clarity = '<tr><td width="170">Clarity</td>';
             $sd_color = '<tr><td>Color</td>';
             $sd_nostones = '<tr><td>No.of Stone</td>';
@@ -1777,7 +1907,7 @@ public function admin_homeenquries_export() {
             foreach ($stone_details as $stone_detail) {
                 $sd_clarity.='<td class="widthtd">' . $json['clarity'] . '</td>';
                 $sd_color.='<td class="widthtd">' . $json['color'] . '</td>';
-                if(isset($stone_detail['Productdiamond'])){
+                if (isset($stone_detail['Productdiamond'])) {
                     $sd_nostones.='<td class="widthtd">' . $stone_detail['Productdiamond']['noofdiamonds'] . '</td>';
                     $sd_weight.='<td class="widthtd">' . $stone_detail['Productdiamond']['stone_weight'] . '</td>';
                     $sd_shape.='<td class="widthtd">' . $stone_detail['Productdiamond']['shape'] . '</td>';
@@ -1838,7 +1968,7 @@ public function admin_homeenquries_export() {
             $ret_gemstone_count = $sgemstone[0]['Productgemstone']['no_of_stone'];
             $ret_gemstone_weight = $sgemstone[0]['Productgemstone']['stone_weight'];
             //
-            
+
             $gemstone = '';
 
             foreach ($sgemstone as $sgemstones) {
@@ -1963,12 +2093,12 @@ public function admin_homeenquries_export() {
 
         $array = array_merge(
                 array(
-                    'diamond_count' => $ret_diamond_count, 
-                    'diamond_weight' => $ret_diamond_weight,
-                    'gemstone_count' => $ret_gemstone_count,
-                    'gemstone_weight' => $ret_gemstone_weight
-                ),$json);
-        
+            'diamond_count' => $ret_diamond_count,
+            'diamond_weight' => $ret_diamond_weight,
+            'gemstone_count' => $ret_gemstone_count,
+            'gemstone_weight' => $ret_gemstone_weight
+                ), $json);
+
         return $array;
 //        $array = array_merge(array('pricediv' => $price, 'product_details' => $product_details, 'stonedetails' => $stonehtml, 'gemstonediv' => $gemstone, 'cartdiv' => $cart), $json);
 //        return $array;

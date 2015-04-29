@@ -26,13 +26,19 @@
           <?php 
 		  ?>
           <?php if(!empty($this->params['pass']['1'])){ 
-		   $sub_cats=ClassRegistry::init('Subcategory')->find('first',array('conditions'=>array('LOWER(subcategory)'=>str_replace('_',' ',$this->params['pass']['1']),'category_id'=>$cats['Category']['category_id'])));
+		   $sub_cats=ClassRegistry::init('Subcategory')->find('first',array('conditions'=>array('LOWER(subcategory)'=>str_replace(array('0_5', '_',), array('0.5', ' '),$this->params['pass']['1']),'category_id'=>$cats['Category']['category_id'])));
 		  ?>
             <li class="line_img"><?php  echo $this->Html->image('line-img.png',array("alt" => "Image")); ?></li>
             <li class="category"><a class="product"><?php echo $sub_cats['Subcategory']['subcategory'];?></a> </li>
 		<?php }
 		}
-	 }?>
+	 }if(isset($n_filter)){
+                        ?> 
+                                <li class="line_img"><?php echo $this->Html->image('line-img.png', array("alt" => "Image")); ?></li>
+                                <li class="category"><a href="#"><?php echo $n_filter; ?></a></li>
+                                <?php   
+                        }
+                        ?>
           </ul>
         </div>
       </div>

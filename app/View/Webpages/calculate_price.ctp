@@ -105,6 +105,7 @@ if(!empty($sgemstone)){
 							
 				
 $price='';
+$n_gold_price = !empty($goldprice) ? $goldprice['Price']['price'] : 0;
 $price.='<table cellpadding="0" cellspacing="0" border="0" width="100%">
                 	<tr>
                     	<td colspan="2" style="border-bottom:none;">
@@ -117,7 +118,7 @@ $price.='<table cellpadding="0" cellspacing="0" border="0" width="100%">
                                 </tr>
                             	<tr>
                                 	<td>'.$json['purity'].'K  '.$json['gold_color'].' Gold</td>
-                                	<td>Rs. '.indian_number_format(round($goldprice['Price']['price']*($json['purity']/24))).'/gm</td>
+                                	<td>Rs. '.indian_number_format(round($n_gold_price*($json['purity']/24))).'/gm</td>
                                 	<td>'.$json['goldweight'].' gm</td>
                                 	<td><span  style="float:left;">Rs.</span><span style="float:right;"> '.($json['gold_price']).'</span></td>
                                 </tr>';
@@ -187,7 +188,7 @@ $cart.='<input type="hidden" name="data[Shoppingcart][vat_per]" value="'.$produc
 $cart.='<input type="hidden" name="data[Shoppingcart][making_charge]" value="'.$json['making_charge'].'">';
 $cart.='<input type="hidden" name="data[Shoppingcart][making_per]" value="'.$product['Product']['making_charge'].'">';
 $cart.='<input type="hidden" name="data[Shoppingcart][total]" value="'.$json['total'].'">';
-$cart.='<input type="hidden" name="data[Shoppingcart][goldprice]" value="'.$goldprice['Price']['price'].'">';
+$cart.='<input type="hidden" name="data[Shoppingcart][goldprice]" value="'.$n_gold_price.'">';
 $cart.='<input type="hidden" name="data[Shoppingcart][stoneprice]" value="'.(!empty($stoneprice)?$stoneprice['Price']['price']:'0').'">';
 $cart.='<input type="hidden" name="data[Shoppingcart][gemstoneamount]" value="'.$json['gemstone'].'">';
 $cart.='<input type="hidden" name="data[Shoppingcart][no_of_diamond]" value="'.(!empty($stone_details)?$noofstones:'').'">';

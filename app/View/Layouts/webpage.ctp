@@ -18,8 +18,8 @@
 <title>Home | <?php echo SITE_NAME;?></title>
 <!--<link href='http://fonts.googleapis.com/css?family=Merriweather:900|Cinzel:700' rel='stylesheet' type='text/css'>-->
 <?php        
-        echo $this->Html->css(array('webindex','webcss/main','webcss/jquery-ui','src/skdslider','webcss/jquery.jqzoom','webcss/jquery.bxslider','webcss/colorbox','jQuery.validation/validationEngine.jquery','message','jquery.fancybox-1.3.4'));
-        echo $this->Html->script(array('jquery-1.11.1.min','webjs/jquery.1.8.2.min','webjs/jquery-ui','src/skdslider.min','webjs/fadeSlideShow','src/jquery.jqzoom-core','webjs/fadeSlideShow','webjs/jquery.bxslider.min','webjs/jquery.colorbox','jQuery.validation/jquery.validationEngine','jQuery.validation/languages/jquery.validationEngine-en','integer','jquery.fancybox-1.3.4.pack'));
+        echo $this->Html->css(array('webindex','webcss/main','webcss/jquery-ui','src/skdslider','webcss/jquery.jqzoom','webcss/jquery.bxslider','webcss/colorbox','jQuery.validation/validationEngine.jquery','message','jquery.fancybox-1.3.4', 'lightgallery/lightGallery'));
+        echo $this->Html->script(array('jquery-1.11.1.min','webjs/jquery.1.8.2.min','webjs/jquery-ui','src/skdslider.min','webjs/fadeSlideShow','src/jquery.jqzoom-core','webjs/fadeSlideShow','webjs/jquery.bxslider.min','webjs/jquery.colorbox','jQuery.validation/jquery.validationEngine','jQuery.validation/languages/jquery.validationEngine-en','integer','jquery.fancybox-1.3.4.pack', 'lightgallery/lightGallery'));
 		
         ?>
         <link rel="icon" href="img/icons/fav.png" />
@@ -99,6 +99,9 @@
 					autoHeight: true,
 					heightStyle: "content" 
 				});
+
+                $(".menutabs").tabs({event: "mouseover"}).addClass("ui-tabs-vertical ui-helper-clearfix");
+                $(".menutabs li").removeClass("ui-corner-top").addClass("ui-corner-left");
             });
 			
         </script>

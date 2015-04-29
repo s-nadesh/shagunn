@@ -94,6 +94,9 @@
                         <li id="changeinfo"><?php echo $this->Html->link('Customer say',array('controller'=>'testimonials','action'=>'index','customer_says'));?></li>
                          <li id="changeinfo"><?php echo $this->Html->link('Locate us',array('controller'=>'locateus','action'=>'index'));?></li>
                          <li id="changeinfo"><?php echo $this->Html->link('Collection Type',array('controller'=>'collectiontypes','action'=>'admin_index'));?>
+                                    <li id="changeinfo"><?php echo $this->Html->link('Order Status', array('controller' => 'orderstatus', 'action' => 'admin_index')); ?>
+                                    <li id="changeinfo"><?php echo $this->Html->link('Admin Status', array('controller' => 'adminstatus', 'action' => 'admin_index')); ?>
+                                    <li id="changeinfo"><?php echo $this->Html->link('Brokerage Status', array('controller' => 'brokeragestatus', 'action' => 'admin_index')); ?>
                        </ul>
                     </li>
 
@@ -164,6 +167,7 @@
                        </ul>
                        
                        </li>
+                                    <li id="changeinfo"><?php echo $this->Html->link('Menu Mgnt', array('controller' => 'menus', 'action' => 'admin_index')); ?>
                    
                    </ul> 
 
@@ -213,6 +217,13 @@
                        
                    
                    </ul>     
+                            
+                            <li><a href="#">Brokerage</a>     
+                            <ul>  
+                                <li id="changeinfo"><?php echo $this->Html->link(' Vendor Brokerage', array('controller' => 'orders', 'action' => 'admin_vendors_brokerage')); ?></li>
+                                <li id="changeinfo"><?php echo $this->Html->link('Franchise Brokerage', array('controller' => 'orders', 'action' => 'admin_franchisee_brokerage')); ?></li>
+
+                            </ul>
                   <!-- <?php  
                    $discount=array('discounts');
                     if(in_array($this->params['controller'],$discount)):$current='class="active"';else:$current='';endif;

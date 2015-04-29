@@ -58,9 +58,9 @@ class FranchiseesController extends AppController {
             }
         }
 
-        if ($this->request->query('search') != '') {
             $search = array();
             $search = array('user_type' => '1', 'status !=' => 'Trash');
+        if ($this->request->query('search') != '') {
             if (($this->request->query('cdate') != '') && ($this->request->query('edate') != '')) {
                 $search = array('created_date BETWEEN \'' . $this->request->query('cdate') . '\' AND \'' . $this->request->query('edate') . '\'');
             } elseif ($this->request->query('cdate') != '') {

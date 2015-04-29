@@ -198,7 +198,7 @@
                             <?php
                         }
                     } else {
-                        echo "<tr><td colspan='6' align='center'>NO PRODUCT FOUND</td></tr>";
+                        echo "<tr><td colspan='8' align='center'>NO PRODUCT FOUND</td></tr>";
                     }
                     ?>
 

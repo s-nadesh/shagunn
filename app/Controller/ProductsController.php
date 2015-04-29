@@ -1129,15 +1129,20 @@ class ProductsController extends AppController {
                 $frans_brkge = $this->Franchiseebrokerage->findByFranchiseeBrkgeUserId($cart['User']['user_id']);
                 $special_charge = 0;
                 
-                if($cart['User']['pincode'] == $cart['Order']['pincode']){
-                    $frans_brkge_charge = $frans_brkge['Franchiseebrokerage']['pincodewise_brkge_value'];
+                if(!empty($frans_brkge)){
+                    if($cart['User']['pincode'] == $cart['Order']['pincode']){
+                        $frans_brkge_charge = $frans_brkge['Franchiseebrokerage']['pincodewise_brkge_value'];
+                    }else{
+                        $frans_brkge_charge = $frans_brkge['Franchiseebrokerage']['general_brkge_value'];
+                    }
+                    
+                    if($frans_brkge['Franchiseebrokerage']['brkge_calc'] == 'PER'){
+                        $making_charge = $netamt * ($frans_brkge_charge / 100);
+                    }elseif($frans_brkge['Franchiseebrokerage']['brkge_calc'] == 'INR'){
+                        $making_charge = $frans_brkge_charge;
+                    }
                 }else{
-                    $frans_brkge_charge = $frans_brkge['Franchiseebrokerage']['general_brkge_value'];
-                }
-                if($frans_brkge['Franchiseebrokerage']['brkge_calc'] == 'PER'){
-                    $making_charge = $netamt * ($frans_brkge_charge / 100);
-                }elseif($frans_brkge['Franchiseebrokerage']['brkge_calc'] == 'INR'){
-                    $making_charge = $frans_brkge_charge;
+                    $making_charge = 0;
                 }
             }
             $brokerage_amount = $special_charge + $making_charge;
