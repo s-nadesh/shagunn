@@ -17,7 +17,7 @@ class FranchiseesController extends AppController {
      * @var array
      */
     public $components = array('Paginator', 'Session');
-    public $uses = array('User', 'Adminuser', 'State', 'Accounttype', 'Proof', 'Nomination', 'Bankdetail', 'Payment', 'Outlet', 'Franchiseeproof', 'Officeuse', 'Otherdetail');
+    public $uses = array('User', 'Adminuser', 'State', 'Accounttype', 'Proof', 'Nomination', 'Bankdetail', 'Payment', 'Outlet', 'Franchiseeproof', 'Officeuse', 'Otherdetail', 'Franchiseebrokerage');
     public $layout = 'admin';
 
     /**
@@ -26,74 +26,66 @@ class FranchiseesController extends AppController {
      * @return void
      */
     public function admin_index() {
-        
-		
-		$this->layout='admin';	
+
+
+        $this->layout = 'admin';
         $this->checkadmin();
-		$this->User->recursive = 0;
-		
-		if(isset($this->request->data['searchfilter'])){
-			$search=array();
-			if($this->request->data['cdate']!=''){
-				$search[]='cdate='.$this->request->data['cdate'];
-			}
-			
-			if($this->request->data['edate']!=''){
-				$search[]='edate='.$this->request->data['edate'];
-			}
-			if($this->request->data['searchname']!=''){
-				$search[]='searchname='.$this->request->data['searchname'];
-			}
-			if($this->request->data['searchfranchise']!=''){
-				$search[]='searchfranchise='.$this->request->data['searchfranchise'];
-			}
-			if($this->request->data['searchemail']!=''){
-				$search[]='searchemail='.$this->request->data['searchemail'];
-			}
-			
-			if(!empty($search)){
-				$this->redirect(array('action'=>'?search=1&'.implode('&',$search)));
-			}else{
-				$this->redirect(array('action'=>'index'));
-			}
-		}
-		
-		if($this->request->query('search')!=''){
-			$search=array();
-			$search=array('user_type' => '1','status !='=>'Trash');			
-			if(($this->request->query('cdate')!='') && ($this->request->query('edate')!='')){
-				$search=array('created_date BETWEEN \''.$this->request->query('cdate').'\' AND \''.$this->request->query('edate').'\'');
-				
-			}elseif($this->request->query('cdate')!=''){
-				$search['created_date']=$this->request->query('cdate');
-				
-			}elseif($this->request->query('edate')!=''){
-				$search['created_date']=$this->request->query('cdate');
-			}
-			if($this->request->query('searchname')!=''){
-				
-				$search=array_merge($search,array('OR'=>array('CONCAT(User.first_name, \' \', User.last_name) LIKE '=>'%'.$this->request->query('searchname').'%','CONCAT(User.first_name, \'\', User.last_name) LIKE '=>'%'.$_REQUEST['searchname'].'%','User.first_name LIKE '=>'%'.$_REQUEST['searchname'].'%','User.last_name LIKE '=>'%'.$_REQUEST['searchname'].'%')));
-							
-			}
-			if($this->request->query('searchfranchise')){
-				$search['franchisee_code LIKE ']=$this->request->query('searchfranchise');
-				}
-			
-			if(!empty($_REQUEST['searchemail'])){
-				
-				$search['email LIKE']='%'.$this->request->query('searchemail').'%';
-				}
+        $this->User->recursive = 0;
+
+        if (isset($this->request->data['searchfilter'])) {
+            $search = array();
+            if ($this->request->data['cdate'] != '') {
+                $search[] = 'cdate=' . $this->request->data['cdate'];
+            }
+
+            if ($this->request->data['edate'] != '') {
+                $search[] = 'edate=' . $this->request->data['edate'];
+            }
+            if ($this->request->data['searchname'] != '') {
+                $search[] = 'searchname=' . $this->request->data['searchname'];
+            }
+            if ($this->request->data['searchfranchise'] != '') {
+                $search[] = 'searchfranchise=' . $this->request->data['searchfranchise'];
+            }
+            if ($this->request->data['searchemail'] != '') {
+                $search[] = 'searchemail=' . $this->request->data['searchemail'];
+            }
+
+            if (!empty($search)) {
+                $this->redirect(array('action' => '?search=1&' . implode('&', $search)));
+            } else {
+                $this->redirect(array('action' => 'index'));
+            }
+        }
+
+        if ($this->request->query('search') != '') {
+            $search = array();
+            $search = array('user_type' => '1', 'status !=' => 'Trash');
+            if (($this->request->query('cdate') != '') && ($this->request->query('edate') != '')) {
+                $search = array('created_date BETWEEN \'' . $this->request->query('cdate') . '\' AND \'' . $this->request->query('edate') . '\'');
+            } elseif ($this->request->query('cdate') != '') {
+                $search['created_date'] = $this->request->query('cdate');
+            } elseif ($this->request->query('edate') != '') {
+                $search['created_date'] = $this->request->query('cdate');
+            }
+            if ($this->request->query('searchname') != '') {
+
+                $search = array_merge($search, array('OR' => array('CONCAT(User.first_name, \' \', User.last_name) LIKE ' => '%' . $this->request->query('searchname') . '%', 'CONCAT(User.first_name, \'\', User.last_name) LIKE ' => '%' . $_REQUEST['searchname'] . '%', 'User.first_name LIKE ' => '%' . $_REQUEST['searchname'] . '%', 'User.last_name LIKE ' => '%' . $_REQUEST['searchname'] . '%')));
+            }
+            if ($this->request->query('searchfranchise')) {
+                $search['franchisee_code LIKE '] = $this->request->query('searchfranchise');
+            }
+
+            if (!empty($_REQUEST['searchemail'])) {
+
+                $search['email LIKE'] = '%' . $this->request->query('searchemail') . '%';
+            }
+            $this->paginate = array('conditions' => $search, 'order' => 'User.user_id DESC');
+            $this->set('user', $this->paginate('User'));
+        } else {
 			 $this->paginate = array('conditions' =>$search,'order'=>'User.user_id DESC');
-			 $this->set('user', $this->paginate('User'));
-			
-		}
-		else{
-			 $this->paginate = array('conditions' => array('user_type' => '1', 'status !=' => 'Trash'), 'order' => 'user_id DESC');
-        $this->set('user', $this->Paginator->paginate('User'));
-		}
-			
-		
-       
+            $this->set('user', $this->Paginator->paginate('User'));
+        }
     }
 
     /**
@@ -165,6 +157,10 @@ class FranchiseesController extends AppController {
                 }
                 $this->Franchiseeproof->save($this->request->data);
 
+                //added by prakash
+                $this->request->data['Franchiseebrokerage']['franchisee_brkge_user_id'] = $user_id;
+                $this->Franchiseebrokerage->save($this->request->data);
+
 
                 $this->Session->setFlash('<div class="success msg">Franchisee has been added successfully.Please check your mail</div>', '');
                 $this->redirect(array('action' => 'index'));
@@ -229,11 +225,11 @@ class FranchiseesController extends AppController {
 
     public function admin_edit() {
         $this->checkadmin();
-       
+
 
 
         $user = $this->User->find('first', array('conditions' => array('user_id' => $this->params['pass']['0'], 'status !=' => 'Trash')));
-         $this->set('user', $user);
+        $this->set('user', $user);
 
         $nomination = $this->Nomination->find('first', array('conditions' => array('user_id' => $this->params['pass']['0'])));
         $this->set('nomination', $nomination);
@@ -266,13 +262,18 @@ class FranchiseesController extends AppController {
         $this->set('proof', $proof);
 
         $user_id = $user['User']['user_id'];
+        
+        //added by prakash
+        $brokerage = $this->Franchiseebrokerage->find('first', array('conditions' => array('franchisee_brkge_user_id' => $this->params['pass']['0'])));
+        $this->set('brokerage', $brokerage);
+
         if ($this->request->is('post')) {
             $check = $this->User->find('first', array('conditions' => array('email' => $this->request->data['User']['email'], 'status !=' => 'Trash', 'user_id !=' => $this->params['pass']['0'])));
             if (empty($check)) {
-				
-                $this->request->data['User']['user_id'] =$user['User']['user_id'];
-				
-				 $password = $this->str_rand();
+
+                $this->request->data['User']['user_id'] = $user['User']['user_id'];
+
+                $password = $this->str_rand();
                 $this->request->data['User']['password'] = sha1($password);
                 $activateemail = $this->Emailcontent->find('first', array('conditions' => array('eid' => 5)));
                 $activateemail['toemail'] = $this->request->data['User']['email'];
@@ -280,8 +281,8 @@ class FranchiseesController extends AppController {
                 $adminmailid = $this->Adminuser->find('first', array('conditions' => array('admin_id' => '1')));
                 $this->mailsend(SITE_NAME, $adminmailid['Adminuser']['email'], $this->request->data['User']['email'], $activateemail['Emailcontent']['subject'], $message);
                 $this->User->save($this->request->data);
-				
-				if (!empty($nomination)) {
+
+                if (!empty($nomination)) {
                     $this->request->data['Nomination']['nominee_id'] = $nomination['Nomination']['nominee_id'];
                 }
 
@@ -305,11 +306,11 @@ class FranchiseesController extends AppController {
                 }
                 $this->request->data['Outlet']['user_id'] = $user_id;
                 $this->Outlet->save($this->request->data);
-				
-                $this->Payment->deleteAll(array('user_id'=>$user['User']['user_id']));
-                foreach ($this->request->data['Payment'] as $payment) { 
+
+                $this->Payment->deleteAll(array('user_id' => $user['User']['user_id']));
+                foreach ($this->request->data['Payment'] as $payment) {
                     $payment['user_id'] = $user_id;
-					$this->Payment->saveAll($payment);
+                    $this->Payment->saveAll($payment);
                 }
                 if (!empty($use)) {
                     $this->request->data['Officeuse']['office_id'] = $use['Officeuse']['office_id'];
@@ -327,7 +328,15 @@ class FranchiseesController extends AppController {
                 $this->request->data['Franchiseeproof']['user_id'] = $user_id;
                 $this->Franchiseeproof->save($this->request->data);
 
-               
+                //addded by prakash
+                if (!empty($brokerage)) {
+                    $this->request->data['Franchiseebrokerage']['franchisee_brkge_id'] = $brokerage['Franchiseebrokerage']['franchisee_brkge_id'];
+                }else{
+                    $this->request->data['Franchiseebrokerage']['franchisee_brkge_user_id'] = $user_id;
+                }
+                $this->Franchiseebrokerage->save($this->request->data);
+
+
                 $this->Session->setFlash('<div class="success msg">Details save successfully.</div>', 'default');
                 $this->redirect(array('action' => 'index'));
             } else {
@@ -335,97 +344,90 @@ class FranchiseesController extends AppController {
             }
         }
     }
-	
-	public function admin_fexport(){
-		 $this->checkadmin();
-		  $this->layout='';
-		 $this->render(false);
-		 
-		 ini_set('max_execution_time', 600); //increase max_execution_time to 10 min if data set is very large	
-		//create a file
-		$filename = "franchisee.csv";
-		$csv_file = fopen('php://output', 'w');
-	
-		header('Content-type: application/csv');
-		header('Content-Disposition: attachment; filename="'.$filename.'"');
-		
-		$results=$this->User->find('all',array('conditions'=>array('user_type'=>1,"status !="=>"Trash")));
-		 $header_row = array("S.No","Email","Title","Frist Name","Last Name","Phone No","Address","Birth day","Martial Status","PAN","Pincode","City","State","Mobile No","Phone No 2","Fax No","Franchisee Code","Status","Payment","Amount","Cheque No","Bank Name","Account No","Branch Name","Payment","Amount","Cheque No","Bank Name","Account No","Branch Name","Payment","Amount","Cheque No","Bank Name","Account No","Branch Name","Outlet Name","Address","City","State","Pincode","Mobile No","Phone No1","Phone No 2","Fax","Email","N.title","N.name","Guardian_name","Address","City","State","Pincode","Mobile No","Phone No 1","Phone No 2","DOB","Email","Bank Name","Account No","Branch Name","Type","IFSC Code","PAN Proof","Document Proof","Bank Proof","Sign Proof","Source By","Accepted By","Person Name");
-		fputcsv($csv_file,$header_row,',','"');
-		$i=1;
-		foreach($results as $results){
-			$payment=$this->Payment->find("all",array('conditions'=>array('user_id'=>$results['User']['user_id']),array('limit'=>'3')));
-			$paymentcount=$this->Payment->find("count",array('conditions'=>array('user_id'=>$results['User']['user_id'])));
-			
-			$outlet=$this->Outlet->find("first",array('conditions'=>array('user_id'=>$results['User']['user_id'])));
-			
-			$nomination=$this->Nomination->find("first",array('conditions'=>array('user_id'=>$results['User']['user_id'])));
-			
-			$bank=$this->Bankdetail->find("first",array('conditions'=>array('user_id'=>$results['User']['user_id'])));
-			
-			$proof=$this->Franchiseeproof->find("first",array('conditions'=>array('user_id'=>$results['User']['user_id'])));
-			
-			$use=$this->Officeuse->find("first",array('conditions'=>array('user_id'=>$results['User']['user_id'])));
-			
-			
-			$payments=array();
-			foreach($payment as $payment_del){
-				
-				$payments[]=$payment_del['Payment']['payment'];
-				$payments[]=$payment_del['Payment']['amount'];
-				$payments[]=$payment_del['Payment']['cheque_no'];
-				$payments[]=$payment_del['Payment']['bank_name'];
-				$payments[]=$payment_del['Payment']['account_no'];
-				$payments[]=$payment_del['Payment']['branch_name'];
-				
-				
-			}
-			if($paymentcount <3){
-			for($s=$paymentcount+1;$s<=3;$s++){
-				$payments[]=' ';
-				$payments[]=' ';
-				$payments[]=' ';
-				$payments[]=' ';
-				$payments[]=' ';
-				$payments[]=' ';
-				
-				
-			}
-		}
-			
-			
-			$row = array(
-				$i,
-				$results['User']['email'],
-				$results['User']['title'],				
-				$results['User']['first_name'],
-				$results['User']['last_name'],
-				$results['User']['phone_no'],
-				$results['User']['address'],
-				$results['User']['date_of_birth'],
-				$results['User']['martial_status'],
-				$results['User']['pan_no'],
-				$results['User']['city'],
-				$results['User']['state'],
-				$results['User']['pincode'],
-				$results['User']['mobile_no'],
-				$results['User']['phone_no2'],
-				$results['User']['fax_no'],
-				$results['User']['franchisee_code'],
-				$results['User']['status']);
-				$row=array_merge($row,$payments);
-				$row=array_merge($row,array($outlet['Outlet']['outlet_name'],$outlet['Outlet']['address'],$outlet['Outlet']['city'],$outlet['Outlet']['state'],$outlet['Outlet']['pincode'],$outlet['Outlet']['mobile_no'],$outlet['Outlet']['phone_no1'],$outlet['Outlet']['phone_no2'],$outlet['Outlet']['fax'],$outlet['Outlet']['email']));
-				$row=array_merge($row,array($nomination['Nomination']['title'],$nomination['Nomination']['name'],$nomination['Nomination']['guardian_name'],$nomination['Nomination']['address'],$nomination['Nomination']['city'],$nomination['Nomination']['state'],$nomination['Nomination']['pincode'],$nomination['Nomination']['mobile_no'],$nomination['Nomination']['phone_no1'],$nomination['Nomination']['phone_no2'],$nomination['Nomination']['dob'],$nomination['Nomination']['email']));
-				$row=array_merge($row,array($bank['Bankdetail']['name'],$bank['Bankdetail']['account_no'],$bank['Bankdetail']['branch_name'],$bank['Bankdetail']['type'],$bank['Bankdetail']['ifsc_code']));
-				$row=array_merge($row,array($proof['Franchiseeproof']['pan'],$proof['Franchiseeproof']['proof'],$proof['Franchiseeproof']['bankproof'],$proof['Franchiseeproof']['sign_proof']));
-				$row=array_merge($row,array($use['Officeuse']['sourceby'],$use['Officeuse']['acceptedby'],$use['Officeuse']['source_person_name']));
-				$i++;	
-			fputcsv($csv_file,$row,',','"');
-		}
-		fclose($csv_file);	
-		
-		
-	}
 
+    public function admin_fexport() {
+        $this->checkadmin();
+        $this->layout = '';
+        $this->render(false);
+
+        ini_set('max_execution_time', 600); //increase max_execution_time to 10 min if data set is very large	
+        //create a file
+        $filename = "franchisee.csv";
+        $csv_file = fopen('php://output', 'w');
+
+        header('Content-type: application/csv');
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
+
+        $results = $this->User->find('all', array('conditions' => array('user_type' => 1, "status !=" => "Trash")));
+        $header_row = array("S.No", "Email", "Title", "Frist Name", "Last Name", "Phone No", "Address", "Birth day", "Martial Status", "PAN", "Pincode", "City", "State", "Mobile No", "Phone No 2", "Fax No", "Franchisee Code", "Status", "Payment", "Amount", "Cheque No", "Bank Name", "Account No", "Branch Name", "Payment", "Amount", "Cheque No", "Bank Name", "Account No", "Branch Name", "Payment", "Amount", "Cheque No", "Bank Name", "Account No", "Branch Name", "Outlet Name", "Address", "City", "State", "Pincode", "Mobile No", "Phone No1", "Phone No 2", "Fax", "Email", "N.title", "N.name", "Guardian_name", "Address", "City", "State", "Pincode", "Mobile No", "Phone No 1", "Phone No 2", "DOB", "Email", "Bank Name", "Account No", "Branch Name", "Type", "IFSC Code", "PAN Proof", "Document Proof", "Bank Proof", "Sign Proof", "Source By", "Accepted By", "Person Name");
+        fputcsv($csv_file, $header_row, ',', '"');
+        $i = 1;
+        foreach ($results as $results) {
+            $payment = $this->Payment->find("all", array('conditions' => array('user_id' => $results['User']['user_id']), array('limit' => '3')));
+            $paymentcount = $this->Payment->find("count", array('conditions' => array('user_id' => $results['User']['user_id'])));
+
+            $outlet = $this->Outlet->find("first", array('conditions' => array('user_id' => $results['User']['user_id'])));
+
+            $nomination = $this->Nomination->find("first", array('conditions' => array('user_id' => $results['User']['user_id'])));
+
+            $bank = $this->Bankdetail->find("first", array('conditions' => array('user_id' => $results['User']['user_id'])));
+
+            $proof = $this->Franchiseeproof->find("first", array('conditions' => array('user_id' => $results['User']['user_id'])));
+
+            $use = $this->Officeuse->find("first", array('conditions' => array('user_id' => $results['User']['user_id'])));
+
+
+            $payments = array();
+            foreach ($payment as $payment_del) {
+
+                $payments[] = $payment_del['Payment']['payment'];
+                $payments[] = $payment_del['Payment']['amount'];
+                $payments[] = $payment_del['Payment']['cheque_no'];
+                $payments[] = $payment_del['Payment']['bank_name'];
+                $payments[] = $payment_del['Payment']['account_no'];
+                $payments[] = $payment_del['Payment']['branch_name'];
+            }
+            if ($paymentcount < 3) {
+                for ($s = $paymentcount + 1; $s <= 3; $s++) {
+                    $payments[] = ' ';
+                    $payments[] = ' ';
+                    $payments[] = ' ';
+                    $payments[] = ' ';
+                    $payments[] = ' ';
+                    $payments[] = ' ';
+                }
+            }
+
+
+            $row = array(
+                $i,
+                $results['User']['email'],
+                $results['User']['title'],
+                $results['User']['first_name'],
+                $results['User']['last_name'],
+                $results['User']['phone_no'],
+                $results['User']['address'],
+                $results['User']['date_of_birth'],
+                $results['User']['martial_status'],
+                $results['User']['pan_no'],
+                $results['User']['city'],
+                $results['User']['state'],
+                $results['User']['pincode'],
+                $results['User']['mobile_no'],
+                $results['User']['phone_no2'],
+                $results['User']['fax_no'],
+                $results['User']['franchisee_code'],
+                $results['User']['status']);
+            $row = array_merge($row, $payments);
+            $row = array_merge($row, array($outlet['Outlet']['outlet_name'], $outlet['Outlet']['address'], $outlet['Outlet']['city'], $outlet['Outlet']['state'], $outlet['Outlet']['pincode'], $outlet['Outlet']['mobile_no'], $outlet['Outlet']['phone_no1'], $outlet['Outlet']['phone_no2'], $outlet['Outlet']['fax'], $outlet['Outlet']['email']));
+            $row = array_merge($row, array($nomination['Nomination']['title'], $nomination['Nomination']['name'], $nomination['Nomination']['guardian_name'], $nomination['Nomination']['address'], $nomination['Nomination']['city'], $nomination['Nomination']['state'], $nomination['Nomination']['pincode'], $nomination['Nomination']['mobile_no'], $nomination['Nomination']['phone_no1'], $nomination['Nomination']['phone_no2'], $nomination['Nomination']['dob'], $nomination['Nomination']['email']));
+            $row = array_merge($row, array($bank['Bankdetail']['name'], $bank['Bankdetail']['account_no'], $bank['Bankdetail']['branch_name'], $bank['Bankdetail']['type'], $bank['Bankdetail']['ifsc_code']));
+            $row = array_merge($row, array($proof['Franchiseeproof']['pan'], $proof['Franchiseeproof']['proof'], $proof['Franchiseeproof']['bankproof'], $proof['Franchiseeproof']['sign_proof']));
+            $row = array_merge($row, array($use['Officeuse']['sourceby'], $use['Officeuse']['acceptedby'], $use['Officeuse']['source_person_name']));
+            $i++;
+            fputcsv($csv_file, $row, ',', '"');
+        }
+        fclose($csv_file);
+    }
 
 }
