@@ -25,6 +25,10 @@
     #cboxTitle a{
         font-weight: bold;
     }
+    
+    .emptyrect > div {
+        padding: 40px 0;
+    }
 </style>
 
 <script type="text/javascript">
@@ -62,6 +66,7 @@
 
         $franchisee_product_count = $product_count - $remain_product_count;
         $products = ClassRegistry::init('Franchiseeproduct')->findAllByUserIdAndCategoryId($this->Session->read('User.user_id'), $categories['Category']['category_id']);
+
         ?>
                                 <li>
                                     <div>
@@ -70,7 +75,7 @@
             $image = ClassRegistry::init('Productimage')->find('first', array('conditions' => array('product_id' => $product[0]['Product']['product_id'], 'status' => 'Active')));
             echo $this->Html->link($this->Html->image('product/small/' . $image['Productimage']['imagename'], array('border' => 0, 'width' => '100px', 'height' => '100')), array('action' => 'product', 'controller' => 'webpages', $categories['Category']['link']), array('escape' => false, 'title' => $categories['Category']['category'], 'target' => '_blank'));
         } else {
-            echo '<div class="emptyrect">' . $categories['Category']['category'] . '</div>';
+            echo '<div class="emptyrect"><div>' . $categories['Category']['category'] . '</div></div>';
         }
         ?>
                                     </div>
@@ -97,6 +102,7 @@
         
         <?php
         $j = 1;
+        $logo_src = BASE_URL.'/img/icons/logo.png';
         foreach ($products as $product) {
             $subcategory = ClassRegistry::init('Subcategory')->find('first', array('conditions' => array('subcategory_id' => $product['Product']['subcategory_id'])));
             $Product_product_name = str_replace(" ", "_", $product['Product']['product_name']);
@@ -119,25 +125,50 @@
             }
             $ids = explode(',', $product['Product']['metal_color']);
             $color = $ids[0];
-
-            $diamond_val = $diamond['Productdiamond']['clarity'] . '-' . $diamond['Productdiamond']['color'];
+            $diamond_val = !empty($diamond) ? $diamond['Productdiamond']['clarity'] . '-' . $diamond['Productdiamond']['color'] : '';
 
             $product_code = $categories['Category']['category_code'] . $product['Product']['product_code'] . '-' . $purity['Productmetal']['value'] . 'K';
             if (!empty($diamond)) {
                 $product_code .= $diamond['Productdiamond']['clarity'] . $diamond['Productdiamond']['color'];
             }
 
+//            echo 'diamond : '.$purity['Productmetal']['value'] . 'K' . $diamond_val.'<br />';
+//            echo 'size : '.$size.'<br />';
+//            echo 'product id : '.$product['Product']['product_id'].'<br />';
+//            echo 'color : '.$color.'<br />';
             $price = $this->requestAction('webpages/calc_price_ret/' . $purity['Productmetal']['value'] . 'K' . $diamond_val . '/' . $size . '/' . $product['Product']['product_id'] . '/' . $color);
+//            echo '<pre>';
+//            print_r($price['stonedetails']);
+
+
 
             $image = ClassRegistry::init('Productimage')->find('first', array('conditions' => array('product_id' => $product['Product']['product_id'], 'status' => 'Active')));
             if (!empty($image)) {
-                if ($image['Productimage']['imagename'] != NULL) {
-                    $title = "<div class='customHtml'><h2>{$categories['Category']['category']}</h2>"
-                            . "<a href='{$link}' target='_blank'>{$product['Product']['product_name']}</a><br />"
-                            . "<b><a href='{$link}' target='_blank'>{$product_code}</a></b><br />"
-                            . "<span class='pricetag'>Rs.{$price['total']}/-</span></div>";
-                    ?>
-            <!--<div class='customHtml'><h4>Big Buck Bunny</h4><p>Big Buck Bunny is a short computer-animated comedy film by the Blender Institute, part of the Blender Foundation.</p></div>-->
+                if ($image['Productimage']['imagename'] != '') {
+                    $title = "<div class='customHtml'>"
+                            ."<img class='innerlogo' src='{$logo_src}' />"
+                            . "<ul>"
+//                            . "<div class='innerHtml'></div>"
+//                            . "<div class='innerHtml'>"
+                            . "<li><h2>{$categories['Category']['category']}</h2></li>"
+                            . "<li>Product Name : <a href='{$link}' target='_blank'>{$product['Product']['product_name']}</a></li>"
+                            . "<li>Product Code : <b><a href='{$link}' target='_blank'>{$product_code}</a></b></li>"
+                            . "<li>Gold Gram : <span>{$price['weight']} gm</span></li>";
+//                            . "</div>"
+//                            . "<div class='innerHtml'>";
+//                            . "<span class='pricetag'>Rs.{$price['total']}/-</span></div>"
+                            
+                    
+                    $title .= $price['diamond_count'] != '' ? "<li>No. of Stone in diamond : <span>{$price['diamond_count']}</span><br /></li>" : '';
+                    $title .= $price['diamond_weight'] != '' ? "<li>Diamond Weight : <span>{$price['diamond_weight']}</span></li>" : '';
+                    $title .= $price['gemstone_count'] != '' ? "<li>No. of Stone in Gemstone : <span>{$price['gemstone_count']}</span></li>" : '';
+                    $title .= $price['gemstone_weight'] != '' ? "<li>Gemstone Weight : <span>{$price['gemstone_weight']} Carat</span></li>" : '';
+                    $title .= "</ul>";
+                    $title .= "<div class='innercompany'>Birla Gold <br />&<br /> Precious Metals Limited</div>";
+                    $title .= "</div>";
+//                    $title .= "<div class='innerHtml'></div>"
+;
+                ?>
             <li  data-link-url="<?php echo $link?>" data-src="<?php echo BASE_URL . 'img/product/home/' . $image['Productimage']['imagename']; ?>" 
                  data-sub-html="<?php echo $title ?>"> 
                         <a>
@@ -165,16 +196,13 @@
         </script>
         <?php
         $i++;
-        
     }
     ?>
-    
-                                
                     </ul>
                 </div> 
     
     
             </div>
-            <div class="shadow"><?php echo $this->Html->image('shadow.png', array("alt" => "Image")); ?></div>
+            <!--<div class="shadow"><?php echo $this->Html->image('shadow.png', array("alt" => "Image")); ?></div>-->
     
         </div>
