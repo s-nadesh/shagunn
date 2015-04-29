@@ -64,6 +64,7 @@
             <th align="left"><?php echo $this->Paginator->sort('category_id','Category');?></th> 
            <th align="left"><?php echo $this->Paginator->sort('product_name','Product Name');?></th> 
             <th align="left"><?php echo $this->Paginator->sort('product_code','Product Code');?></th> 
+            <th align="left"><?php echo $this->Paginator->sort('stock_quantity','Stock Quantity');?></th> 
             <th align="left"><?php echo $this->Paginator->sort('status','Status');?></th> 
            <!-- <th align="center"><?php echo $this->Paginator->sort('images','Add Images');?></th> -->
             <th align="center" width="100"><?php echo __('Action');?></th> 
@@ -94,6 +95,7 @@
         <td align="left"><?php echo $category['Category']['category']?></td>
         <td align="left"><?php  echo $product['Product']['product_name'];?></td>
         <td align="left"><?php echo $array[0];?><?php  echo $product['Product']['product_code'];?></td>
+        <td align="left"><?php  echo $product['Product']['stock_quantity'];?></td>
          <td align="left"><?php  echo $product['Product']['status'];?></td>
          <!--<td align="center"><?php  echo $this->Html->image('icons/photo.png',array('url'=>array('action'=>'addimages',$product['Product']['product_id']),'border'=>0,'alt'=>'Delete') ); ?></td>-->
        <td align="center"><?php echo h($product['Product']['status'])=="Active" ? $this->Html->link(__('Click to Deactive'),array('action'=>'changestatus',$product['Product']['product_id'],'Inactive')) : $this->Html->link(__('Click to Active'),array('action'=>'changestatus',$product['Product']['product_id'],'Active')); ?></td> 
