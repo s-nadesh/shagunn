@@ -144,11 +144,12 @@ class AppController extends Controller {
         $email->emailFormat('html');
         $email->from(array(trim($from) => $fromname));
         if ($attachment == 1) {
-            $attach = explode(",", $attachmentsfiles);
-            foreach ($attach as $attach) {
-                $attachment[] = $attachmentfolder . $attach;
+            $attachs = explode(",", $attachmentsfiles);
+            $attachments = array();
+            foreach ($attachs as $attach) {
+                $attachments[] = $attach;
             }
-            $email->attachments($attachment);
+            $email->attachments($attachments);
         }
         $email->template($template, $layout);
         $email->to(trim($to));
