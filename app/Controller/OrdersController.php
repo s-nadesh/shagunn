@@ -16,8 +16,8 @@ class OrdersController extends AppController {
      *
      * @var array
      */
-    public $components = array('Paginator', 'Session', 'Image');
-    public $uses = array('Order', 'User', 'Shipping', 'Shoppingcart', 'Discount', 'Paymentdetails', 'Discounthistory', 'Product', 'Productimage', 'Category', 'Productdiamond', 'Productgemstone', 'Vendorcontact', 'Products','Shippingrate','Partialpay');
+    public $components = array('Paginator', 'Session', 'Image', 'Mpdf');
+    public $uses = array('Order', 'User', 'Shipping', 'Shoppingcart', 'Discount', 'Paymentdetails', 'Discounthistory', 'Product', 'Productimage', 'Category', 'Productdiamond', 'Productgemstone', 'Vendorcontact', 'Products', 'Shippingrate', 'Partialpay');
     public $layout = 'webpage';
 
     public function personal_details() {
@@ -56,7 +56,7 @@ class OrdersController extends AppController {
                     }
                 }
             } else {
-                $shipping_add = $this->Shipping->find('first', array('conditions' => array('user_id' => $this->Session->read('User.user_id'), 'default' => 1)));				
+                $shipping_add = $this->Shipping->find('first', array('conditions' => array('user_id' => $this->Session->read('User.user_id'), 'default' => 1)));
 
                 if (!empty($shipping_add)) {
                     $this->set('shipping', $shipping_add);
@@ -89,7 +89,7 @@ class OrdersController extends AppController {
                     }
                     $invoice_code = sprintf("%06d", $tiid);
                     $this->request->data['Order']['invoice'] = $invoice_code;
-                    
+
                     $this->request->data['Order']['created_date'] = date('Y-m-d H:i:s');
                     $this->Order->save($this->request->data);
                     $order_id = $this->Order->getLastInsertID();
@@ -97,16 +97,15 @@ class OrdersController extends AppController {
                 $this->Session->write('Order', $order_id);
             }
             $this->Session->setFlash("<div class='success msg'>" . __('Shipping detail  saved successfully') . "</div>");
-			
+
             $this->redirect(array('controller' => 'orders', 'action' => 'order'));
-        }if(isset($this->params['pass']['0']))
-			{
-			$this->Session->setFlash("<div class='error msg'>" . __('We could not do delivery this pincode. Sorry for the inconvinience.') . "</div>");
-			}
+        }if (isset($this->params['pass']['0'])) {
+            $this->Session->setFlash("<div class='error msg'>" . __('We could not do delivery this pincode. Sorry for the inconvinience.') . "</div>");
+        }
     }
 
     public function order() {
-		/*check the cart session*/         
+        /* check the cart session */
         if ($this->Session->read('cart_process') != '') {
             $cart_product = $this->Shoppingcart->find('all', array('conditions' => array('cart_session' => $this->Session->read('cart_process'))));
             if (empty($cart_product)) {
@@ -115,53 +114,53 @@ class OrdersController extends AppController {
         } else {
             $this->redirect(array('action' => 'jewellery', 'controller' => 'webpages'));
         }
-		
-		/*payment process */
+
+        /* payment process */
         if (isset($this->request->data['Paymentdetails']['payment'])) {
             $order = $this->Order->find('first', array('conditions' => array('order_id' => $this->Session->read('Order'))));
-            $partialpay=$this->Partialpay->find('first',array('conditions'=>array('partialpay_id'=>'1')));
-            $partialpay_percentage=$partialpay['Partialpay']['partialpay_per'];
+            $partialpay = $this->Partialpay->find('first', array('conditions' => array('partialpay_id' => '1')));
+            $partialpay_percentage = $partialpay['Partialpay']['partialpay_per'];
             if (!empty($order)) {
                 $this->request->data['Order']['order_id'] = $order['Order']['order_id'];
                 $this->request->data['Order']['cod_status'] = $_REQUEST['cod_status'];
-          
-                    if ($_REQUEST['cod_status'] == 'COD') {
-                        $this->request->data['Order']['cod_percentage'] = $partialpay_percentage;
-                        $this->request->data['Order']['cod_amount'] = round(($_REQUEST['amountpay'] * $partialpay_percentage) / 100);
-                        $this->Order->saveAll($this->request->data);
-                        $this->redirect(array('action' => 'payment', 'controller' => 'orders'));
-                    }elseif ($_REQUEST['cod_status'] == 'PayU') {
-						//pr($this->request->data['amountpay']);exit;
-						$this->request->data['Order']['netpayamt']=$this->request->data['amountpay'];
-                        $this->Order->saveAll($this->request->data);
-                       $this->redirect(array('action' => 'payment', 'controller' => 'orders'));
-                    } elseif ($_REQUEST['cod_status'] == 'CHQ/DD') {
-                        $this->Order->saveAll($this->request->data);
-                        $order1 = $this->Order->find('first', array('conditions' => array('order_id' => $this->Session->read('Order'))));
-                        $user = $this->User->find('first', array('conditions' => array('user_id' => $this->Session->read('User.user_id'))));
+
+                if ($_REQUEST['cod_status'] == 'COD') {
+                    $this->request->data['Order']['cod_percentage'] = $partialpay_percentage;
+                    $this->request->data['Order']['cod_amount'] = round(($_REQUEST['amountpay'] * $partialpay_percentage) / 100);
+                    $this->Order->saveAll($this->request->data);
+                    $this->redirect(array('action' => 'payment', 'controller' => 'orders'));
+                } elseif ($_REQUEST['cod_status'] == 'PayU') {
+                    //pr($this->request->data['amountpay']);exit;
+                    $this->request->data['Order']['netpayamt'] = $this->request->data['amountpay'];
+                    $this->Order->saveAll($this->request->data);
+                    $this->redirect(array('action' => 'payment', 'controller' => 'orders'));
+                } elseif ($_REQUEST['cod_status'] == 'CHQ/DD') {
+                    $this->Order->saveAll($this->request->data);
+                    $order1 = $this->Order->find('first', array('conditions' => array('order_id' => $this->Session->read('Order'))));
+                    $user = $this->User->find('first', array('conditions' => array('user_id' => $this->Session->read('User.user_id'))));
                         $name = $user['User']['first_name'].' '.$user['User']['last_name'];
-                        $cart = $this->Shoppingcart->find('all', array('conditions' => array('order_id' => $this->Session->read('Order'))));
-		if($user['User']['user_type']=='0'){
-			if($order1['Order']['cod_status']=='PayU'){
-				$in='SGN-ON-';
-			}elseif($order1['Order']['cod_status']=='CHQ/DD'){
-				$in='SGN-CHQ/DD-';
-			}elseif($order1['Order']['cod_status']=='COD'){
-				$in='SGN-CD-';
-			}
-		}else{
-			if($order1['Order']['cod_status']=='PayU'){
-				$in='SGN-FN-';
-			}elseif($order1['Order']['cod_status']=='COD'){
-				$in='SGN-FNCD-';
-			}elseif($order1['Order']['cod_status']=='CHQ/DD'){
-				$in='SGN-FNCHQ/DD-';
-			}
-		}
-                       
-			$msg = '';
-            if (!empty($cart)) {
-                $msg = '<table  cellspacing="0" cellpadding="4" align="center" style="border:1px solid #000; border-bottom:none;" width="100%">
+                    $cart = $this->Shoppingcart->find('all', array('conditions' => array('order_id' => $this->Session->read('Order'))));
+                    if ($user['User']['user_type'] == '0') {
+                        if ($order1['Order']['cod_status'] == 'PayU') {
+                            $in = 'SGN-ON-';
+                        } elseif ($order1['Order']['cod_status'] == 'CHQ/DD') {
+                            $in = 'SGN-CHQ/DD-';
+                        } elseif ($order1['Order']['cod_status'] == 'COD') {
+                            $in = 'SGN-CD-';
+                        }
+                    } else {
+                        if ($order1['Order']['cod_status'] == 'PayU') {
+                            $in = 'SGN-FN-';
+                        } elseif ($order1['Order']['cod_status'] == 'COD') {
+                            $in = 'SGN-FNCD-';
+                        } elseif ($order1['Order']['cod_status'] == 'CHQ/DD') {
+                            $in = 'SGN-FNCHQ/DD-';
+                        }
+                    }
+
+                    $msg = '';
+                    if (!empty($cart)) {
+                        $msg = '<table  cellspacing="0" cellpadding="4" align="center" style="border:1px solid #000; border-bottom:none;" width="100%">
 						  <tr>
 							<th width="10" height="27" style="border-bottom:1px solid #000;border-right:1px solid #000; " >S.No</th>
 							<th style=" border-bottom:1px solid #000;border-right:1px solid #000; " >Product Code</th>
@@ -169,146 +168,143 @@ class OrdersController extends AppController {
 							<th width="10" style="border-bottom:1px solid #000;border-right:1px solid #000; "  >Quantity</th>
 							<th style=" border-bottom:1px solid #000;" >Price</th>
 						  </tr>';
-						  $i=1;
-                foreach ($cart as $carts) {
-                    $product = $this->Product->find('first', array('conditions' => array('product_id' => $carts['Shoppingcart']['product_id'])));
-					$productdiamond = $this->Productdiamond->find('first', array('conditions' => array('product_id' => $carts['Shoppingcart']['product_id'],'clarity'=>$carts['Shoppingcart']['clarity'],'color'=>$carts['Shoppingcart']['color']),'fields'=>array('SUM(noofdiamonds) AS no_diamond','SUM(stone_weight) AS sweight')));
-					
-					$productgemstone=$this->Productgemstone->find('all',array('conditions'=>array('product_id'=>$carts['Shoppingcart']['product_id'])));
-					
-					$product = $this->Product->find('first', array('conditions' => array('product_id' => $carts['Shoppingcart']['product_id'])));
-                    $cat = $this->Category->find('first', array('conditions' => array('category_id' => $product['Product']['category_id'])));
-                    $image = $this->Productimage->find('first', array('conditions' => array('product_id' => $product['Product']['product_id'])));
-                    $orders = $this->Order->find('first', array('conditions' => array('order_id' => $this->Session->read('Order'))));
-					$msg.='<tr align="center" >
-            <td valign="top" style="border-bottom:1px solid #000;border-right:1px solid #000; " >'.$i.'</td>
+                        $i = 1;
+                        foreach ($cart as $carts) {
+                            $product = $this->Product->find('first', array('conditions' => array('product_id' => $carts['Shoppingcart']['product_id'])));
+                            $productdiamond = $this->Productdiamond->find('first', array('conditions' => array('product_id' => $carts['Shoppingcart']['product_id'], 'clarity' => $carts['Shoppingcart']['clarity'], 'color' => $carts['Shoppingcart']['color']), 'fields' => array('SUM(noofdiamonds) AS no_diamond', 'SUM(stone_weight) AS sweight')));
+
+                            $productgemstone = $this->Productgemstone->find('all', array('conditions' => array('product_id' => $carts['Shoppingcart']['product_id'])));
+
+                            $product = $this->Product->find('first', array('conditions' => array('product_id' => $carts['Shoppingcart']['product_id'])));
+                            $cat = $this->Category->find('first', array('conditions' => array('category_id' => $product['Product']['category_id'])));
+                            $image = $this->Productimage->find('first', array('conditions' => array('product_id' => $product['Product']['product_id'])));
+                            $orders = $this->Order->find('first', array('conditions' => array('order_id' => $this->Session->read('Order'))));
+                            $msg.='<tr align="center" >
+            <td valign="top" style="border-bottom:1px solid #000;border-right:1px solid #000; " >' . $i . '</td>
             <td valign="top" style=" border-bottom:1px solid #000;border-right:1px solid #000; ">' . $cat['Category']['category_code'] . '' . $product['Product']['product_code'] . '-' . $carts['Shoppingcart']['purity'] . 'K' . $carts['Shoppingcart']['clarity'] . $carts['Shoppingcart']['color'] . '</td>
             <td  valign="middle" style=" border-bottom:1px solid #000;border-right:1px solid #000; " ><table  cellspacing="0" cellpadding="4" align="center" style="border:1px solid #000;" width="80%">
                 <tr >
                   <td style="border-bottom:1px solid #000;">' . $product['Product']['product_name'] . ',</td>
                 </tr>
                 <tr>
-                  <td style="border-bottom:1px solid #000;">'.($carts['Shoppingcart']['size']!=''?'<strong>Size -</strong> 12,<br />':'').'
-                    <strong>Metals:</strong> '. $carts['Shoppingcart']['purity'].'K '.$carts['Shoppingcart']['metalcolor'] .' Glod</td>
+                  <td style="border-bottom:1px solid #000;">' . ($carts['Shoppingcart']['size'] != '' ? '<strong>Size -</strong> 12,<br />' : '') . '
+                    <strong>Metals:</strong> ' . $carts['Shoppingcart']['purity'] . 'K ' . $carts['Shoppingcart']['metalcolor'] . ' Glod</td>
                 </tr>
                 <tr>
-                  <td style="line-height:0.5;"><p><strong>Matels Wt:</strong> '.$carts['Shoppingcart']['weight'] .' gms</p>';
-				 if($carts['Shoppingcart']['stoneamount'] >0){				  
-                   $msg.='<p><strong>Stone:</strong> Diamond</p>
-                    <p><strong>Stone Wt:</strong> '.$productdiamond[0]['sweight'].' carat</p>
-                    <p><strong>Quality:</strong> '.$carts['Shoppingcart']['clarity'].'-'.$carts['Shoppingcart']['color'].'</p>
-                    <p><strong>Number of Stone:</strong> '.$productdiamond[0]['no_diamond'].'</p>';
-				 }
-					if($carts['Shoppingcart']['gemstoneamount'] >0){
-						foreach($productgemstone as $productgemstone){
-						$msg.='<p><strong>Stone:</strong> '.$productgemstone['Productgemstone']['gemstone'].'</p>
-							<p><strong>Stone Wt:</strong>  '.$productgemstone['Productgemstone']['stone_weight'].' carat</p>
-							<p><strong>Number of Stone:</strong> '.$productgemstone['Productgemstone']['no_of_stone'].'</p>';
-
-						}
-					} 
-					$msg.='</td>
+                  <td style="line-height:0.5;"><p><strong>Matels Wt:</strong> ' . $carts['Shoppingcart']['weight'] . ' gms</p>';
+                            if ($carts['Shoppingcart']['stoneamount'] > 0) {
+                                $msg.='<p><strong>Stone:</strong> Diamond</p>
+                    <p><strong>Stone Wt:</strong> ' . $productdiamond[0]['sweight'] . ' carat</p>
+                    <p><strong>Quality:</strong> ' . $carts['Shoppingcart']['clarity'] . '-' . $carts['Shoppingcart']['color'] . '</p>
+                    <p><strong>Number of Stone:</strong> ' . $productdiamond[0]['no_diamond'] . '</p>';
+                            }
+                            if ($carts['Shoppingcart']['gemstoneamount'] > 0) {
+                                foreach ($productgemstone as $productgemstone) {
+                                    $msg.='<p><strong>Stone:</strong> ' . $productgemstone['Productgemstone']['gemstone'] . '</p>
+							<p><strong>Stone Wt:</strong>  ' . $productgemstone['Productgemstone']['stone_weight'] . ' carat</p>
+							<p><strong>Number of Stone:</strong> ' . $productgemstone['Productgemstone']['no_of_stone'] . '</p>';
+                                }
+                            }
+                            $msg.='</td>
                 </tr>
               </table></td>
-            <td style=" border-bottom:1px solid #000;border-right:1px solid #000; " valign="top">'.$carts['Shoppingcart']['quantity'].'</td>
-            <td style=" border-bottom:1px solid #000; " valign="top">'.($carts['Shoppingcart']['quantity']*$carts['Shoppingcart']['total']).'</td>
+            <td style=" border-bottom:1px solid #000;border-right:1px solid #000; " valign="top">' . $carts['Shoppingcart']['quantity'] . '</td>
+            <td style=" border-bottom:1px solid #000; " valign="top">' . ($carts['Shoppingcart']['quantity'] * $carts['Shoppingcart']['total']) . '</td>
           </tr>';
-                              
-            }$msg.='</table>';
-			} 
-			$shipping_details=' <p><strong>'.$user['User']['first_name'].' '.$user['User']['last_name'].'</strong></p>
-			<p>'.str_replace('/n', '<br/>', $order1['Order']['shipping_add']).'</p>
-			<p>'.$order1['Order']['scity'].'-'.$order1['Order']['spincode'].'</p>
-			<p>'.$order1['Order']['sstate'].'</p>';
-			$cart_amount=$this->Shoppingcart->find('first',array('conditions'=>array('order_id'=>$order1['Order']['order_id']),'fields'=>'SUM(quantity*total) AS subtotal'));
-			$netamount=$cart_amount[0]['subtotal'];
-			$paymentdetails='<table border="1" cellpadding="5" align="center">
+                        }$msg.='</table>';
+                    }
+                    $shipping_details = ' <p><strong>' . $user['User']['first_name'] . ' ' . $user['User']['last_name'] . '</strong></p>
+			<p>' . str_replace('/n', '<br/>', $order1['Order']['shipping_add']) . '</p>
+			<p>' . $order1['Order']['scity'] . '-' . $order1['Order']['spincode'] . '</p>
+			<p>' . $order1['Order']['sstate'] . '</p>';
+                    $cart_amount = $this->Shoppingcart->find('first', array('conditions' => array('order_id' => $order1['Order']['order_id']), 'fields' => 'SUM(quantity*total) AS subtotal'));
+                    $netamount = $cart_amount[0]['subtotal'];
+                    $paymentdetails = '<table border="1" cellpadding="5" align="center">
           <tr>
             <th>Sub Total Amount</th>
-            <th>Rs. '.$cart_amount[0]['subtotal'].'</th>
+            <th>Rs. ' . $cart_amount[0]['subtotal'] . '</th>
           </tr>';
-		  if($order1['Order']['discount_amount']>0){		  
-          $paymentdetails.='<tr>
+                    if ($order1['Order']['discount_amount'] > 0) {
+                        $paymentdetails.='<tr>
             <th>Offer Discount Amount</th>
-            <th>Rs. '.$order1['Order']['discount_amount'].'</th>
+            <th>Rs. ' . $order1['Order']['discount_amount'] . '</th>
           </tr>';
-		  $netamount-=$order1['Order']['discount_amount'];
-		  }
-		  if($order1['Order']['shipping_amt']>0){
-		    $paymentdetails.=' <tr>
-            <th>Shipping Charges :</th>
-            <th>Rs. '.$order1['Order']['shipping_amt'].'</th>
-          </tr>';
-		  $netamount+=$order1['Order']['shipping_amt'];
-		   }
-		   $paymentdetails.='<tr>
-            <th>Total Amount</th>
-            <th>Rs. '.$netamount.'</th>
-          </tr>';
-		  if($order1['Order']['status']=='PartialPaid'){
-          $paymentdetails.='<tr>
-            <td>Amount Paid</td>
-            <td>Rs. '.$order1['Order']['cod_amount'].'</td>
-         	 </tr>';
-			$balance=$netamount-$order1['Order']['cod_amount'];
-			 $paymentdetails.='<tr>
-            <th>Balance Payable Amount :</th>
-            <th>Rs. '.$balance.'</th>
-            </tr>';
-		  }
-           
-         $paymentdetails.='</table>';
-			
-            $activateemail = $this->Emailcontent->find('first', array('conditions' => array('eid' => 11)));
-            $message = str_replace(array('{name}', '{details}','{order_no}','{order_date}','{shipping_details}','{payment_details}'), array($name, $msg,$in.$order1['Order']['invoice'],date('d-m-Y',strtotime($order1['Order']['created_date'])),$shipping_details,$paymentdetails), $activateemail['Emailcontent']['content']);
-           $adminmailid = $this->Adminuser->find('first', array('conditions' => array('admin_id' => '1')));
-            $this->mailsend(SITE_NAME, $activateemail['Emailcontent']['fromemail'], $user['User']['email'], $activateemail['Emailcontent']['subject'], $message,'','','','acknowledgment','');
-
-            $email = $this->Emailcontent->find('first', array('conditions' => array('eid' => 12)));	
-			
-            $messagen = str_replace(array('{name}', '{details}','{order_no}','{order_date}','{shipping_details}','{payment_details}'), array($name, $msg,$in.$order1['Order']['invoice'],date('d-m-Y',strtotime($order1['Order']['created_date'])),$shipping_details,$paymentdetails), $email['Emailcontent']['content']);
-			
-            $this->mailsend(SITE_NAME, $user['User']['email'], $adminmailid['Adminuser']['email'], $email['Emailcontent']['subject'], $messagen,'','','','acknowledgment','');
-        
-                        $this->Session->delete('Order');
-                        $this->Session->delete('cart_process');
-						$this->Session->setFlash("<div class='success msg'>" . __('Your Order successfully updated.') . "</div>");
-                        $this->redirect(BASE_URL . 'account-details');                        
+                        $netamount-=$order1['Order']['discount_amount'];
                     }
-             
+                    if ($order1['Order']['shipping_amt'] > 0) {
+                        $paymentdetails.=' <tr>
+            <th>Shipping Charges :</th>
+            <th>Rs. ' . $order1['Order']['shipping_amt'] . '</th>
+          </tr>';
+                        $netamount+=$order1['Order']['shipping_amt'];
+                    }
+                    $paymentdetails.='<tr>
+            <th>Total Amount</th>
+            <th>Rs. ' . $netamount . '</th>
+          </tr>';
+                    if ($order1['Order']['status'] == 'PartialPaid') {
+                        $paymentdetails.='<tr>
+            <td>Amount Paid</td>
+            <td>Rs. ' . $order1['Order']['cod_amount'] . '</td>
+         	 </tr>';
+                        $balance = $netamount - $order1['Order']['cod_amount'];
+                        $paymentdetails.='<tr>
+            <th>Balance Payable Amount :</th>
+            <th>Rs. ' . $balance . '</th>
+            </tr>';
+                    }
+
+                    $paymentdetails.='</table>';
+
+                    $activateemail = $this->Emailcontent->find('first', array('conditions' => array('eid' => 11)));
+                    $message = str_replace(array('{name}', '{details}', '{order_no}', '{order_date}', '{shipping_details}', '{payment_details}'), array($name, $msg, $in . $order1['Order']['invoice'], date('d-m-Y', strtotime($order1['Order']['created_date'])), $shipping_details, $paymentdetails), $activateemail['Emailcontent']['content']);
+                    $adminmailid = $this->Adminuser->find('first', array('conditions' => array('admin_id' => '1')));
+                    
+                    //added by prakash
+                    $invoice = $this->requestAction(array('action' => 'orderpdf', $order1['Order']['order_id'], 'F'), array('return', 'bare' => false));
+                    $file = 'files/invoices/'.str_replace('/', '_', $in . $order1['Order']['invoice'] . '.pdf');
+                    $this->mailsend(SITE_NAME, $activateemail['Emailcontent']['fromemail'], $user['User']['email'], $activateemail['Emailcontent']['subject'], $message, '', 1, $file, 'acknowledgment', '');
+
+                    $email = $this->Emailcontent->find('first', array('conditions' => array('eid' => 12)));
+
+                    $messagen = str_replace(array('{name}', '{details}', '{order_no}', '{order_date}', '{shipping_details}', '{payment_details}'), array($name, $msg, $in . $order1['Order']['invoice'], date('d-m-Y', strtotime($order1['Order']['created_date'])), $shipping_details, $paymentdetails), $email['Emailcontent']['content']);
+                    $this->mailsend(SITE_NAME, $user['User']['email'], $adminmailid['Adminuser']['email'], $email['Emailcontent']['subject'], $messagen, '', 1, $file, 'acknowledgment', '');
+
+                    $this->Session->delete('Order');
+                    $this->Session->delete('cart_process');
+                    $this->Session->setFlash("<div class='success msg'>" . __('Your Order successfully updated.') . "</div>");
+                    $this->redirect(BASE_URL . 'account-details');
+                }
             }
         }
-        
-        
+
+
 
         if ($this->Session->read('cart_process') != '') {
             $order_id = $this->Session->read('Order');
             $cart = $this->Shoppingcart->find('all', array('conditions' => array('cart_session' => $this->Session->read('cart_process'))));
             if (!empty($cart)) {
-				/*update the order id into shopping cart*/
+                /* update the order id into shopping cart */
                 foreach ($cart as $carts) {
                     $this->request->data['Shoppingcart']['cart_id'] = $carts['Shoppingcart']['cart_id'];
                     $this->request->data['Shoppingcart']['order_id'] = $order_id;
                     $this->Shoppingcart->saveAll($this->request->data);
                 }
-				
-				/*shipping rate caluclation*/
-				$order_pincode=$this->Order->find('first',array('conditions'=>array('order_id'=>$this->Session->read('Order'))));
-                $shippingrate_taxcode=$this->Shippingrate->find('first',array('conditions'=>array('pincode'=>$order_pincode['Order']['spincode'])));
-				if(!empty($shippingrate_taxcode)){
-					$cart_amount=$this->Shoppingcart->find('first',array('conditions'=>array('order_id'=>$order_pincode['Order']['order_id']),'fields'=>'SUM(quantity*total) AS subtotal'));
-					$taxrate_amt=round($cart_amount['0']['subtotal']*$shippingrate_taxcode['Shippingrate']['taxrate']/100);
-					$order_pincode['Order']['shipping_per']=$shippingrate_taxcode['Shippingrate']['taxrate'];
-					$order_pincode['Order']['shipping_amt']=$taxrate_amt;
-					$this->Order->save($order_pincode);
-				}
-				
-				
-                
+
+                /* shipping rate caluclation */
+                $order_pincode = $this->Order->find('first', array('conditions' => array('order_id' => $this->Session->read('Order'))));
+                $shippingrate_taxcode = $this->Shippingrate->find('first', array('conditions' => array('pincode' => $order_pincode['Order']['spincode'])));
+                if (!empty($shippingrate_taxcode)) {
+                    $cart_amount = $this->Shoppingcart->find('first', array('conditions' => array('order_id' => $order_pincode['Order']['order_id']), 'fields' => 'SUM(quantity*total) AS subtotal'));
+                    $taxrate_amt = round($cart_amount['0']['subtotal'] * $shippingrate_taxcode['Shippingrate']['taxrate'] / 100);
+                    $order_pincode['Order']['shipping_per'] = $shippingrate_taxcode['Shippingrate']['taxrate'];
+                    $order_pincode['Order']['shipping_amt'] = $taxrate_amt;
+                    $this->Order->save($order_pincode);
+                }
             }
         }
-		
-		/*check the user session*/
+
+        /* check the user session */
         if ($this->Session->read('User') != '') {
             $id = $this->Session->read('cart_process');
             $carts = $this->Shoppingcart->find('all', array('conditions' => array('cart_session' => $id)));
@@ -318,23 +314,21 @@ class OrdersController extends AppController {
             $user = $this->User->find('first', array('conditions' => array('user_id' => $this->Session->read('User.user_id'))));
             $this->set('user', $user);
         }
-		
-              
     }
 
     public function delete() {
-        $this->layout = '';       
+        $this->layout = '';
         $cart = $this->Shoppingcart->find('first', array('conditions' => array('cart_id' => $this->params['pass']['0'])));
-        $this->Shoppingcart->deleteAll(array('cart_id' => $this->params['pass']['0']),false,false);
-		if($this->Session->read('discount')!=''){
-			$this->Order->updateAll(array('discount_per'=>NULL,'discount_amount'=>0),array('order_id'=>$this->Session->read('Order')));
-			$this->Discounthistory->deleteAll(array('order_id'=>$this->Session->read('Order')),false,false,false);
-			$this->Session->delete('discount');
-		} 		
-		//$newcart = $this->Shoppingcart->find('first', array('conditions' => array('cart_session' => $this->Session->read('cart_process'))));       
+        $this->Shoppingcart->deleteAll(array('cart_id' => $this->params['pass']['0']), false, false);
+        if ($this->Session->read('discount') != '') {
+            $this->Order->updateAll(array('discount_per' => NULL, 'discount_amount' => 0), array('order_id' => $this->Session->read('Order')));
+            $this->Discounthistory->deleteAll(array('order_id' => $this->Session->read('Order')), false, false, false);
+            $this->Session->delete('discount');
+        }
+        //$newcart = $this->Shoppingcart->find('first', array('conditions' => array('cart_session' => $this->Session->read('cart_process'))));       
         $this->Session->setFlash("<div class='success msg'>" . __('Order deleted successfully') . "</div>");
         $this->redirect(array('action' => 'order', 'controller' => 'orders'));
-         $this->render(false);
+        $this->render(false);
     }
 
     public function movetowishlist() {
@@ -356,7 +350,6 @@ class OrdersController extends AppController {
     }
 
     public function payment_success() {
-		
 
         $this->request->data['Paymentdetails']['order_id'] = $this->Session->read('Order');
         $this->request->data['Paymentdetails']['user_id'] = $this->Session->read('User.user_id');
@@ -389,28 +382,28 @@ class OrdersController extends AppController {
             $this->Order->save($this->request->data);
         }
         $order1 = $this->Order->find('first', array('conditions' => array('order_id' => $this->Session->read('Order'))));
-		if($user['User']['user_type']=='0'){
-			if($order1['Order']['cod_status']=='PayU'){
-				$in='SGN-ON-';
-			}elseif($order1['Order']['cod_status']=='CHQ/DD'){
-				$in='SGN-CHQ/DD-';
-			}elseif($order1['Order']['cod_status']=='COD'){
-				$in='SGN-CD-';
-			}
-		}else{
-			if($order1['Order']['cod_status']=='PayU'){
-				$in='SGN-FN-';
-			}elseif($order1['Order']['cod_status']=='COD'){
-				$in='SGN-FNCD-';
-			}elseif($order1['Order']['cod_status']=='CHQ/DD'){
-				$in='SGN-FNCHQ/DD-';
-			}
-		}
+        if ($user['User']['user_type'] == '0') {
+            if ($order1['Order']['cod_status'] == 'PayU') {
+                $in = 'SGN-ON-';
+            } elseif ($order1['Order']['cod_status'] == 'CHQ/DD') {
+                $in = 'SGN-CHQ/DD-';
+            } elseif ($order1['Order']['cod_status'] == 'COD') {
+                $in = 'SGN-CD-';
+            }
+        } else {
+            if ($order1['Order']['cod_status'] == 'PayU') {
+                $in = 'SGN-FN-';
+            } elseif ($order1['Order']['cod_status'] == 'COD') {
+                $in = 'SGN-FNCD-';
+            } elseif ($order1['Order']['cod_status'] == 'CHQ/DD') {
+                $in = 'SGN-FNCHQ/DD-';
+            }
+        }
 
         $name = $user['User']['first_name'].' '.$user['User']['last_name'];
         $cart = $this->Shoppingcart->find('all', array('conditions' => array('order_id' => $this->Session->read('Order'))));
         if ($order1['Order']['cod_status'] == 'COD') {
-			$msg = '';
+            $msg = '';
             if (!empty($cart)) {
                 $msg = '<table  cellspacing="0" cellpadding="4" align="center" style="border:1px solid #000; border-bottom:none;" width="100%">
 						  <tr>
@@ -420,110 +413,114 @@ class OrdersController extends AppController {
 							<th width="10" style="border-bottom:1px solid #000;border-right:1px solid #000; "  >Quantity</th>
 							<th style=" border-bottom:1px solid #000;" >Price</th>
 						  </tr>';
-						  $i=1;
+                $i = 1;
                 foreach ($cart as $carts) {
                     $product = $this->Product->find('first', array('conditions' => array('product_id' => $carts['Shoppingcart']['product_id'])));
-					$productdiamond = $this->Productdiamond->find('first', array('conditions' => array('product_id' => $carts['Shoppingcart']['product_id'],'clarity'=>$carts['Shoppingcart']['clarity'],'color'=>$carts['Shoppingcart']['color']),'fields'=>array('SUM(noofdiamonds) AS no_diamond','SUM(stone_weight) AS sweight')));
-					
-					$productgemstone=$this->Productgemstone->find('all',array('conditions'=>array('product_id'=>$carts['Shoppingcart']['product_id'])));
-					
-					$product = $this->Product->find('first', array('conditions' => array('product_id' => $carts['Shoppingcart']['product_id'])));
+                    $productdiamond = $this->Productdiamond->find('first', array('conditions' => array('product_id' => $carts['Shoppingcart']['product_id'], 'clarity' => $carts['Shoppingcart']['clarity'], 'color' => $carts['Shoppingcart']['color']), 'fields' => array('SUM(noofdiamonds) AS no_diamond', 'SUM(stone_weight) AS sweight')));
+
+                    $productgemstone = $this->Productgemstone->find('all', array('conditions' => array('product_id' => $carts['Shoppingcart']['product_id'])));
+
+                    $product = $this->Product->find('first', array('conditions' => array('product_id' => $carts['Shoppingcart']['product_id'])));
                     $cat = $this->Category->find('first', array('conditions' => array('category_id' => $product['Product']['category_id'])));
                     $image = $this->Productimage->find('first', array('conditions' => array('product_id' => $product['Product']['product_id'])));
                     $orders = $this->Order->find('first', array('conditions' => array('order_id' => $this->Session->read('Order'))));
-					$msg.='<tr align="center" >
-            <td valign="top" style="border-bottom:1px solid #000;border-right:1px solid #000; " >'.$i.'</td>
+                    $msg.='<tr align="center" >
+            <td valign="top" style="border-bottom:1px solid #000;border-right:1px solid #000; " >' . $i . '</td>
             <td valign="top" style=" border-bottom:1px solid #000;border-right:1px solid #000; ">' . $cat['Category']['category_code'] . '' . $product['Product']['product_code'] . '-' . $carts['Shoppingcart']['purity'] . 'K' . $carts['Shoppingcart']['clarity'] . $carts['Shoppingcart']['color'] . '</td>
             <td  valign="middle" style=" border-bottom:1px solid #000;border-right:1px solid #000; " ><table  cellspacing="0" cellpadding="4" align="center" style="border:1px solid #000;" width="80%">
                 <tr >
                   <td style="border-bottom:1px solid #000;">' . $product['Product']['product_name'] . ',</td>
                 </tr>
                 <tr>
-                  <td style="border-bottom:1px solid #000;">'.($carts['Shoppingcart']['size']!=''?'<strong>Size -</strong> 12,<br />':'').'
-                    <strong>Metals:</strong> '. $carts['Shoppingcart']['purity'].'K '.$carts['Shoppingcart']['metalcolor'] .' Glod</td>
+                  <td style="border-bottom:1px solid #000;">' . ($carts['Shoppingcart']['size'] != '' ? '<strong>Size -</strong> 12,<br />' : '') . '
+                    <strong>Metals:</strong> ' . $carts['Shoppingcart']['purity'] . 'K ' . $carts['Shoppingcart']['metalcolor'] . ' Glod</td>
                 </tr>
                 <tr>
-                  <td style="line-height:0.5;"><p><strong>Matels Wt:</strong> '.$carts['Shoppingcart']['weight'] .' gms</p>';
-				 if($carts['Shoppingcart']['stoneamount'] >0){				  
-                   $msg.='<p><strong>Stone:</strong> Diamond</p>
-                    <p><strong>Stone Wt:</strong> '.$productdiamond[0]['sweight'].' carat</p>
-                    <p><strong>Quality:</strong> '.$carts['Shoppingcart']['clarity'].'-'.$carts['Shoppingcart']['color'].'</p>
-                    <p><strong>Number of Stone:</strong> '.$productdiamond[0]['no_diamond'].'</p>';
-				 }
-					if($carts['Shoppingcart']['gemstoneamount'] >0){
-						foreach($productgemstone as $productgemstone){
-						$msg.='<p><strong>Stone:</strong> '.$productgemstone['Productgemstone']['gemstone'].'</p>
-							<p><strong>Stone Wt:</strong>  '.$productgemstone['Productgemstone']['stone_weight'].' carat</p>
-							<p><strong>Number of Stone:</strong> '.$productgemstone['Productgemstone']['no_of_stone'].'</p>';
-
-						}
-					} 
-					$msg.='</td>
+                  <td style="line-height:0.5;"><p><strong>Matels Wt:</strong> ' . $carts['Shoppingcart']['weight'] . ' gms</p>';
+                    if ($carts['Shoppingcart']['stoneamount'] > 0) {
+                        $msg.='<p><strong>Stone:</strong> Diamond</p>
+                    <p><strong>Stone Wt:</strong> ' . $productdiamond[0]['sweight'] . ' carat</p>
+                    <p><strong>Quality:</strong> ' . $carts['Shoppingcart']['clarity'] . '-' . $carts['Shoppingcart']['color'] . '</p>
+                    <p><strong>Number of Stone:</strong> ' . $productdiamond[0]['no_diamond'] . '</p>';
+                    }
+                    if ($carts['Shoppingcart']['gemstoneamount'] > 0) {
+                        foreach ($productgemstone as $productgemstone) {
+                            $msg.='<p><strong>Stone:</strong> ' . $productgemstone['Productgemstone']['gemstone'] . '</p>
+							<p><strong>Stone Wt:</strong>  ' . $productgemstone['Productgemstone']['stone_weight'] . ' carat</p>
+							<p><strong>Number of Stone:</strong> ' . $productgemstone['Productgemstone']['no_of_stone'] . '</p>';
+                        }
+                    }
+                    $msg.='</td>
                 </tr>
               </table></td>
-            <td style=" border-bottom:1px solid #000;border-right:1px solid #000; " valign="top">'.$carts['Shoppingcart']['quantity'].'</td>
-            <td style=" border-bottom:1px solid #000; " valign="top">'.($carts['Shoppingcart']['quantity']*$carts['Shoppingcart']['total']).'</td>
+            <td style=" border-bottom:1px solid #000;border-right:1px solid #000; " valign="top">' . $carts['Shoppingcart']['quantity'] . '</td>
+            <td style=" border-bottom:1px solid #000; " valign="top">' . ($carts['Shoppingcart']['quantity'] * $carts['Shoppingcart']['total']) . '</td>
           </tr>';
-                              
-            }$msg.='</table>';
-			} 
-			$shipping_details=' <p><strong>'.$user['User']['first_name'].' '.$user['User']['last_name'].'</strong></p>
-			<p>'.str_replace('/n', '<br/>', $order1['Order']['shipping_add']).'</p>
-			<p>'.$order1['Order']['scity'].'-'.$order1['Order']['spincode'].'</p>
-			<p>'.$order1['Order']['sstate'].'</p>';
-			$cart_amount=$this->Shoppingcart->find('first',array('conditions'=>array('order_id'=>$order1['Order']['order_id']),'fields'=>'SUM(quantity*total) AS subtotal'));
-			$netamount=$cart_amount[0]['subtotal'];
-			$paymentdetails='<table border="1" cellpadding="5" align="center">
+                    //update stock
+                    $this->Product->updateAll(
+                            array('Product.stock_quantity' => 'Product.stock_quantity - 1'), array('Product.product_id' => $carts['Shoppingcart']['product_id']));
+                }$msg.='</table>';
+            }
+            $shipping_details = ' <p><strong>' . $user['User']['first_name'] . ' ' . $user['User']['last_name'] . '</strong></p>
+			<p>' . str_replace('/n', '<br/>', $order1['Order']['shipping_add']) . '</p>
+			<p>' . $order1['Order']['scity'] . '-' . $order1['Order']['spincode'] . '</p>
+			<p>' . $order1['Order']['sstate'] . '</p>';
+            $cart_amount = $this->Shoppingcart->find('first', array('conditions' => array('order_id' => $order1['Order']['order_id']), 'fields' => 'SUM(quantity*total) AS subtotal'));
+            $netamount = $cart_amount[0]['subtotal'];
+            $paymentdetails = '<table border="1" cellpadding="5" align="center">
           <tr>
             <th>Sub Total Amount</th>
-            <th>Rs. '.$cart_amount[0]['subtotal'].'</th>
+            <th>Rs. ' . $cart_amount[0]['subtotal'] . '</th>
           </tr>';
-		  if($order1['Order']['discount_amount']>0){		  
-          $paymentdetails.='<tr>
+            if ($order1['Order']['discount_amount'] > 0) {
+                $paymentdetails.='<tr>
             <th>Offer Discount Amount</th>
-            <th>Rs. '.$order1['Order']['discount_amount'].'</th>
+            <th>Rs. ' . $order1['Order']['discount_amount'] . '</th>
           </tr>';
-		  $netamount-=$order1['Order']['discount_amount'];
-		  }
-		  if($order1['Order']['shipping_amt']>0){
-		    $paymentdetails.=' <tr>
+                $netamount-=$order1['Order']['discount_amount'];
+            }
+            if ($order1['Order']['shipping_amt'] > 0) {
+                $paymentdetails.=' <tr>
             <th>Shipping Charges :</th>
-            <th>Rs. '.$order1['Order']['shipping_amt'].'</th>
+            <th>Rs. ' . $order1['Order']['shipping_amt'] . '</th>
           </tr>';
-		  $netamount+=$order1['Order']['shipping_amt'];
-		   }
-		   $paymentdetails.='<tr>
+                $netamount+=$order1['Order']['shipping_amt'];
+            }
+            $paymentdetails.='<tr>
             <th>Total Amount</th>
-            <th>Rs. '.$netamount.'</th>
+            <th>Rs. ' . $netamount . '</th>
           </tr>';
-		  if($order1['Order']['status']=='PartialPaid'){
-          $paymentdetails.='<tr>
+            if ($order1['Order']['status'] == 'PartialPaid') {
+                $paymentdetails.='<tr>
             <td>Amount Paid</td>
-            <td>Rs. '.$order1['Order']['cod_amount'].'</td>
+            <td>Rs. ' . $order1['Order']['cod_amount'] . '</td>
          	 </tr>';
-			$balance=$netamount-$order1['Order']['cod_amount'];
-			 $paymentdetails.='<tr>
+                $balance = $netamount - $order1['Order']['cod_amount'];
+                $paymentdetails.='<tr>
             <th>Balance Payable Amount :</th>
-            <th>Rs. '.$balance.'</th>
+            <th>Rs. ' . $balance . '</th>
             </tr>';
-		  }
-           
-         $paymentdetails.='</table>';
-			
-            $activateemail = $this->Emailcontent->find('first', array('conditions' => array('eid' => 8)));
-            $message = str_replace(array('{name}', '{details}','{order_no}','{order_date}','{shipping_details}','{payment_details}'), array($name, $msg,$in.$order1['Order']['invoice'],date('d-m-Y',strtotime($order1['Order']['created_date'])),$shipping_details,$paymentdetails), $activateemail['Emailcontent']['content']);
-           $adminmailid = $this->Adminuser->find('first', array('conditions' => array('admin_id' => '1')));
-            $this->mailsend(SITE_NAME, $activateemail['Emailcontent']['fromemail'], $user['User']['email'], $activateemail['Emailcontent']['subject'], $message,'','','','acknowledgment','');
+            }
 
-            $email = $this->Emailcontent->find('first', array('conditions' => array('eid' => 9)));			
+            $paymentdetails.='</table>';
+
+            $activateemail = $this->Emailcontent->find('first', array('conditions' => array('eid' => 8)));
+            $message = str_replace(array('{name}', '{details}', '{order_no}', '{order_date}', '{shipping_details}', '{payment_details}'), array($name, $msg, $in . $order1['Order']['invoice'], date('d-m-Y', strtotime($order1['Order']['created_date'])), $shipping_details, $paymentdetails), $activateemail['Emailcontent']['content']);
+            $adminmailid = $this->Adminuser->find('first', array('conditions' => array('admin_id' => '1')));
+
+            //added by prakash
+            $invoice = $this->requestAction(array('action' => 'orderpdf', $order1['Order']['order_id'], 'F'), array('return', 'bare' => false));
+            $file = 'files/invoices/'.str_replace('/', '_', $in . $order1['Order']['invoice'] . '.pdf');
+            $this->mailsend(SITE_NAME, $activateemail['Emailcontent']['fromemail'], $user['User']['email'], $activateemail['Emailcontent']['subject'], $message, '', 1, $file, 'acknowledgment', '');
+
+            $email = $this->Emailcontent->find('first', array('conditions' => array('eid' => 9)));
             $amountedit = $this->Paymentdetails->find('first', array('conditions' => array('paymentdetails_id' => $last_id)));
-			
-            $messagen = str_replace(array('{name}', '{details}','{order_no}','{order_date}','{shipping_details}','{payment_details}'), array($name, $msg,$in.$order1['Order']['invoice'],date('d-m-Y',strtotime($order1['Order']['created_date'])),$shipping_details,$paymentdetails), $email['Emailcontent']['content']);
-			
-            $this->mailsend(SITE_NAME, $user['User']['email'], $adminmailid['Adminuser']['email'], $email['Emailcontent']['subject'], $messagen,'','','','acknowledgment','');
+
+            $messagen = str_replace(array('{name}', '{details}', '{order_no}', '{order_date}', '{shipping_details}', '{payment_details}'), array($name, $msg, $in . $order1['Order']['invoice'], date('d-m-Y', strtotime($order1['Order']['created_date'])), $shipping_details, $paymentdetails), $email['Emailcontent']['content']);
+            $this->mailsend(SITE_NAME, $user['User']['email'], $adminmailid['Adminuser']['email'], $email['Emailcontent']['subject'], $messagen, '', 1, $file, 'acknowledgment', '');
         }
         if ($order1['Order']['cod_status'] == 'PayU') {
-			$msg = '';
+            $msg = '';
             if (!empty($cart)) {
                 $msg = '<table  cellspacing="0" cellpadding="4" align="center" style="border:1px solid #000; border-bottom:none;" width="100%">
 						  <tr>
@@ -533,106 +530,113 @@ class OrdersController extends AppController {
 							<th width="10" style="border-bottom:1px solid #000;border-right:1px solid #000; "  >Quantity</th>
 							<th style=" border-bottom:1px solid #000;" >Price</th>
 						  </tr>';
-						  $i=1;
+                $i = 1;
                 foreach ($cart as $carts) {
                     $product = $this->Product->find('first', array('conditions' => array('product_id' => $carts['Shoppingcart']['product_id'])));
-					$productdiamond = $this->Productdiamond->find('first', array('conditions' => array('product_id' => $carts['Shoppingcart']['product_id'],'clarity'=>$carts['Shoppingcart']['clarity'],'color'=>$carts['Shoppingcart']['color']),'fields'=>array('SUM(noofdiamonds) AS no_diamond','SUM(stone_weight) AS sweight')));
-					
-					$productgemstone=$this->Productgemstone->find('all',array('conditions'=>array('product_id'=>$carts['Shoppingcart']['product_id'])));
-					
-					$product = $this->Product->find('first', array('conditions' => array('product_id' => $carts['Shoppingcart']['product_id'])));
+                    $productdiamond = $this->Productdiamond->find('first', array('conditions' => array('product_id' => $carts['Shoppingcart']['product_id'], 'clarity' => $carts['Shoppingcart']['clarity'], 'color' => $carts['Shoppingcart']['color']), 'fields' => array('SUM(noofdiamonds) AS no_diamond', 'SUM(stone_weight) AS sweight')));
+
+                    $productgemstone = $this->Productgemstone->find('all', array('conditions' => array('product_id' => $carts['Shoppingcart']['product_id'])));
+
+                    $product = $this->Product->find('first', array('conditions' => array('product_id' => $carts['Shoppingcart']['product_id'])));
                     $cat = $this->Category->find('first', array('conditions' => array('category_id' => $product['Product']['category_id'])));
                     $image = $this->Productimage->find('first', array('conditions' => array('product_id' => $product['Product']['product_id'])));
                     $orders = $this->Order->find('first', array('conditions' => array('order_id' => $this->Session->read('Order'))));
-					$msg.='<tr align="center" >
-            <td valign="top" style="border-bottom:1px solid #000;border-right:1px solid #000; " >'.$i.'</td>
+                    $msg.='<tr align="center" >
+            <td valign="top" style="border-bottom:1px solid #000;border-right:1px solid #000; " >' . $i . '</td>
             <td valign="top" style=" border-bottom:1px solid #000;border-right:1px solid #000; ">' . $cat['Category']['category_code'] . '' . $product['Product']['product_code'] . '-' . $carts['Shoppingcart']['purity'] . 'K' . $carts['Shoppingcart']['clarity'] . $carts['Shoppingcart']['color'] . '</td>
             <td  valign="middle" style=" border-bottom:1px solid #000;border-right:1px solid #000; " ><table  cellspacing="0" cellpadding="4" align="center" style="border:1px solid #000;" width="80%">
                 <tr >
                   <td style="border-bottom:1px solid #000;">' . $product['Product']['product_name'] . ',</td>
                 </tr>
                 <tr>
-                  <td style="border-bottom:1px solid #000;">'.($carts['Shoppingcart']['size']!=''?'<strong>Size -</strong> 12,<br />':'').'
-                    <strong>Metals:</strong> '. $carts['Shoppingcart']['purity'].'K '.$carts['Shoppingcart']['metalcolor'] .' Glod</td>
+                  <td style="border-bottom:1px solid #000;">' . ($carts['Shoppingcart']['size'] != '' ? '<strong>Size -</strong> 12,<br />' : '') . '
+                    <strong>Metals:</strong> ' . $carts['Shoppingcart']['purity'] . 'K ' . $carts['Shoppingcart']['metalcolor'] . ' Glod</td>
                 </tr>
                 <tr>
-                  <td style="line-height:0.5;"><p><strong>Matels Wt:</strong> '.$carts['Shoppingcart']['weight'] .' gms</p>';
-				 if($carts['Shoppingcart']['stoneamount'] >0){				  
-                   $msg.='<p><strong>Stone:</strong> Diamond</p>
-                    <p><strong>Stone Wt:</strong> '.$productdiamond[0]['sweight'].' carat</p>
-                    <p><strong>Quality:</strong> '.$carts['Shoppingcart']['clarity'].'-'.$carts['Shoppingcart']['color'].'</p>
-                    <p><strong>Number of Stone:</strong> '.$productdiamond[0]['no_diamond'].'</p>';
-				 }
-					if($carts['Shoppingcart']['gemstoneamount'] >0){
-						foreach($productgemstone as $productgemstone){
-						$msg.='<p><strong>Stone:</strong> '.$productgemstone['Productgemstone']['gemstone'].'</p>
-							<p><strong>Stone Wt:</strong>  '.$productgemstone['Productgemstone']['stone_weight'].' carat</p>
-							<p><strong>Number of Stone:</strong> '.$productgemstone['Productgemstone']['no_of_stone'].'</p>';
-						}
-					}  
-					$msg.='</td>
+                  <td style="line-height:0.5;"><p><strong>Matels Wt:</strong> ' . $carts['Shoppingcart']['weight'] . ' gms</p>';
+                    if ($carts['Shoppingcart']['stoneamount'] > 0) {
+                        $msg.='<p><strong>Stone:</strong> Diamond</p>
+                    <p><strong>Stone Wt:</strong> ' . $productdiamond[0]['sweight'] . ' carat</p>
+                    <p><strong>Quality:</strong> ' . $carts['Shoppingcart']['clarity'] . '-' . $carts['Shoppingcart']['color'] . '</p>
+                    <p><strong>Number of Stone:</strong> ' . $productdiamond[0]['no_diamond'] . '</p>';
+                    }
+                    if ($carts['Shoppingcart']['gemstoneamount'] > 0) {
+                        foreach ($productgemstone as $productgemstone) {
+                            $msg.='<p><strong>Stone:</strong> ' . $productgemstone['Productgemstone']['gemstone'] . '</p>
+							<p><strong>Stone Wt:</strong>  ' . $productgemstone['Productgemstone']['stone_weight'] . ' carat</p>
+							<p><strong>Number of Stone:</strong> ' . $productgemstone['Productgemstone']['no_of_stone'] . '</p>';
+                        }
+                    }
+                    $msg.='</td>
                 </tr>
               </table></td>
-            <td style=" border-bottom:1px solid #000;border-right:1px solid #000; " valign="top">'.$carts['Shoppingcart']['quantity'].'</td>
-            <td style=" border-bottom:1px solid #000; " valign="top">'.($carts['Shoppingcart']['quantity']*$carts['Shoppingcart']['total']).'</td>
+            <td style=" border-bottom:1px solid #000;border-right:1px solid #000; " valign="top">' . $carts['Shoppingcart']['quantity'] . '</td>
+            <td style=" border-bottom:1px solid #000; " valign="top">' . ($carts['Shoppingcart']['quantity'] * $carts['Shoppingcart']['total']) . '</td>
           </tr>';
-                             
-            }$msg.='</table>';
-			} 
-			$shipping_details=' <p><strong>'.$user['User']['first_name'].' '.$user['User']['last_name'].'</strong></p>
-			<p>'.str_replace('/n', '<br/>', $order1['Order']['shipping_add']).'</p>
-			<p>'.$order1['Order']['scity'].'-'.$order1['Order']['spincode'].'</p>
-			<p>'.$order1['Order']['sstate'].'</p>';
-			$cart_amount=$this->Shoppingcart->find('first',array('conditions'=>array('order_id'=>$order1['Order']['order_id']),'fields'=>'SUM(quantity*total) AS subtotal'));
-			$netamount=$cart_amount[0]['subtotal'];
-			$paymentdetails='<table border="1" cellpadding="5" align="center">
+
+                    //update stock
+                    $this->Product->updateAll(
+                            array('Product.stock_quantity' => 'Product.stock_quantity - 1'), array('Product.product_id' => $carts['Shoppingcart']['product_id']));
+                }$msg.='</table>';
+            }
+            $shipping_details = ' <p><strong>' . $user['User']['first_name'] . ' ' . $user['User']['last_name'] . '</strong></p>
+			<p>' . str_replace('/n', '<br/>', $order1['Order']['shipping_add']) . '</p>
+			<p>' . $order1['Order']['scity'] . '-' . $order1['Order']['spincode'] . '</p>
+			<p>' . $order1['Order']['sstate'] . '</p>';
+            $cart_amount = $this->Shoppingcart->find('first', array('conditions' => array('order_id' => $order1['Order']['order_id']), 'fields' => 'SUM(quantity*total) AS subtotal'));
+            $netamount = $cart_amount[0]['subtotal'];
+            $paymentdetails = '<table border="1" cellpadding="5" align="center">
           <tr>
             <th>Sub Total Amount</th>
-            <th>Rs. '.$cart_amount[0]['subtotal'].'</th>
+            <th>Rs. ' . $cart_amount[0]['subtotal'] . '</th>
           </tr>';
-		  if($order1['Order']['discount_amount']>0){		  
-          $paymentdetails.='<tr>
+            if ($order1['Order']['discount_amount'] > 0) {
+                $paymentdetails.='<tr>
             <th>Offer Discount Amount</th>
-            <th>Rs. '.$order1['Order']['discount_amount'].'</th>
+            <th>Rs. ' . $order1['Order']['discount_amount'] . '</th>
           </tr>';
-		  $netamount-=$order1['Order']['discount_amount'];
-		  }
-		  if($order1['Order']['shipping_amt']>0){
-		    $paymentdetails.=' <tr>
+                $netamount-=$order1['Order']['discount_amount'];
+            }
+            if ($order1['Order']['shipping_amt'] > 0) {
+                $paymentdetails.=' <tr>
             <th>Shipping Charges :</th>
-            <th>Rs. '.$order1['Order']['shipping_amt'].'</th>
+            <th>Rs. ' . $order1['Order']['shipping_amt'] . '</th>
           </tr>';
-		  $netamount+=$order1['Order']['shipping_amt'];
-		   }
-		   $paymentdetails.='<tr>
+                $netamount+=$order1['Order']['shipping_amt'];
+            }
+            $paymentdetails.='<tr>
             <th>Total Amount</th>
-            <th>Rs. '.$netamount.'</th>
+            <th>Rs. ' . $netamount . '</th>
           </tr>';
-		  if($order1['Order']['status']=='PartialPaid'){
-          $paymentdetails.='<tr>
+            if ($order1['Order']['status'] == 'PartialPaid') {
+                $paymentdetails.='<tr>
             <td>Amount Paid</td>
-            <td>Rs. '.$order1['Order']['cod_amount'].'</td>
+            <td>Rs. ' . $order1['Order']['cod_amount'] . '</td>
          	 </tr>';
-			$balance=$netamount-$order1['Order']['cod_amount'];
-			 $paymentdetails.='<tr>
+                $balance = $netamount - $order1['Order']['cod_amount'];
+                $paymentdetails.='<tr>
             <th>Balance Payable Amount :</th>
-            <th>Rs. '.$balance.'</th>
+            <th>Rs. ' . $balance . '</th>
             </tr>';
-		  }
-           
-         $paymentdetails.='</table>';
-			
-            $activateemail = $this->Emailcontent->find('first', array('conditions' => array('eid' => 10)));
-            $message = str_replace(array('{name}', '{details}','{order_no}','{order_date}','{shipping_details}','{payment_details}'), array($name, $msg,$in.$order1['Order']['invoice'],date('d-m-Y',strtotime($order1['Order']['created_date'])),$shipping_details,$paymentdetails), $activateemail['Emailcontent']['content']);
-           $adminmailid = $this->Adminuser->find('first', array('conditions' => array('admin_id' => '1')));
-            $this->mailsend(SITE_NAME, $activateemail['Emailcontent']['fromemail'], $user['User']['email'], $activateemail['Emailcontent']['subject'], $message,'','','','acknowledgment','');
+            }
 
-            $email = $this->Emailcontent->find('first', array('conditions' => array('eid' => 9)));			
+            $paymentdetails.='</table>';
+
+            $activateemail = $this->Emailcontent->find('first', array('conditions' => array('eid' => 10)));
+            $message = str_replace(array('{name}', '{details}', '{order_no}', '{order_date}', '{shipping_details}', '{payment_details}'), array($name, $msg, $in . $order1['Order']['invoice'], date('d-m-Y', strtotime($order1['Order']['created_date'])), $shipping_details, $paymentdetails), $activateemail['Emailcontent']['content']);
+            $adminmailid = $this->Adminuser->find('first', array('conditions' => array('admin_id' => '1')));
+            
+            //added by prakash
+            $invoice = $this->requestAction(array('action' => 'orderpdf', $order1['Order']['order_id'], 'F'), array('return', 'bare' => false));
+            $file = 'files/invoices/'.str_replace('/', '_', $in . $order1['Order']['invoice'] . '.pdf');
+            $this->mailsend(SITE_NAME, $activateemail['Emailcontent']['fromemail'], $user['User']['email'], $activateemail['Emailcontent']['subject'], $message, '', 1, $file, 'acknowledgment', '');
+
+            $email = $this->Emailcontent->find('first', array('conditions' => array('eid' => 9)));
             $amountedit = $this->Paymentdetails->find('first', array('conditions' => array('paymentdetails_id' => $last_id)));
-			
-            $messagen = str_replace(array('{name}', '{details}','{order_no}','{order_date}','{shipping_details}','{payment_details}'), array($name, $msg,$in.$order1['Order']['invoice'],date('d-m-Y',strtotime($order1['Order']['created_date'])),$shipping_details,$paymentdetails), $email['Emailcontent']['content']);
-			
-            $this->mailsend(SITE_NAME, $user['User']['email'], $adminmailid['Adminuser']['email'], $email['Emailcontent']['subject'], $messagen,'','','','acknowledgment','');
+
+            $messagen = str_replace(array('{name}', '{details}', '{order_no}', '{order_date}', '{shipping_details}', '{payment_details}'), array($name, $msg, $in . $order1['Order']['invoice'], date('d-m-Y', strtotime($order1['Order']['created_date'])), $shipping_details, $paymentdetails), $email['Emailcontent']['content']);
+
+            $this->mailsend(SITE_NAME, $user['User']['email'], $adminmailid['Adminuser']['email'], $email['Emailcontent']['subject'], $messagen, '', '', '', 'acknowledgment', '');
         }
 
 
@@ -679,7 +683,7 @@ class OrdersController extends AppController {
         }
         if (!empty($orderfailed)) {
             $this->request->data['Order']['order_id'] = $orderfailed['Order']['order_id'];
-            $this->request->data['Order']['order_status'] ='Failed' ;
+            $this->request->data['Order']['order_status'] = 'Failed';
             $this->request->data['Order']['status'] = 'Failed';
             $this->Order->save($this->request->data);
         }
@@ -742,22 +746,23 @@ class OrdersController extends AppController {
         echo json_encode($jsonarray);
     }
 
-	public function partialpayment_amt(){
-		$this->layout='';
-		$this->render(false);
-		$per=$_REQUEST['percentage'];
-		$amt=$_REQUEST['amount'];
-		$partial_amt=round($amt*$per/100);
-		$partial_amt_res='Rs. '.$partial_amt;
-		echo json_encode($partial_amt_res);
-		}	
+    public function partialpayment_amt() {
+        $this->layout = '';
+        $this->render(false);
+        $per = $_REQUEST['percentage'];
+        $amt = $_REQUEST['amount'];
+        $partial_amt = round($amt * $per / 100);
+        $partial_amt_res = 'Rs. ' . $partial_amt;
+        echo json_encode($partial_amt_res);
+    }
 
     public function my_order() {
-		  
+        $this->usercheck();
+
         //$pay = $this->Paymentdetails->find('all', array('conditions' => array('user_id' => $this->Session->read('User.user_id')), 'order' => 'paymentdetails_id DESC'));
         //$this->set('pay', $pay);
-        $order=$this->Order->find('all',array('conditions'=>array('user_id'=>$this->Session->read('User.user_id')),'order'=>'order_id DESC'));
-        $this->set('order',$order);
+        $order = $this->Order->find('all', array('conditions' => array('user_id' => $this->Session->read('User.user_id')), 'order' => 'order_id DESC'));
+        $this->set('order', $order);
     }
 
     public function admin_index() {
@@ -828,7 +833,7 @@ class OrdersController extends AppController {
     public function admin_order_index() {
         $this->layout = "admin";
         $this->checkadmin();
-        $this->Order->recursive = 0;
+        $this->Order->recursive = 2;
 
         if (isset($this->request->data['searchfilter'])) {
             $search = array();
@@ -926,7 +931,6 @@ public function track(){
             }
         }
     }
-
     public function admin_view() {
         $this->layout = "admin";
         $this->checkadmin();
@@ -975,6 +979,19 @@ public function track(){
     public function admin_order_view() {
         $this->layout = "admin";
         $this->checkadmin();
+        if ($this->request->is('post') || $this->request->is('put')) {
+            if ($this->Order->save($this->request->data)) {
+
+                if ($this->request->data['Order']['old_order_status_id'] != $this->request->data['Order']['order_status_id']) {
+                    $this->order_status_mail($this->request->data['Order']['order_id']);
+                }
+
+                $this->Session->setFlash('<div class="success msg">Order details updated successfully</div>', '');
+            } else {
+                $this->Session->setFlash('<div class="error msg">Failed to update</div>', '');
+            }
+            $this->redirect(array('action' => 'order_view', $this->data['Order']['order_id'], 'controller' => 'orders'));
+        }
         /* $paymentdetails=$this->Paymentdetails->find('first',array('conditions'=>array('paymentdetails_id'=>$this->params['pass']['0'])));
           $this->set('paymentdetail',$paymentdetails); */
         $orderdetails = $this->Order->find('first', array('conditions' => array('order_id' => $this->params['pass']['0'])));
@@ -993,10 +1010,10 @@ public function track(){
                 $this->request->data['Paymentdetails']['order_id'] = $orderdetails['Order']['order_id'];
                 $this->request->data['Paymentdetails']['user_id'] = $orderdetails['Order']['user_id'];
                 $this->request->data['Paymentdetails']['status'] = 'Success';
-				 $this->request->data['Paymentdetails']['admin_status'] = 'Order in Progress';
+                $this->request->data['Paymentdetails']['admin_status'] = 'Order in Progress';
                 $this->request->data['Paymentdetails']['ip'] = $_SERVER['REMOTE_ADDR'];
                 $this->request->data['Paymentdetails']['created_date'] = date('Y-m-d H:i:s');
-				
+
                 $this->Paymentdetails->save($this->request->data);
                 $this->request->data['Order']['order_id'] = $orderdetails['Order']['order_id'];
                 $this->request->data['Order']['status'] = 'Paid';
@@ -1044,96 +1061,97 @@ public function track(){
             }
         }
     }
-/*public function apply_discount($id=''){                                                       $message = '';
-		 $message1='';
-        if ($id != '') {
-            $date = date('Y-m-d');
-            $cart_product = $this->Discount->find('first', array('conditions' => array('voucher_code' => $id, '"' . $date . '" BETWEEN Discount.start_date AND  Discount.expired_date')));
 
-            $user_id = $this->Session->read('User.user_id');
+    /* public function apply_discount($id=''){                                                       $message = '';
+      $message1='';
+      if ($id != '') {
+      $date = date('Y-m-d');
+      $cart_product = $this->Discount->find('first', array('conditions' => array('voucher_code' => $id, '"' . $date . '" BETWEEN Discount.start_date AND  Discount.expired_date')));
 
-            if (!empty($cart_product)) {
-		
-                $type = $cart_product['Discount']['type'];
-                $peroramou = $cart_product['Discount']['per_amou'];
-                $percentage = $cart_product['Discount']['percentage'];
-                $discount_id = $cart_product['Discount']['discount_id'];
-                $coupon_code = $cart_product['Discount']['voucher_code'];
-                $user_id_dis = explode(",", $cart_product['Discount']['user_id']);
-                $category_id_dis = explode(",", $cart_product['Discount']['category_id']);
-                $product_id_dis = explode(",", $cart_product['Discount']['product_id']);
+      $user_id = $this->Session->read('User.user_id');
+
+      if (!empty($cart_product)) {
+
+      $type = $cart_product['Discount']['type'];
+      $peroramou = $cart_product['Discount']['per_amou'];
+      $percentage = $cart_product['Discount']['percentage'];
+      $discount_id = $cart_product['Discount']['discount_id'];
+      $coupon_code = $cart_product['Discount']['voucher_code'];
+      $user_id_dis = explode(",", $cart_product['Discount']['user_id']);
+      $category_id_dis = explode(",", $cart_product['Discount']['category_id']);
+      $product_id_dis = explode(",", $cart_product['Discount']['product_id']);
 
 
-                $already_used_or_not = $this->Discounthistory->find('count', array('conditions' => array('coupon_id' => $discount_id, 'user_id' => $user_id)));
-               
-              if($already_used_or_not==0) {
+      $already_used_or_not = $this->Discounthistory->find('count', array('conditions' => array('coupon_id' => $discount_id, 'user_id' => $user_id)));
 
-                    $cart_product = $this->Shoppingcart->find('all', array('conditions' => array('cart_session' => $this->Session->read('cart_process'))));
+      if($already_used_or_not==0) {
 
-                if (($type == "User" && in_array($user_id, $user_id_dis)) || $type == "Product" || $type == "Category" || $type == "Vouchercode")
-                 {
-                        foreach ($cart_product as $cart_products) {
+      $cart_product = $this->Shoppingcart->find('all', array('conditions' => array('cart_session' => $this->Session->read('cart_process'))));
 
-                            $cat_id_find = $this->Products->find('first', array('conditions' => array('product_id' => $cart_products['Shoppingcart']['product_id'])));
+      if (($type == "User" && in_array($user_id, $user_id_dis)) || $type == "Product" || $type == "Category" || $type == "Vouchercode")
+      {
+      foreach ($cart_product as $cart_products) {
 
-                            if ((in_array($cart_products['Shoppingcart']['product_id'], $product_id_dis) && $type == "Product") || (in_array($cat_id_find['Products']['category_id'], $category_id_dis) && $type == "Category") || $type == "Vouchercode" || $type == "User")
-							{
-                                if ($peroramou == 1) {
-									
-                                    $per_amount = $cart_products['Shoppingcart']['total'] * $percentage / 100;
-                                    $remain_amount = $cart_products['Shoppingcart']['total'] - $per_amount;
-                                } else {
-									
-                                    $per_amount = $percentage;
-                                    $remain_amount = $cart_products['Shoppingcart']['total'] - $per_amount;
-                                }								
-                           $this->request->data['Shoppingcart']['cart_id'] = $cart_products['Shoppingcart']['cart_id'];
-                            $this->request->data['Shoppingcart']['total_amount'] = $cart_products['Shoppingcart']['total'];
-                            $this->request->data['Shoppingcart']['total'] = $remain_amount;
-                            $this->request->data['Shoppingcart']['detected_amount'] = $per_amount;
-                            $this->request->data['Shoppingcart']['is_coupon_used'] = '1';
-                            $this->Shoppingcart->save($this->request->data['Shoppingcart']);
+      $cat_id_find = $this->Products->find('first', array('conditions' => array('product_id' => $cart_products['Shoppingcart']['product_id'])));
 
-                            $this->request->data['Discounthistory']['user_id'] = $user_id;
-                            $this->request->data['Discounthistory']['coupon_code'] = $coupon_code;
-                            $this->request->data['Discounthistory']['coupon_id'] = $discount_id;
-                            $this->request->data['Discounthistory']['cart_id'] = $cart_products['Shoppingcart']['cart_id'];
-                            if ($peroramou == 1) {
-                                $this->request->data['Discounthistory']['percentage'] = $percentage;
-                            } else {
-                                $this->request->data['Discounthistory']['amount'] = $percentage;
-                            }
-                            $this->Discounthistory->save($this->request->data['Discounthistory']);
-                            $message="Discount Amount applied";                      
-                        } else if($message=='' ) {   $message1="Invalid Voucher Code";     }
-                    
-					
-						
-                    }
-if($message!='') {  $this->Session->setFlash("<div class='success msg'>".$message."</div>");        } 
-else if($message1!='') { $this->Session->setFlash("<div class='error msg'>".$message1."</div>");   } 
-$this->redirect(array('action' => 'order', 'controller' => 'orders'));
+      if ((in_array($cart_products['Shoppingcart']['product_id'], $product_id_dis) && $type == "Product") || (in_array($cat_id_find['Products']['category_id'], $category_id_dis) && $type == "Category") || $type == "Vouchercode" || $type == "User")
+      {
+      if ($peroramou == 1) {
 
-                    }
-                } 
-                else {  
-				
- $this->Session->setFlash("<div class='error msg'>Code Already used</div>");       	
-   $this->redirect(array('action' => 'order', 'controller' => 'orders'));	
-	          }
-               
-            } else {			
-				 $this->Session->setFlash("<div class='error msg'>Invalid voucher code</div>");  
-        $this->redirect(array('action' => 'order', 'controller' => 'orders'));
+      $per_amount = $cart_products['Shoppingcart']['total'] * $percentage / 100;
+      $remain_amount = $cart_products['Shoppingcart']['total'] - $per_amount;
+      } else {
 
-               
-            }
+      $per_amount = $percentage;
+      $remain_amount = $cart_products['Shoppingcart']['total'] - $per_amount;
+      }
+      $this->request->data['Shoppingcart']['cart_id'] = $cart_products['Shoppingcart']['cart_id'];
+      $this->request->data['Shoppingcart']['total_amount'] = $cart_products['Shoppingcart']['total'];
+      $this->request->data['Shoppingcart']['total'] = $remain_amount;
+      $this->request->data['Shoppingcart']['detected_amount'] = $per_amount;
+      $this->request->data['Shoppingcart']['is_coupon_used'] = '1';
+      $this->Shoppingcart->save($this->request->data['Shoppingcart']);
 
-            
-        }   
-}*/
+      $this->request->data['Discounthistory']['user_id'] = $user_id;
+      $this->request->data['Discounthistory']['coupon_code'] = $coupon_code;
+      $this->request->data['Discounthistory']['coupon_id'] = $discount_id;
+      $this->request->data['Discounthistory']['cart_id'] = $cart_products['Shoppingcart']['cart_id'];
+      if ($peroramou == 1) {
+      $this->request->data['Discounthistory']['percentage'] = $percentage;
+      } else {
+      $this->request->data['Discounthistory']['amount'] = $percentage;
+      }
+      $this->Discounthistory->save($this->request->data['Discounthistory']);
+      $message="Discount Amount applied";
+      } else if($message=='' ) {   $message1="Invalid Voucher Code";     }
 
-	public function apply_discount(){
+
+
+      }
+      if($message!='') {  $this->Session->setFlash("<div class='success msg'>".$message."</div>");        }
+      else if($message1!='') { $this->Session->setFlash("<div class='error msg'>".$message1."</div>");   }
+      $this->redirect(array('action' => 'order', 'controller' => 'orders'));
+
+      }
+      }
+      else {
+
+      $this->Session->setFlash("<div class='error msg'>Code Already used</div>");
+      $this->redirect(array('action' => 'order', 'controller' => 'orders'));
+      }
+
+      } else {
+      $this->Session->setFlash("<div class='error msg'>Invalid voucher code</div>");
+      $this->redirect(array('action' => 'order', 'controller' => 'orders'));
+
+
+      }
+
+
+      }
+      } */
+
+    public function apply_discount(){
 		if ($this->Session->read('User')== '' || $this->Session->read('cart_process')=='') {
 			$this->redirect(BASE_URL);
 		}
@@ -1234,4 +1252,347 @@ $this->redirect(array('action' => 'order', 'controller' => 'orders'));
 			$this->redirect(BASE_URL);
 		}
 	}
+
+    //New function written by Nad at 2015-03-27
+    public function order_status_mail($order_id) {
+        $orderdetails = $this->Order->find('first', array('conditions' => array('order_id' => $order_id)));
+        $user = ClassRegistry::init('User')->find('first', array('conditions' => array('user_id' => $orderdetails['Order']['user_id'])));
+        $in = $this->admin_get_invoice_prefix($user['User']['user_type'], $orderdetails['Order']['cod_status']);
+
+        $adminmailid = $this->Adminuser->find('first', array('conditions' => array('admin_id' => '1')));
+
+        App::uses('CakeEmail', 'Network/Email');
+
+        $email = new CakeEmail();
+        $email->emailFormat('html');
+        $email->from(array(trim($adminmailid['Adminuser']['email']) => SITE_NAME));
+        $email->template('default', 'default');
+        $email->to(trim($user['User']['email']));
+        $subject = " Order # " . $in . $orderdetails['Order']['invoice'] . " Order Status : " . $orderdetails['Orderstatus']['order_status'];
+        $email->subject(SITE_NAME . $subject);
+        $message = "<p>Dear {$user['User']['first_name']}</p>";
+        $message .= "<p>Your Order status has been recently changed</p>";
+        $message .= "<p>Your Order # {$in}{$orderdetails['Order']['invoice']}</p>";
+        $message .= "<p>Order Status : {$orderdetails['Orderstatus']['order_status']}</p>";
+        $message .= "<p>Thanks.</p>";
+//        $invoice = $this->requestAction(array('action' => 'admin_orderpdf', $orderdetails['Order']['order_id'], 'F'), array('return', 'bare' => false));
+//        $email->attachments('files/invoices/'.$in . $orderdetails['Order']['invoice'].'.pdf');
+        
+        $email->send($message);
+        $email->reset();
+    }
+
+    //added by prakash
+    public function admin_vendors_brokerage() {
+        $is_search = false;
+        $this->layout = "admin";
+        $this->checkadmin();
+        $this->Shoppingcart->bindModel(
+                array(
+            'belongsTo' => array(
+                'Order' => array(
+                    'type' => 'Inner',
+                    'conditions' => array('Shoppingcart.order_id = Order.order_id'),
+                    'foreignKey' => false,
+                ),
+                'Orderstatus' => array(
+                    'type' => 'Inner',
+                    'conditions' => array('Order.order_status_id = Orderstatus.order_sts_id'),
+                    'foreignKey' => false,
+                ),
+                'Brokeragestatus' => array(
+                    'type' => 'Inner',
+                    'conditions' => array('Order.brokerage_status_id = Brokeragestatus.brokerage_sts_id'),
+                    'foreignKey' => false,
+                ),
+                'Product' => array(
+                    'type' => 'Inner',
+                    'conditions' => array('Shoppingcart.product_id = Product.product_id'),
+                    'foreignKey' => false,
+                ),
+                'Category' => array(
+                    'type' => 'Inner',
+                    'conditions' => array('Product.category_id = Category.category_id'),
+                    'foreignKey' => false,
+                ),
+                'Vendor' => array(
+                    'type' => 'Inner',
+                    'conditions' => array('Product.vendor_id = Vendor.vendor_id'),
+                    'foreignKey' => false,
+                ),
+                'User' => array(
+                    'type' => 'Inner',
+                    'conditions' => array('Order.user_id = User.user_id And User.user_type = "0"'),
+                    'foreignKey' => false,
+                ),
+            )
+                ), false
+        );
+
+        if ($this->request->is('get')) {
+            $is_search = true;
+            $search = array('Shoppingcart.order_id is not NULL');
+            if ($this->request->query('pname') != '') {
+                $search[] = "Product.product_name Like '%" . $this->request->query('pname') . "%'";
+            }
+            if ($this->request->query('vendor') != '') {
+                $search[] = "Vendor.vendor_code Like '%" . $this->request->query('vendor') . "%'";
+            }
+            if ($this->request->query('date') != '') {
+                $search[] = "DATE(Order.created_date) = '" . $this->request->query('date') . "'";
+            }
+
+            $this->paginate = array('conditions' => $search, 'order' => 'Order.order_id DESC');
+            $this->set('orderdetails', $this->paginate('Shoppingcart'));
+        } else {
+            $this->paginate = array('conditions' => array('Shoppingcart.order_id is not NULL'), 'order' => 'Shoppingcart.order_id DESC');
+            $this->set('orderdetails', $this->Paginator->paginate('Shoppingcart'));
+        }
+
+        $this->set(compact('is_search'));
+    }
+
+    public function admin_franchisee_brokerage() {
+        $is_search = false;
+        $this->layout = "admin";
+        $this->checkadmin();
+        $this->Shoppingcart->bindModel(
+                array(
+            'belongsTo' => array(
+                'Order' => array(
+                    'type' => 'Inner',
+                    'conditions' => array('Shoppingcart.order_id = Order.order_id'),
+                    'foreignKey' => false,
+                ),
+                'Orderstatus' => array(
+                    'type' => 'Inner',
+                    'conditions' => array('Order.order_status_id = Orderstatus.order_sts_id'),
+                    'foreignKey' => false,
+                ),
+                'Brokeragestatus' => array(
+                    'type' => 'Inner',
+                    'conditions' => array('Order.brokerage_status_id = Brokeragestatus.brokerage_sts_id'),
+                    'foreignKey' => false,
+                ),
+                'Product' => array(
+                    'type' => 'Inner',
+                    'conditions' => array('Shoppingcart.product_id = Product.product_id'),
+                    'foreignKey' => false,
+                ),
+                'Category' => array(
+                    'type' => 'Inner',
+                    'conditions' => array('Product.category_id = Category.category_id'),
+                    'foreignKey' => false,
+                ),
+                'Vendor' => array(
+                    'type' => 'Inner',
+                    'conditions' => array('Product.vendor_id = Vendor.vendor_id'),
+                    'foreignKey' => false,
+                ),
+                'User' => array(
+                    'type' => 'Inner',
+                    'conditions' => array('Order.user_id = User.user_id And User.user_type = "1"'),
+                    'foreignKey' => false,
+                ),
+            )
+                ), false
+        );
+
+        if ($this->request->is('get')) {
+            $is_search = true;
+            $search = array('Shoppingcart.order_id is not NULL', 'User.user_type = "1"');
+            if ($this->request->query('pname') != '') {
+                $search[] = "Product.product_name Like '%" . $this->request->query('pname') . "%'";
+            }
+            if ($this->request->query('date') != '') {
+                $search[] = "DATE(Order.created_date) = '" . $this->request->query('date') . "'";
+            }
+
+            $this->paginate = array('conditions' => $search, 'order' => 'Order.order_id DESC');
+            $this->set('orderdetails', $this->paginate('Shoppingcart'));
+        } else {
+            $this->paginate = array('conditions' => array('Shoppingcart.order_id is not NULL'), 'order' => 'Shoppingcart.order_id DESC');
+            $this->set('orderdetails', $this->Paginator->paginate('Shoppingcart'));
+        }
+
+        $this->set(compact('is_search'));
+    }
+
+    public function admin_brokerage_export($type) {
+        $filename = $type . ".csv";
+        $user_type = $type == 'vendor_brokerage' ? 0 : 1;
+        $this->layout = '';
+        $this->render(false);
+        ini_set('max_execution_time', 600);
+        //create a file
+        $csv_file = fopen('php://output', 'w');
+
+        header('Content-type: application/csv');
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
+
+        $this->Shoppingcart->bindModel(
+                array(
+            'belongsTo' => array(
+                'Order' => array(
+                    'type' => 'Inner',
+                    'conditions' => array('Shoppingcart.order_id = Order.order_id'),
+                    'foreignKey' => false,
+                ),
+                'Orderstatus' => array(
+                    'type' => 'Inner',
+                    'conditions' => array('Order.order_status_id = Orderstatus.order_sts_id'),
+                    'foreignKey' => false,
+                ),
+                'Brokeragestatus' => array(
+                    'type' => 'Inner',
+                    'conditions' => array('Order.brokerage_status_id = Brokeragestatus.brokerage_sts_id'),
+                    'foreignKey' => false,
+                ),
+                'Product' => array(
+                    'type' => 'Inner',
+                    'conditions' => array('Shoppingcart.product_id = Product.product_id'),
+                    'foreignKey' => false,
+                ),
+                'Category' => array(
+                    'type' => 'Inner',
+                    'conditions' => array('Product.category_id = Category.category_id'),
+                    'foreignKey' => false,
+                ),
+                'Vendor' => array(
+                    'type' => 'Inner',
+                    'conditions' => array('Product.vendor_id = Vendor.vendor_id'),
+                    'foreignKey' => false,
+                ),
+                'User' => array(
+                    'type' => 'Inner',
+                    'conditions' => array('Order.user_id = User.user_id And user_type = "' . $user_type . '"'),
+                    'foreignKey' => false,
+                ),
+            )
+                ), false
+        );
+        $results = $this->Shoppingcart->find('all', array('conditions' => array('Shoppingcart.order_id !=' => NULL), 'order' => 'Shoppingcart.order_id DESC'));
+        $header_row = array("S.No", "Order ID", "Date", "Customer Name", "Vendor Code", "Product Code", "Product Name", "Price", "Order Status", "Brokerage Status", "Brokeage Amount", "Order Value");
+        if ($type == 'franschisee_brokerage') {
+            unset($header_row[array_search('Vendor Code', $header_row)]);
+        }
+        fputcsv($csv_file, $header_row, ',', '"');
+        $i = 1;
+        foreach ($results as $result) {
+            $in = $this->admin_get_invoice_prefix($result['User']['user_type'], $result['Order']['cod_status']);
+            $brokerage_amount = $this->requestAction(array('controller' => 'products', 'action' => 'admin_get_brokerage_amount', $result['Product']['product_id'], $result['Shoppingcart']['cart_id']));
+            $netamount = $this->admin_get_net_amount($result['Order']['order_id']);
+
+            $row = array(
+                $i,
+                $in . $result['Order']['invoice'],
+                date("Y-m-d", strtotime($result['Order']['created_date'])),
+                $result['User']['first_name'] . ' ' . $result['User']['last_name'],
+                $result['Vendor']['vendor_code'],
+                $result['Category']['category_code'] . ' ' . $result['Product']['product_code'] . "-" . $result['Shoppingcart']['purity'] . "K" . $result['Shoppingcart']['clarity'] . $result['Shoppingcart']['color'],
+                $result['Product']['product_name'],
+                indian_number_format($result['Shoppingcart']['total'] * $result['Shoppingcart']['quantity']),
+                $result['Orderstatus']['order_status'],
+                $result['Brokeragestatus']['brokerage_status'],
+                indian_number_format($brokerage_amount),
+                indian_number_format($netamount),
+            );
+            if ($type == 'franschisee_brokerage') {
+                unset($row[4]);
+            }
+            $i++;
+            fputcsv($csv_file, $row, ',', '"');
+        }
+        fclose($csv_file);
+    }
+
+    public function admin_get_invoice_prefix($user_type, $cod_status) {
+        $prefix = '';
+        if ($user_type == '0') {
+            if ($cod_status == 'PayU') {
+                $prefix = 'SGN-ON-';
+            } elseif ($cod_status == 'CHQ/DD') {
+                $prefix = 'SGN-CHQ/DD-';
+            } elseif ($cod_status == 'COD') {
+                $prefix = 'SGN-CD-';
+            }
+        } else {
+            if ($cod_status == 'PayU') {
+                $prefix = 'SGN-FN-';
+            } elseif ($cod_status == 'COD') {
+                $prefix = 'SGN-FNCD-';
+            } elseif ($cod_status == 'CHQ/DD') {
+                $prefix = 'SGN-FNCHQ/DD-';
+            }
+        }
+        return $prefix;
+    }
+
+    public function admin_get_net_amount($order_id) {
+        $netamount = 0;
+        $this->Shoppingcart->bindModel(
+                array(
+            'belongsTo' => array(
+                'Order' => array(
+                    'type' => 'Inner',
+                    'conditions' => array('Shoppingcart.order_id = Order.order_id'),
+                    'foreignKey' => false,
+                ),
+            )
+                ), false
+        );
+        $cart_amount = $this->Shoppingcart->find('first', array(
+            'conditions' => array('Shoppingcart.order_id' => $order_id),
+            'fields' => 'SUM(Shoppingcart.quantity*Shoppingcart.total) AS subtotal, Order.discount_amount, Order.shipping_amt'));
+        if (!empty($cart_amount)) {
+            $netamount = $cart_amount[0]['subtotal'];
+            $netamount-=$cart_amount['Order']['discount_amount'];
+            $netamount+=$cart_amount['Order']['shipping_amt'];
+        }
+        return $netamount;
+    }
+
+    public function orderpdf($order_id = NULL, $output = 'D') {
+        $this->usercheck();
+        $userid = $this->Session->read('User.user_id');
+        
+        $this->layout = '';
+        $orderdetails = $this->Order->find('first', array('conditions' => array('order_id' => $order_id)));
+        if($userid == $orderdetails['Order']['user_id']){
+            $user = ClassRegistry::init('User')->find('first', array('conditions' => array('user_id' => $orderdetails['Order']['user_id'])));
+            $in = $this->admin_get_invoice_prefix($user['User']['user_type'], $orderdetails['Order']['cod_status']);
+
+            $this->set(compact('orderdetails', 'user', 'in'));
+            $filename = str_replace('/', '_', $in . $orderdetails['Order']['invoice'] . '.pdf');
+            $this->Mpdf->init(array('en-GB-x', 'A4', '', '', 10, 10, 10, 10, 6, 3));
+//            $this->Mpdf->Image(BASE_URL.'img/icons/logo.png',0,0,210,297,'png','',true, false);
+            $filepath = 'files/invoices/' . $filename;
+            $this->Mpdf->setFilename($filepath);
+            $this->Mpdf->setOutput($output);
+//            $this->Mpdf->Output($filename, 'D');
+        }else{
+            $this->Session->setFlash("<div class='error msg'>" . __('Access denied.') . "</div>");
+            $this->redirect(array('controller' => 'orders', 'action' => 'my_orders'));
+        }
+//        $this->Mpdf->SetWatermarkText("Draft");
+    }
+
+    public function admin_orderpdf($order_id = NULL, $output = 'D') {
+        $this->checkadmin();
+        
+        $this->layout = '';
+        $orderdetails = $this->Order->find('first', array('conditions' => array('order_id' => $order_id)));
+        $user = ClassRegistry::init('User')->find('first', array('conditions' => array('user_id' => $orderdetails['Order']['user_id'])));
+        $in = $this->admin_get_invoice_prefix($user['User']['user_type'], $orderdetails['Order']['cod_status']);
+
+        $this->set(compact('orderdetails', 'user', 'in'));
+        $filename = str_replace('/', '_', $in . $orderdetails['Order']['invoice'] . '.pdf');
+        $this->Mpdf->init(array('en-GB-x', 'A4', '', '', 10, 10, 10, 10, 6, 3));
+        $filepath = 'files/invoices/' . $filename;
+        $this->Mpdf->setFilename($filepath);
+        $this->Mpdf->setOutput($output);
+//            $this->Mpdf->Output($filename, 'D');
+//        $this->Mpdf->SetWatermarkText("Draft");
+    }
+
 }
