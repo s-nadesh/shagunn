@@ -6,13 +6,21 @@
 <div id="content"  class="clearfix">			
     <div class="container">
     
-        <div align="right" style="padding-right:50px;"><?php echo $this->Html->link('Back to Order Details',array('action'=>'order_index'),array('class'=>'button')); ?></div>   
+        <div align="right" style="padding-right:50px;">
+                          <?php   $billingdetails=ClassRegistry::init('Order')->find('first',array('conditions'=>array('order_id'=>$this->params['pass']['0'])));
+                        $user = ClassRegistry::init('User')->find('first', array('conditions' => array('user_id' => $billingdetails['Order']['user_id']))); 
+                        if ($user['User']['user_type'] == '0') {
+                            echo $this->Html->link('Back to Vendor Brokerage', array('action' => 'vendors_brokerage'), array('class' => 'button'));
+                        } elseif ($user['User']['user_type'] == '1') {
+                            echo $this->Html->link('Back to Franchisee Brokerage', array('action' => 'franchisee_brokerage'), array('class' => 'button'));
+                        }
+                        ?>
+
+            <?php echo $this->Html->link('Back to Order Details',array('action'=>'order_index'),array('class'=>'button')); ?></div>   
         <div class="texttabBox"> 
             <form>       	
            <fieldset><legend>Billing  Details</legend>
             			 <dl class="inline">
-                          <?php   $billingdetails=ClassRegistry::init('Order')->find('first',array('conditions'=>array('order_id'=>$this->params['pass']['0'])));
-						  ?>
                              <table width="600" align="left" >
                                <tr><td width="150"><strong> Billing Address</strong></td><td>
                             <p><?php $bill=h($billingdetails['Order']['billing_add']); if(!empty($bill))echo $bill; else '-';  ?></p>
