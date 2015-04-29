@@ -54,15 +54,15 @@ $product_details.='<table cellpadding="0" cellspacing="0" border="0" width="100%
                     	<td>Approximate Metal weight</td>
                     	<td>'.$json['goldweight'].' gm</td>
                     </tr>
-					<tr>
+					<tr class="show_non_gold">
                     	<td>Approximate Product weight</td>
                     	<td>'.$json['weight'].' gm</td>
                     </tr>
-					<tr>
+					<tr class="show_non_gold">
                     	<td>Width</td>
                     	<td>'.$product['Product']['width'].' mm</td>
                     </tr>
-					<tr>
+					<tr class="show_non_gold">
                     	<td>Height</td>
                     	<td>'.$product['Product']['height'].' mm</td>
                     </tr>
