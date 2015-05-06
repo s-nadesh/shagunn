@@ -1479,6 +1479,7 @@ public function track(){
             $header_row[3] = 'Franchisee Name';
         }elseif($type == 'vendor_brokerage'){
             unset($header_row[array_search('Franchisee code', $header_row)]);
+            $header_row[3] = 'Vendor Name';
         }
         fputcsv($csv_file, $header_row, ',', '"');
         $i = 1;
