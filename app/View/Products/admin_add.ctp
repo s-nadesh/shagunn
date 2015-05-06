@@ -90,7 +90,7 @@
                         <dl class="inline">
                             <div>        
                                 <?php
-                                $menus = ClassRegistry::init('Menu')->find('all', array('recursive' => 2, 'conditions' => array('is_active' => 1, 'menu_id' => array(4, 5, 6, 7, 8))));
+                                $menus = ClassRegistry::init('Menu')->find('all', array('recursive' => 2, 'conditions' => array('is_active' => 1, 'menu_id' => array(3, 4, 5, 6, 7, 8))));
                                 foreach ($menus as $menu_id => $menu) {
                                     ?>
                                     <dt><label for="name"><?php echo $menu['Menu']['menu_name'] ?> Menu</label></dt>

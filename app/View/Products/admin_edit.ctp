@@ -165,7 +165,7 @@
                         <dl class="inline">
                             <div>        
                                 <?php
-                                $menus = ClassRegistry::init('Menu')->find('all', array('recursive' => 2, 'conditions' => array('is_active' => 1, 'menu_id' => array(4, 5, 6, 7, 8))));
+                                $menus = ClassRegistry::init('Menu')->find('all', array('recursive' => 2, 'conditions' => array('is_active' => 1, 'menu_id' => array(3, 4, 5, 6, 7, 8))));
                                 $product_menus = explode(",", $product['Product']['submenu_ids']);
                                 $product_offers = explode(",", $product['Product']['offer_ids']);
                                 foreach ($menus as $menu_id => $menu) {
