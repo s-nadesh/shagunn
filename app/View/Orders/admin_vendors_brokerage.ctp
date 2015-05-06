@@ -49,9 +49,9 @@
                     <th align="center" width="5%"><?php echo __('#'); ?></th>        
                     <th align="left" width="10%"><?php echo $this->Paginator->sort('Order.invoice', 'Order Id'); ?></th> 
                     <th align="left" width="5%"><?php echo $this->Paginator->sort('Order.created_date', 'Date'); ?></th> 
-                    <th align="left" width="10%"><?php echo $this->Paginator->sort('User.first_name', 'Vendor Name'); ?></th> 
+                    <th align="left" width="10%"><?php echo $this->Paginator->sort('User.first_name', 'Customer Name'); ?></th> 
                     <th align="left" width="8%"><?php echo $this->Paginator->sort('Vendor.vendor_code', 'Vendor Code'); ?></th> 
-                    <th align="left" width="8%"><?php echo $this->Paginator->sort('Vendor.Company_name', 'Company Name'); ?></th> 
+                    <th align="left" width="8%"><?php echo $this->Paginator->sort('Vendor.Company_name', 'Vendor  Name'); ?></th> 
                     <th align="left" width="10%"><?php echo $this->Paginator->sort('Product.product_code', 'Product Code'); ?></th>
                     <th align="left" width="10%"><?php echo $this->Paginator->sort('Product.product_name', 'Product Name'); ?></th> 
                     <th align="left" width="5%">Price</th> 
