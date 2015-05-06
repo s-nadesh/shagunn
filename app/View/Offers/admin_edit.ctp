@@ -20,8 +20,10 @@
                 <dt><label>Sub menu</label></dt>
                 <dd><?php echo $offer['Submenu']['submenu_name']?></dd>
                 <?php
-                echo $this->Form->input('offer_name', array('div' => false, 'error' => false, 'label' => array('text' => 'Offer Title' . '<span class="required">*</span>'), 'before' => '<dt>', 'after' => '</dd>', 'between' => '</dt><dd>', 'class' => 'validate[required]', 'size' => '50'));
-                echo $this->Form->submit(__('Submit'), array('div' => false, 'before' => ' <div class="buttons" >', 'after' => '</div>', 'class' => 'button', 'value' => __('Submit')));
+                echo $this->Form->input('offer_name', array('div' => false, 'error' => false, 'label' => array('text' => 'Offer Title' . '<span class="required">*</span>'), 'before' => '<dt>', 'after' => '</dd>', 'between' => '</dt><dd>', 'class' => 'validate[required]', 'size' => '50'));?>
+                <dt><label for="name">Status</label></dt>
+                <dd><?php echo $this->Form->input('is_active', array('type' => 'checkbox', 'div' => false, 'error' => false, 'label' => false));?></dd>
+                <?php echo $this->Form->submit(__('Submit'), array('div' => false, 'before' => ' <div class="buttons" >', 'after' => '</div>', 'class' => 'button', 'value' => __('Submit')));
                 ?>
             </dl>
         </fieldset>

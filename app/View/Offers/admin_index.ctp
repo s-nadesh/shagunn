@@ -21,6 +21,7 @@
         ?></th> 
                     <th width="30" align="center"><?php echo __('#'); ?></th>        
                     <th align="left"><?php echo $this->Paginator->sort('offer_name', 'Offer'); ?></th> 
+                    <th width="40" align="center"><?php echo $this->Paginator->sort('is_active', 'Status'); ?></th>
                     <th width="30" align="center">Edit</th>
                 </tr>
             </thead>
@@ -36,6 +37,7 @@
                             <td align="center"><?php echo $this->Html->image('icons/arrow.jpg'); ?></td>
                             <td align="center"><?php echo h($i); ?></td>
                             <td align="left"><?php echo h($offer['Offer']['offer_name']); ?></td>
+                            <td align="left"><?php echo $offer['Offer']['is_active'] == 1 ? 'Active' : 'In-active'; ?></td>
 
 
                             <td align="center">

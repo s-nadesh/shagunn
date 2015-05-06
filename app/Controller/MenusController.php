@@ -78,4 +78,31 @@ class MenusController extends AppController {
         }
         $this->redirect(array('action' => 'index'));
     }
+    
+    public function admin_menu_export() {
+        $filename = "menus.csv";
+        $this->layout = '';
+        $this->render(false);
+        ini_set('max_execution_time', 600);
+        //create a file
+        $csv_file = fopen('php://output', 'w');
+
+        header('Content-type: application/csv');
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
+
+        $results = $this->Menu->find('all');
+        $header_row = array("S.No", "Menu", "Is Active");
+        fputcsv($csv_file, $header_row, ',', '"');
+        $i = 1;
+        foreach ($results as $result) {
+            $row = array(
+                $i,
+                $result['Menu']['menu_name'],
+                $result['Menu']['is_active'] == '1' ? 'Active' : 'In-active',
+            );
+            $i++;
+            fputcsv($csv_file, $row, ',', '"');
+        }
+        fclose($csv_file);
+    }
 }

@@ -18,7 +18,7 @@
                     <div class="shop_info_menu">
                         <ul>
                             <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <?php echo $this->Html->image("phone_icn.png", array("alt" => "index")); ?><span style="padding-top:3px; font-size:16px;"> 1800 1022 066</span></li>
-                            <li style="color:#dba715;"><?php //echo  $this->Html->image("cart_icn.png",array("alt" => "index"));                 ?> 
+                            <li style="color:#dba715;"><?php //echo  $this->Html->image("cart_icn.png",array("alt" => "index"));                  ?> 
                                 <a href="<?php echo BASE_URL; ?>shoppingcarts/shopping_cart"> <?php echo $this->Html->image("cart_icn.png", array("alt" => "index")); ?> Cart <?php
                                     if ($this->Session->read('cart_process') != '') {
                                         $cartcount = ClassRegistry::init('Shoppingcart')->find('first', array('conditions' => array('cart_session' => $this->Session->read('cart_process')), 'fields' => array('SUM(quantity) AS tot_qty')));
@@ -63,7 +63,21 @@
                 <ul id="nav">
                     <li class="home_icn"><a href="<?php echo BASE_URL; ?>"><?php echo $this->Html->image("home_icn.png", array("alt" => "index")); ?></a></li>
                     <?php
-                    $menus = ClassRegistry::init('Menu')->find('all', array('recursive' => 2, 'conditions' => array('is_active' => '1'), 'order' => array('menu_order asc')));
+                    ClassRegistry::init('Menu')->Behaviors->attach('Containable');
+                    $menus = ClassRegistry::init('Menu')->find('all', array(
+                        'contain' => array(
+                            'Submenu' => array(
+                                'Offer' => array(
+                                    'conditions' => array('Offer.is_active' => '1')
+                                ),
+                                'conditions' => array('Submenu.is_active' => '1'),
+                                ),
+                        ),
+                        'conditions' => array('Menu.is_active' => '1'),
+                        'order' => 'Menu.menu_order'
+                    ));
+                    
+//                    $menus = ClassRegistry::init('Menu')->find('all', array('recursive' => 2, 'conditions' => array('is_active' => '1'), 'order' => array('menu_order asc')));
                     $left = 133;
                     foreach ($menus as $key => $menu) {
                         $left -= 134;
@@ -241,7 +255,7 @@
                         <?php } elseif ($menu['Menu']['menu_id'] == 2) { ?>
                             <li class="baseitem" data-left="<?php echo $left ?>">
                                 <?php $gold_category = ClassRegistry::init('Category')->findByCategory('Gold Coins'); ?>
-                                <?php $gold_url = !empty($gold_category) ? BASE_URL . "details/" . $gold_category['Category']['link'] : '';?>
+                                <?php $gold_url = !empty($gold_category) ? BASE_URL . "details/" . $gold_category['Category']['link'] : ''; ?>
                                 <a class="primary_link" href="<?php echo $gold_url ?>"><?php echo $menu['Menu']['menu_name'] ?></a>
                                 <div class="dropdown gold_navmenu vertical_menu">
                                     <div class="menutabs" id="tabs<?php echo $menu['Menu']['menu_id'] ?>">
@@ -288,13 +302,13 @@
                                 </div>
                             </li>
                             <!--Solitaires-->
-                        <?php } elseif ($menu['Menu']['menu_id'] == 3) { ?>
-                            <li class="baseitem" data-left="<?php echo $left ?>">
-                                <a class="primary_link" href="#"><?php echo $menu['Menu']['menu_name'] ?></a>
-                            </li>
-                            <!--Bridal & Men & Collection & Gifts-->
-                            <?php
-                        } elseif ($menu['Menu']['menu_id'] == 4 || $menu['Menu']['menu_id'] == 5 || $menu['Menu']['menu_id'] == 6 || $menu['Menu']['menu_id'] == 7) {
+                        <?php } /* elseif ($menu['Menu']['menu_id'] == 3) { ?>
+                          <li class="baseitem" data-left="<?php echo $left ?>">
+                          <a class="primary_link" href="#"><?php echo $menu['Menu']['menu_name'] ?></a>
+                          </li>
+                          <!--Bridal & Men & Collection & Gifts-->
+                          <?php
+                          } */ elseif ($menu['Menu']['menu_id'] == 3 || $menu['Menu']['menu_id'] == 4 || $menu['Menu']['menu_id'] == 5 || $menu['Menu']['menu_id'] == 6 || $menu['Menu']['menu_id'] == 7) {
                             ?>
                             <li class="baseitem" data-left="<?php echo $left ?>">
                                 <a class="primary_link" href="#"><?php echo $menu['Menu']['menu_name'] ?></a>
@@ -308,11 +322,15 @@
                                             <?php
                                             $gift_sub_count = 0;
                                             foreach ($menu['Submenu'] as $submenu) {
-                                                if($gift_sub_count < 5){
-                                                ?>
-                                                <li><a href="#tabs-<?php echo $menu['Menu']['menu_id'] . $submenu['submenu_id']; ?>" onclick="location.href = '<?php echo BASE_URL . 'product?submenu=' . $submenu['submenu_id'] ?>'"><?php echo $submenu['submenu_name']; ?></a></li>
-                                                <?php
-                                                }else{
+                                                if ($gift_sub_count < 5 && $menu['Menu']['menu_id'] == 7) {
+                                                    ?>
+                                                    <li><a href="#tabs-<?php echo $menu['Menu']['menu_id'] . $submenu['submenu_id']; ?>" onclick="location.href = '<?php echo BASE_URL . 'product?submenu=' . $submenu['submenu_id'] ?>'"><?php echo $submenu['submenu_name']; ?></a></li>
+                                                    <?php
+                                                } elseif (in_array($menu['Menu']['menu_id'], array(3, 4, 5, 6))) {
+                                                    ?>
+                                                    <li><a href="#tabs-<?php echo $menu['Menu']['menu_id'] . $submenu['submenu_id']; ?>" onclick="location.href = '<?php echo BASE_URL . 'product?submenu=' . $submenu['submenu_id'] ?>'"><?php echo $submenu['submenu_name']; ?></a></li>
+                                                    <?php
+                                                } else {
                                                     $gift_sub_count = 0;
                                                     break;
                                                 }
@@ -329,10 +347,10 @@
                                             <?php } ?>
                                             <?php
                                             foreach ($menu['Submenu'] as $submenu) {
-                                                if($gift_sub_count >= 5){
-                                                ?>
-                                                <li><a href="#tabs-<?php echo $menu['Menu']['menu_id'] . $submenu['submenu_id']; ?>" onclick="location.href = '<?php echo BASE_URL . 'product?submenu=' . $submenu['submenu_id'] ?>'"><?php echo $submenu['submenu_name']; ?></a></li>
-                                                <?php
+                                                if ($gift_sub_count >= 5 && $menu['Menu']['menu_id'] == 7) {
+                                                    ?>
+                                                    <li><a href="#tabs-<?php echo $menu['Menu']['menu_id'] . $submenu['submenu_id']; ?>" onclick="location.href = '<?php echo BASE_URL . 'product?submenu=' . $submenu['submenu_id'] ?>'"><?php echo $submenu['submenu_name']; ?></a></li>
+                                                    <?php
                                                 }
                                                 $gift_sub_count++;
                                             }
@@ -351,13 +369,13 @@
                                             }
                                         }
                                         ?>
-                                        <?php for($k=1001; $k<=1005; $k++){?>
-                                            <div id="tabs-<?php echo $k?>">
+                                        <?php for ($k = 1001; $k <= 1005; $k++) { ?>
+                                            <div id="tabs-<?php echo $k ?>">
                                                 <div style="float:left;">
                                                     <div class="clear">&nbsp;</div>
                                                 </div>
                                             </div>
-                                        <?php }?>
+                                        <?php } ?>
                                     </div>
                                 </div>
                             </li>
@@ -373,8 +391,9 @@
                                                 ?>
                                                 <li><a class="titlesubmenu" style="cursor: text !important;"><strong><?php echo $submenu['submenu_name']; ?></strong></a></li>
                                                 <?php foreach ($submenu['Offer'] as $key => $offer) { ?>
-                                                    <li><a href="#tabs-<?php echo $menu['Menu']['menu_id'] . $submenu['submenu_id'].$offer['offer_id']; ?>" onclick="location.href = '<?php echo BASE_URL . 'product?offers=' . $offer['offer_id'] ?>'"><?php echo $offer['offer_name']; ?></a></li>
-                                                <?php }
+                                                    <li><a href="#tabs-<?php echo $menu['Menu']['menu_id'] . $submenu['submenu_id'] . $offer['offer_id']; ?>" onclick="location.href = '<?php echo BASE_URL . 'product?offers=' . $offer['offer_id'] ?>'"><?php echo $offer['offer_name']; ?></a></li>
+                                                <?php
+                                                }
                                             }
                                             ?> 
                                         </ul>
@@ -382,13 +401,13 @@
                                         if (!empty($menu['Submenu'])) {
                                             foreach ($menu['Submenu'] as $submenu) {
                                                 foreach ($submenu['Offer'] as $key => $offer) {
-                                                ?>
-                                                <div id="tabs-<?php echo $menu['Menu']['menu_id'] . $submenu['submenu_id'].$offer['offer_id']; ?>">
-                                                    <div style="float:left;">
-                                                        <div class="clear">&nbsp;</div>
+                                                    ?>
+                                                    <div id="tabs-<?php echo $menu['Menu']['menu_id'] . $submenu['submenu_id'] . $offer['offer_id']; ?>">
+                                                        <div style="float:left;">
+                                                            <div class="clear">&nbsp;</div>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                <?php
+                                                    <?php
                                                 }
                                             }
                                         }
@@ -396,8 +415,8 @@
                                     </div>
                                 </div>
                             </li>
-                    <?php } ?>
-                    <?php } ?>
+                        <?php } ?>
+<?php } ?>
 
 
                 </ul>

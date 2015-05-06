@@ -1,6 +1,7 @@
 <div id="content" class="clearfix"> 
     <div class="container">
         <div class="mainheading">   
+            <div class="btnlink"><?php echo $this->Html->link(__('+Export'), array('action' => 'admin_menu_export'),array('class'=>'button')); ?></div>
             <div class="btnlink"><?php // echo $this->Html->link(__('+Add Menu'), array('action' => 'add'),array('class'=>'button'));  ?></div> 	
             <div class="titletag"><h1><?php echo __('Menu'); ?></h1></div>
         </div>
@@ -16,6 +17,7 @@
         ?></th> 
                     <th width="30" align="center"><?php echo __('#'); ?></th>        
                     <th align="left"><?php echo $this->Paginator->sort('menu_name', 'Menu'); ?></th> 
+                    <th width="40" align="center"><?php echo $this->Paginator->sort('is_active', 'Status'); ?></th>
                     <th width="30" align="center">Edit</th>
                     <th width="30" align="center">View Submenu</th>
                 </tr>
@@ -26,15 +28,14 @@
                     echo '<tr><td colspan="4" align="center">' . __('No records found') . '</td></tr>';
                 else {
                     $i = $this->Paginator->counter('{:start}');
-                    $show_submenus = array(4, 5, 6, 7, 8);
+                    $show_submenus = array(3, 4, 5, 6, 7, 8);
                     foreach ($menus as $menu):
                         ?>
                         <tr>
                             <td align="center"><?php echo $this->Html->image('icons/arrow.jpg'); ?></td>
                             <td align="center"><?php echo h($i); ?></td>
                             <td align="left"><?php echo h($menu['Menu']['menu_name']); ?></td>
-
-
+                            <td align="left"><?php echo $menu['Menu']['is_active'] == 1 ? 'Active' : 'In-active'; ?></td>
                             <td align="center">
                                 <?php
                                 echo $this->Html->image('icons/edit.png', array('url' => array('action' => 'edit', $menu['Menu']['menu_id']), 'border' => 0, 'alt' => __('Edit')));

@@ -42,7 +42,8 @@
                     <th align="center" width="5%"><?php echo __('#'); ?></th>        
                     <th align="left" width="10%"><?php echo $this->Paginator->sort('Order.invoice', 'Order Id'); ?></th> 
                     <th align="left" width="5%"><?php echo $this->Paginator->sort('Order.created_date', 'Date'); ?></th> 
-                    <th align="left" width="10%"><?php echo $this->Paginator->sort('User.first_name', 'Customer Name'); ?></th> 
+                    <th align="left" width="10%"><?php echo $this->Paginator->sort('User.first_name', 'Franchisee Name'); ?></th> 
+                    <th align="left" width="10%"><?php echo $this->Paginator->sort('User.franchisee_code', 'Franchisee Code'); ?></th> 
                     <th align="left" width="10%"><?php echo $this->Paginator->sort('Product.product_code', 'Product Code'); ?></th>
                     <th align="left" width="10%"><?php echo $this->Paginator->sort('Product.product_name', 'Product Name'); ?></th> 
                     <th align="left" width="5%">Price</th> 
@@ -69,6 +70,7 @@
                         <td align="left"><?php echo $in . $orderdetail['Order']['invoice']; ?></td>
                         <td align="left"><?php echo date("Y-m-d", strtotime($orderdetail['Order']['created_date'])); ?></td>
                         <td align="left"><?php echo $orderdetail['User']['first_name'].' '.$orderdetail['User']['last_name']; ?></td>
+                        <td align="left"><?php echo $orderdetail['User']['franchisee_code']; ?></td>
                         <td align="left"><?php echo $orderdetail['Category']['category_code'] . ' ' . $orderdetail['Product']['product_code'] . "-" . $orderdetail['Shoppingcart']['purity'] . "K" . $orderdetail['Shoppingcart']['clarity'] . $orderdetail['Shoppingcart']['color']; ?></td>
                         <td align="left"><?php echo $orderdetail['Product']['product_name']; ?></td>
                         <td align="left"><?php echo indian_number_format($orderdetail['Shoppingcart']['total'] * $orderdetail['Shoppingcart']['quantity']) ?> </td>

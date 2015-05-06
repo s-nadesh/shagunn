@@ -73,4 +73,31 @@ class OrderstatusController extends AppController {
         }
         $this->redirect(array('action' => 'index'));
     }
+    
+    public function admin_orderstatus_export() {
+        $filename = "order_status.csv";
+        $this->layout = '';
+        $this->render(false);
+        ini_set('max_execution_time', 600);
+        //create a file
+        $csv_file = fopen('php://output', 'w');
+
+        header('Content-type: application/csv');
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
+
+        $results = $this->Orderstatus->find('all');
+        $header_row = array("S.No", "Order Status");
+        fputcsv($csv_file, $header_row, ',', '"');
+        $i = 1;
+        foreach ($results as $result) {
+            $row = array(
+                $i,
+                $result['Orderstatus']['order_status'],
+//                $result['Orderstatus']['is_active'] == '1' ? 'Active' : 'In-active',
+            );
+            $i++;
+            fputcsv($csv_file, $row, ',', '"');
+        }
+        fclose($csv_file);
+    }
 }

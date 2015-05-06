@@ -20,6 +20,7 @@
         ?></th> 
                     <th width="30" align="center"><?php echo __('#'); ?></th>        
                     <th align="left"><?php echo $this->Paginator->sort('submenu_name', 'Submenu'); ?></th> 
+                    <th width="40" align="center"><?php echo $this->Paginator->sort('is_active', 'Status'); ?></th>
                     <th width="30" align="center">Edit</th>
                     <?php if($menu['Menu']['menu_id'] == 8){?>
                     <th width="30" align="center">View Offer</th>
@@ -38,6 +39,7 @@
                             <td align="center"><?php echo $this->Html->image('icons/arrow.jpg'); ?></td>
                             <td align="center"><?php echo h($i); ?></td>
                             <td align="left"><?php echo h($submenu['Submenu']['submenu_name']); ?></td>
+                            <td align="left"><?php echo $submenu['Submenu']['is_active'] == 1 ? 'Active' : 'In-active'; ?></td>
 
 
                             <td align="center">

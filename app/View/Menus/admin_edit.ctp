@@ -31,6 +31,8 @@
                 <?php }?>
                 </dd>
                 <?php }?>
+                <dt><label for="name">Status</label></dt>
+                <dd><?php echo $this->Form->input('is_active', array('type' => 'checkbox', 'div' => false, 'error' => false, 'label' => false));?></dd>
                 <?php
                 echo $this->Form->submit(__('Submit'), array('div' => false, 'before' => ' <div class="buttons" >', 'after' => '</div>', 'class' => 'button', 'value' => __('Submit')));
                 ?>

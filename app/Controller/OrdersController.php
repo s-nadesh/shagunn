@@ -1472,9 +1472,13 @@ public function track(){
                 ), false
         );
         $results = $this->Shoppingcart->find('all', array('conditions' => array('Shoppingcart.order_id !=' => NULL), 'order' => 'Shoppingcart.order_id DESC'));
-        $header_row = array("S.No", "Order ID", "Date", "Customer Name", "Vendor Code", "Product Code", "Product Name", "Price", "Order Status", "Brokerage Status", "Brokeage Amount", "Order Value");
+        $header_row = array("S.No", "Order ID", "Date", "Customer Name", "Vendor Code", "Company name", "Franchisee code", "Product Code", "Product Name", "Price", "Order Status", "Brokerage Status", "Brokeage Amount", "Order Value");
         if ($type == 'franschisee_brokerage') {
             unset($header_row[array_search('Vendor Code', $header_row)]);
+            unset($header_row[array_search('Company name', $header_row)]);
+            $header_row[3] = 'Franchisee Name';
+        }elseif($type == 'vendor_brokerage'){
+            unset($header_row[array_search('Franchisee code', $header_row)]);
         }
         fputcsv($csv_file, $header_row, ',', '"');
         $i = 1;
@@ -1489,6 +1493,8 @@ public function track(){
                 date("Y-m-d", strtotime($result['Order']['created_date'])),
                 $result['User']['first_name'] . ' ' . $result['User']['last_name'],
                 $result['Vendor']['vendor_code'],
+                $result['Vendor']['Company_name'],
+                $result['User']['franchisee_code'],
                 $result['Category']['category_code'] . ' ' . $result['Product']['product_code'] . "-" . $result['Shoppingcart']['purity'] . "K" . $result['Shoppingcart']['clarity'] . $result['Shoppingcart']['color'],
                 $result['Product']['product_name'],
                 indian_number_format($result['Shoppingcart']['total'] * $result['Shoppingcart']['quantity']),
@@ -1499,6 +1505,9 @@ public function track(){
             );
             if ($type == 'franschisee_brokerage') {
                 unset($row[4]);
+                unset($row[5]);
+            }elseif($type == 'vendor_brokerage'){
+                unset($row[6]);
             }
             $i++;
             fputcsv($csv_file, $row, ',', '"');
