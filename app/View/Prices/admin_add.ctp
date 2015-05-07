@@ -134,7 +134,7 @@ if (isset($this->params['pass']['0'])) {
                             <dt><label for="name">Metal Fineness</label></dt>
                             <dd><div> 
                                     <select name="data[Price][metal_fineness]">
-                                        <option value="">Select</option>
+                                        <option value="0">Select</option>
                                         <option value="999" <?php echo isset($price['Price']['metal_fineness']) && $price['Price']['metal_fineness'] == '999' ? 'selected' : ''?>>999</option>
                                         <option value="995" <?php echo isset($price['Price']['metal_fineness']) && $price['Price']['metal_fineness'] == '995' ? 'selected' : ''?>>995</option>
                                     </select>

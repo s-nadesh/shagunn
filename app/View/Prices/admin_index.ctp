@@ -1,4 +1,3 @@
-
 <div id="content" class="clearfix">
     <div class="container">
         <div class="mainheading">
@@ -8,23 +7,29 @@
             </div>
         </div>
         <div class="tablefooter clearfix">
-            <form name="searchfilters" action="" id="myForm1" method="post" style="width:800px;float:left;padding: 5px 10px;">  
+            <?php echo $this->Form->create(null, array(
+                'type'=>'get',
+                'url' => array('page'=>'1'), 
+                'name' => 'searchfilters', 
+                'id'=> 'myForm1',
+                'style' => 'width:800px;float:left;padding: 5px 10px;'
+                ));?>
                 <table cellpadding="0" cellspacing="2">
                     <tr>
                         <td><strong><?php echo __('Type'); ?> : </strong>&nbsp;</td>
                         <td><input type="radio" id="checklist" class="validate[required] radio metal" name="searchtype" value="Metals" <?php
-                            if (isset($_REQUEST['searchtype'])) {
-                                echo $_REQUEST['searchtype'];
+                            if (isset($_REQUEST['searchtype']) && $_REQUEST['searchtype'] == 'Metals') {
+                                echo 'checked';
                             }
                             ?> />Metal&nbsp;&nbsp;&nbsp;
                             <input type="radio" id="checklist" class="validate[required] radio stone" name="searchtype" value="Stone" <?php
-                            if (isset($_REQUEST['searchtype'])) {
-                                echo $_REQUEST['searchtype'];
+                            if (isset($_REQUEST['searchtype']) && $_REQUEST['searchtype'] == 'Stone') {
+                                echo 'checked';
                             }
                             ?> />Diamond&nbsp;&nbsp;&nbsp;
                             <input type="radio" id="checklist" class="validate[required] radio gemstone" name="searchtype" value="Gemstone" <?php
-                            if (isset($_REQUEST['searchtype'])) {
-                                echo $_REQUEST['searchtype'];
+                            if (isset($_REQUEST['searchtype']) && $_REQUEST['searchtype'] == 'Gemstone') {
+                                echo 'checked';
                             }
                             ?> />Gemstone&nbsp;&nbsp;&nbsp;
 
@@ -43,7 +48,7 @@
                                 echo $this->Html->link(__('Cancel'), array('action' => 'index'), array('class' => 'button small', 'style' => 'padding:3px 5px;', 'title' => 'Cancel Search'));
                             }
                             ?></td>
-                    </tr></table></form>
+                    </tr></table><?php echo $this->Form->end()?>
         </div>
         <?php echo $this->Form->create('', array('Controller' => 'prices', 'action' => 'delete', 'id' => 'myForm')); ?>
         <table cellpadding="0" cellspacing="0" id="example" class="table gtable">

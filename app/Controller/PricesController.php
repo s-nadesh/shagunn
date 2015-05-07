@@ -19,12 +19,11 @@ class PricesController extends AppController {
     public $uses = array('Price', 'Jeweltype', 'Metalcolor', 'Metal', 'Diamond', 'Gemstone', 'Clarity', 'Color', 'Carat', 'Shape', 'Settingtype', 'Purity', 'Productmetal', 'Productgemstone', 'Productdiamond');
     public $layout = 'admin';
 	/*List Price */
-    public function admin_index() {
+    public function admin_index($page = NULL) {
         $this->checkadmin();
         $this->Price->recursive = 0;
 			
-        if (isset($this->request->data['searchfilter'])) {
-
+        if(isset($_REQUEST['searchfilter'])){
             $search = array();
             $search = array('Price.status !=' => 'Trash');
             if ($_REQUEST['searchtype'] == 'Metals') {
@@ -84,12 +83,12 @@ class PricesController extends AppController {
 
         if (!isset($this->params['pass']['0'])) {
 
-			/*Add Price */
+            /*Add Price */
             if ($this->request->is('post')) {
                
                 if ($this->request->data['Price']['type'] == 'Metals') {
-                    if($this->request->data['Price']['metal_fineness'] == ''){
-                        $price = $this->Price->find('first', array('conditions' => array('type' => $this->request->data['Price']['type'], 'metal_id' => $this->request->data['Price']['metal_id'], 'status !=' => 'Trash', 'metalcolor_id' => $this->request->data['Price']['metalcolor_id'])));
+                    if($this->request->data['Price']['metal_fineness'] == 0){
+                        $price = $this->Price->find('first', array('conditions' => array('type' => $this->request->data['Price']['type'], 'metal_id' => $this->request->data['Price']['metal_id'], 'status !=' => 'Trash', 'metalcolor_id' => $this->request->data['Price']['metalcolor_id'], 'metal_fineness' => 0)));
                     }else{
                         $price = $this->Price->find('first', array('conditions' => array('type' => $this->request->data['Price']['type'], 'metal_id' => $this->request->data['Price']['metal_id'], 'status !=' => 'Trash', 'metalcolor_id' => $this->request->data['Price']['metalcolor_id'], 'metal_fineness' => $this->request->data['Price']['metal_fineness'])));
                     }
@@ -129,8 +128,8 @@ class PricesController extends AppController {
 
             if ($this->request->is('post')) {
                 if ($prices['Price']['type'] == 'Metals') {
-                    if($this->request->data['Price']['metal_fineness'] == ''){
-                        $price = $this->Price->find('first', array('conditions' => array('status !=' => 'Trash', 'type' => $this->request->data['Price']['type'], 'metal_id' => $this->request->data['Price']['metal_id'], 'metalcolor_id' => $this->request->data['Price']['metalcolor_id'], 'price_id !=' => $prices['Price']['price_id'], 'metal_fineness' => '')));
+                    if($this->request->data['Price']['metal_fineness'] == 0){
+                        $price = $this->Price->find('first', array('conditions' => array('status !=' => 'Trash', 'type' => $this->request->data['Price']['type'], 'metal_id' => $this->request->data['Price']['metal_id'], 'metalcolor_id' => $this->request->data['Price']['metalcolor_id'], 'price_id !=' => $prices['Price']['price_id'], 'metal_fineness' => 0)));
                     }else{
                         $price = $this->Price->find('first', array('conditions' => array('status !=' => 'Trash', 'type' => $this->request->data['Price']['type'], 'metal_id' => $this->request->data['Price']['metal_id'], 'metalcolor_id' => $this->request->data['Price']['metalcolor_id'], 'price_id !=' => $prices['Price']['price_id'], 'metal_fineness' => $this->request->data['Price']['metal_fineness'])));
                     }

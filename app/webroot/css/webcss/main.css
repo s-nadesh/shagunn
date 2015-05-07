@@ -2274,6 +2274,7 @@ width:205px;
 	background:url(../../img/list_hide.jpg) no-repeat;	
 }
 
+/*Newly added */
 .prod_name.prod_code {
     word-wrap: break-word;
 }
@@ -2316,6 +2317,10 @@ width:205px;
 
 #nav .dropdown#offers_navmenu ul{
     width: 210px !important;
+}
+
+#nav .dropdown#solitaires_navmenu ul{
+    width: 162px !important;
 }
 
 #nav .dropdown#gifts_navmenu .ui-tabs-vertical .ui-tabs-nav li a{
