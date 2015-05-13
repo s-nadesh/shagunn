@@ -50,7 +50,7 @@ $productdiv.='   <div class="gridproduct"><div class="productDiv ">
           <div style="border-bottom:1px solid #ccc; float:left; width:100%;">
             <p align="center">			
              <a href="'.BASE_URL.$category['Category']['category']."/".$subcat."/".$products['Product']['product_id']."/".$Product_product_name.$urls.'"><input name="" type="button" value="" class="addBtn" ></a>
-            <a href="'.BASE_URL.'/webpages/whislist/'.$products['Product']['product_id'].'/'.(!empty($images)?$images['Productimage']['image_id']:'').'"> 
+            <a href="'.BASE_URL.'/webpages/whislist/'.$category['Category']['link'].'/'.$products['Product']['product_id'].'/'.(!empty($images)?$images['Productimage']['image_id']:'').'"> 
 			 <input name="" type="button" value="" class="wish_list_btn"></a>
             </p>
           </div> </div></div>';

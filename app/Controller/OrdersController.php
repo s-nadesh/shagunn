@@ -511,7 +511,8 @@ class OrdersController extends AppController {
             //added by prakash
             $invoice = $this->requestAction(array('action' => 'orderpdf', $order1['Order']['order_id'], 'F'), array('return', 'bare' => false));
             $file = 'files/invoices/'.str_replace('/', '_', $in . $order1['Order']['invoice'] . '.pdf');
-            $this->mailsend(SITE_NAME, $activateemail['Emailcontent']['fromemail'], $user['User']['email'], $activateemail['Emailcontent']['subject'], $message, '', 1, $file, 'acknowledgment', '');
+            $subject = $activateemail['Emailcontent']['subject'].' '.$in.$order1['Order']['invoice'];
+            $this->mailsend(SITE_NAME, $activateemail['Emailcontent']['fromemail'], $user['User']['email'], $subject, $message, '', 1, $file, 'acknowledgment', '');
 
             $email = $this->Emailcontent->find('first', array('conditions' => array('eid' => 9)));
             $amountedit = $this->Paymentdetails->find('first', array('conditions' => array('paymentdetails_id' => $last_id)));
@@ -629,7 +630,8 @@ class OrdersController extends AppController {
             //added by prakash
             $invoice = $this->requestAction(array('action' => 'orderpdf', $order1['Order']['order_id'], 'F'), array('return', 'bare' => false));
             $file = 'files/invoices/'.str_replace('/', '_', $in . $order1['Order']['invoice'] . '.pdf');
-            $this->mailsend(SITE_NAME, $activateemail['Emailcontent']['fromemail'], $user['User']['email'], $activateemail['Emailcontent']['subject'], $message, '', 1, $file, 'acknowledgment', '');
+            $subject = $activateemail['Emailcontent']['subject'].' '.$in.$order1['Order']['invoice'];
+            $this->mailsend(SITE_NAME, $activateemail['Emailcontent']['fromemail'], $user['User']['email'], $subject, $message, '', 1, $file, 'acknowledgment', '');
 
             $email = $this->Emailcontent->find('first', array('conditions' => array('eid' => 9)));
             $amountedit = $this->Paymentdetails->find('first', array('conditions' => array('paymentdetails_id' => $last_id)));
@@ -761,7 +763,7 @@ class OrdersController extends AppController {
 
         //$pay = $this->Paymentdetails->find('all', array('conditions' => array('user_id' => $this->Session->read('User.user_id')), 'order' => 'paymentdetails_id DESC'));
         //$this->set('pay', $pay);
-        $order = $this->Order->find('all', array('conditions' => array('user_id' => $this->Session->read('User.user_id')), 'order' => 'order_id DESC'));
+        $order = $this->Order->find('all', array('recursive' => 2, 'conditions' => array('user_id' => $this->Session->read('User.user_id')), 'order' => 'order_id DESC'));
         $this->set('order', $order);
     }
 
@@ -1570,7 +1572,7 @@ public function track(){
         if($userid == $orderdetails['Order']['user_id']){
             $user = ClassRegistry::init('User')->find('first', array('conditions' => array('user_id' => $orderdetails['Order']['user_id'])));
             $in = $this->admin_get_invoice_prefix($user['User']['user_type'], $orderdetails['Order']['cod_status']);
-
+            
             $this->set(compact('orderdetails', 'user', 'in'));
             $filename = str_replace('/', '_', $in . $orderdetails['Order']['invoice'] . '.pdf');
             $this->Mpdf->init(array('en-GB-x', 'A4', '', '', 10, 10, 10, 10, 6, 3));

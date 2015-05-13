@@ -113,7 +113,7 @@
                                 }
                             }
                             ?>
-                            <?php if ($product_category['Category']['category'] == 'Gold Coins') { ?>
+                            <?php if (in_array($product_category['Category']['category'], array('Gold Coins', 'Gold Coin'))) { ?>
                             <tr>
                                 <td colspan="9"><hr /></td>
                             </tr>
@@ -384,7 +384,7 @@
                     </div>
                     <div class="gemstone">
                     </div>
-                    <?php if ($category['Category']['category'] != 'Gold Coins') { ?>
+                    <?php if (!in_array($category['Category']['category'], array('Gold Coins', 'Gold Coin'))) { ?>
                         <h1>Price Break-up</h1>
                         <div class="price_div">
                             <table cellpadding="0" cellspacing="0" border="0" width="100%">
@@ -764,7 +764,7 @@ $(document).ready(function(){
 </script>
 <!--Show if not gold coin - added by prakash-->
 <style type="text/css">
-<?php if ($product_category['Category']['category'] == 'Gold Coins') { ?>
+<?php if (in_array($product_category['Category']['category'], array('Gold Coins', 'Gold Coin'))) { ?>
         .show_non_gold{
             display: none;
         }

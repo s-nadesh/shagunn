@@ -206,22 +206,22 @@
                                 }
                                 ?>"/>&nbsp; <span id="making_charge_indicator"></span></dd>  
 
-                            <dt class="goldcoins"><label for="name">Width<span class="required">*</span></label></dt>
-                            <dd class="goldcoins">  <input type="text" name="data[Product][width]" id="width"  class="validate[required,custom[number]]" size="50" onkeypress="return floatnumbers(this, event)" maxlength=10 value="<?php
+                            <dt class="goldcoins"><label for="name">Width</label></dt>
+                            <dd class="goldcoins">  <input type="text" name="data[Product][width]" id="width"  class="validate-removed[required,custom[number]]" size="50" onkeypress="return floatnumbers(this, event)" maxlength=10 value="<?php
                                 if (isset($this->request->data['Product']['width'])) {
                                     echo $this->request->data['Product']['width'];
                                 }
                                 ?>"/>&nbsp; mm </dd>
 
-                            <dt class="goldcoins"><label for="name">Height<span class="required">*</span></label></dt>
-                            <dd class="goldcoins">   <input type="text" name="data[Product][height]" id="height"  class="validate[required,custom[number]]" size="50" onkeypress="return floatnumbers(this, event)" maxlength=10 value="<?php
+                            <dt class="goldcoins"><label for="name">Height</label></dt>
+                            <dd class="goldcoins">   <input type="text" name="data[Product][height]" id="height"  class="validate-removed[required,custom[number]]" size="50" onkeypress="return floatnumbers(this, event)" maxlength=10 value="<?php
                                 if (isset($this->request->data['Product']['height'])) {
                                     echo $this->request->data['Product']['height'];
                                 }
                                 ?>"/>&nbsp; mm</dd>
-                            <dt><label for="name">Stock<span class="required">*</span></label></dt>
+                            <dt><label for="name">Stock</label></dt>
                             <dd>
-                                <input type="text" name="data[Product][stock_quantity]" id="width"  class="validate[required,custom[number]]" size="50" onkeypress="return floatnumbers(this, event)" maxlength=10 value="<?php
+                                <input type="text" name="data[Product][stock_quantity]" id="width"  class="validate-removed[required,custom[number]]" size="50" onkeypress="return floatnumbers(this, event)" maxlength=10 value="<?php
                                 if (isset($product['Product']['stock_quantity'])) {
                                     echo $product['Product']['stock_quantity'];
                                 }
@@ -990,7 +990,7 @@
     
     function change_category() {
         var category = $("#category :selected").text();
-        if (category.indexOf('Gold Coins') > -1) {
+        if (category.indexOf('Gold Coins') > -1 || category.indexOf('Gold Coin') > -1) {
             $(".goldcoins").hide();
             $(".goldcoins_only").show();
         } else {

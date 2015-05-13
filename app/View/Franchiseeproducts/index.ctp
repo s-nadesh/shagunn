@@ -127,10 +127,11 @@
             $color = $ids[0];
             $diamond_val = !empty($diamond) ? $diamond['Productdiamond']['clarity'] . '-' . $diamond['Productdiamond']['color'] : '';
 
-            $product_code = $categories['Category']['category_code'] . $product['Product']['product_code'] . '-' . $purity['Productmetal']['value'] . 'K';
-            if (!empty($diamond)) {
-                $product_code .= $diamond['Productdiamond']['clarity'] . $diamond['Productdiamond']['color'];
-            }
+            $product_code = $categories['Category']['category_code'] . $product['Product']['product_code'];
+//            $product_code = $categories['Category']['category_code'] . $product['Product']['product_code'] . '-' . $purity['Productmetal']['value'] . 'K';
+//            if (!empty($diamond)) {
+//                $product_code .= $diamond['Productdiamond']['clarity'] . $diamond['Productdiamond']['color'];
+//            }
 
 //            echo 'diamond : '.$purity['Productmetal']['value'] . 'K' . $diamond_val.'<br />';
 //            echo 'size : '.$size.'<br />';

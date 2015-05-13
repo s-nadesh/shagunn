@@ -30,7 +30,7 @@
                         <th>Order Number</th>
                         <th>Delivery Address</th>
                         <th>Amount</th>
-                        <th class="bdrRColor">Status</th>
+                        <th class="bdrRColor">Order Status</th>
                         <th class="bdrRColor">Track Order</th>
                         <th class="bdrRColor">Download Invoice</th>
                     </tr>
@@ -89,7 +89,7 @@
                                                 $cat = ClassRegistry::init('Category')->find('first', array('conditions' => array('category_id' => $products['Product']['category_id'])));
                                                 $subcat = ClassRegistry::init('Subcategory')->find('first', array('conditions' => array('subcategory_id' => $products['Product']['subcategory_id'])));
                                                 ?>
-                                                <a href="<?php echo BASE_URL ?><?php echo $cat['Category']['category'] . "/" . $subcat['Subcategory']['subcategory'] . "/" . $products['Product']['product_id'] . "/" . $products['Product']['product_name'] ?>"> <?php
+                           <a href="<?php echo BASE_URL?><?php echo str_replace(' ','_',trim($cat['Category']['category']))."/".str_replace(' ','_',trim($subcat['Subcategory']['subcategory']))."/".$products['Product']['product_id']."/".str_replace(' ','_',trim($products['Product']['product_name']))?>"> <?php
                                                     echo $cat['Category']['category_code'] . $products['Product']['product_code'] . ' - ' . $metals['Productmetal']['value'] . 'K' .
                                                     $dc . $dcol . '<br>';
                                                     ?></a>
@@ -145,7 +145,9 @@
                                         $order_status = $order_sts;
                                     }
 
-                                    echo $order_status;
+//                                    echo $order_status;
+                                    //added by prakash - updatable order status
+                                    echo $order['Orderstatus']['order_status']
                                     ?>
                                 </td>
                                 <td style="display:none;">
@@ -191,7 +193,13 @@
                                     <?php echo $this->Html->link('Track Order', 'javascript:;', array('onclick' => "var openWin = window.open('".$this->Html->url(array('controller'=>'orders','action'=>'track','?' => array('id' => $order['Order']['way_bill_no'])))."', '_blank', 'toolbar=0,scrollbars=1,location=0,status=1,menubar=0,resizable=1,width=500,height=500');  return false;")); ?>
                                 </td>
                                 <td style="text-align:center">
-                                    <?php echo $this->Html->link($this->Html->image('pdf.png'), array('controller' => 'orders', 'action' => 'orderpdf', $order['Order']['order_id']), array('escape' => false, 'title' => 'Download')); ?>
+                                    <?php
+                                    if(isset($order['Orderstatus']['order_status']) && in_array($order['Orderstatus']['order_status'], array('Completed', 'Complete', 'Finish', 'Finished'))){
+                                        echo $this->Html->link($this->Html->image('pdf.png'), array('controller' => 'orders', 'action' => 'pdf', $order['Order']['order_id']), array('escape' => false, 'title' => 'Download')); 
+                                    }else{
+                                        echo @$order['Orderstatus']['order_status'];
+                                    }
+                                    ?>
                                 </td>
                             </tr>
 

@@ -254,7 +254,10 @@
                             <!--Gold Coin Menu-->
                         <?php } elseif ($menu['Menu']['menu_id'] == 2) { ?>
                             <li class="baseitem" data-left="<?php echo $left ?>">
-                                <?php $gold_category = ClassRegistry::init('Category')->findByCategory('Gold Coins'); ?>
+                                <?php $gold_category = ClassRegistry::init('Category')->find('first', array(
+                                    'conditions' => array(
+                                        'Category.category' => array('Gold Coins', 'Gold Coin')
+                                    ))); ?>
                                 <?php $gold_url = !empty($gold_category) ? BASE_URL . "details/" . $gold_category['Category']['link'] : ''; ?>
                                 <a class="primary_link" href="<?php echo $gold_url ?>"><?php echo $menu['Menu']['menu_name'] ?></a>
                                 <div class="dropdown gold_navmenu vertical_menu">

@@ -516,13 +516,21 @@ class SigninController extends AppController {
     public function wishlist() {
         $this->usercheck();
 
-        $user = $this->Whislist->find("all", array('conditions' => array('Whislist.user_id' => $this->Session->read('User.user_id'),'Whislist.status'=>'Active','Whislist.product_id NOT IN (SELECT Shoppingcart.product_id FROM sha_shoppingcarts AS Shoppingcart WHERE Shoppingcart.order_id IN (SELECT Orders.order_id FROM `sha_orders` AS `Orders` WHERE Orders.user_id='.$this->Session->read('User.user_id').' AND (Orders.status=\'Paid\' OR Orders.status=\'Partialpaid\') AND Orders.created_date >= Whislist.created_date))'),'joins'=>array(array(
-				'table'=>'products',
-				'alias'=>'Product',
-				'type'=>'inner',
-				 'foreignKey' => false,
-				'conditions' => array('`Product.product_id`=`Whislist.product_id`','Product.status'=>'Active')
-				)),'group'=>'Whislist.whislist_id'));
+        $user = $this->Whislist->find("all", array(
+            'conditions' => array(
+                'Whislist.user_id' => $this->Session->read('User.user_id'),
+                'Whislist.status'=>'Active',
+                'Whislist.product_id NOT IN (SELECT Shoppingcart.product_id FROM sha_shoppingcarts AS Shoppingcart WHERE Shoppingcart.order_id IN (SELECT Orders.order_id FROM `sha_orders` AS `Orders` WHERE Orders.user_id='.$this->Session->read('User.user_id').' AND (Orders.status=\'Paid\' OR Orders.status=\'Partialpaid\') AND Orders.created_date >= Whislist.created_date))'),
+            'joins'=>array(
+                array(
+                    'table'=>'products',
+                    'alias'=>'Product',
+                    'type'=>'inner',
+                    'foreignKey' => false,
+                    'conditions' => array(
+                        '`Product.product_id`=`Whislist.product_id`','Product.status'=>'Active')
+                    )),
+            'group'=>'Whislist.whislist_id'));
         $this->set('user', $user);
     }
 

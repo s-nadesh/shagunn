@@ -277,7 +277,7 @@
 /*	cursor: -moz-grabbing;
 	cursor: grab;
 	cursor: -webkit-grab;*/
-	margin: 0;
+	margin: 0 -30px;
 	padding: 0;
 	width: auto;
 	height: auto;
@@ -674,6 +674,7 @@ left: 0;
 }
 
 .innercompany {
+    margin: -60px 30px 0;
   float: right;
   font-weight: bold;
   line-height: 16px;
