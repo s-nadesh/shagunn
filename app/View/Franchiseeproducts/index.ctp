@@ -160,9 +160,9 @@
 //                            . "<span class='pricetag'>Rs.{$price['total']}/-</span></div>"
                             
                     
-                    $title .= $price['diamond_count'] != '' ? "<li>No. of Stone in diamond : <span>{$price['diamond_count']}</span><br /></li>" : '';
+                    $title .= $price['diamond_count'] != '' ? "<li>Diamond Count : <span>{$price['diamond_count']}</span><br /></li>" : '';
                     $title .= $price['diamond_weight'] != '' ? "<li>Diamond Weight : <span>{$price['diamond_weight']}</span></li>" : '';
-                    $title .= $price['gemstone_count'] != '' ? "<li>No. of Stone in Gemstone : <span>{$price['gemstone_count']}</span></li>" : '';
+                    $title .= $price['gemstone_count'] != '' ? "<li>Gemstone Count : <span>{$price['gemstone_count']}</span></li>" : '';
                     $title .= $price['gemstone_weight'] != '' ? "<li>Gemstone Weight : <span>{$price['gemstone_weight']} Carat</span></li>" : '';
                     $title .= "</ul>";
                     $title .= "<div class='innercompany'>Birla Gold <br />&<br /> Precious Metals Limited</div>";
