@@ -1,7 +1,7 @@
 <div id="content" class="clearfix">
     <div class="container">
         <div class="mainheading">
-            <div class="btnlink"><?php echo $this->Html->link(__('+Export'), array('action' => 'admin_brokerage_export', 'vendor_brokerage'),array('class'=>'button')); ?></div>
+            <div class="btnlink"><?php echo $this->Html->link(__('+Export'), array('action' => 'admin_brokerage_export'.$search_string_url),array('class'=>'button')); ?></div>
             <div class="titletag">
                 <h1>Vendor Brokerage</h1>
             </div>
@@ -24,10 +24,17 @@
                             }
                             ?>" /> </td>
                         <td>&nbsp;&nbsp;</td>
-                        <td><strong><?php echo __('Date'); ?> : </strong>&nbsp;</td>
-                        <td><input id="date" name="date" type="text" class="text-input" autocomplete="off" value="<?php
-                            if (isset($_REQUEST['date'])) {
-                                echo $_REQUEST['date'];
+                        <td><strong><?php echo __('From Date'); ?> : </strong>&nbsp;</td>
+                        <td><input name="from_date" type="text" class="text-input date" autocomplete="off" value="<?php
+                            if (isset($_REQUEST['from_date'])) {
+                                echo $_REQUEST['from_date'];
+                            }
+                            ?>" /> </td>
+                        <td>&nbsp;&nbsp;</td>
+                        <td><strong><?php echo __('To Date'); ?> : </strong>&nbsp;</td>
+                        <td><input name="to_date" type="text" class="text-input date" autocomplete="off" value="<?php
+                            if (isset($_REQUEST['to_date'])) {
+                                echo $_REQUEST['to_date'];
                             }
                             ?>" /> </td>
                         <td>&nbsp;&nbsp;</td>
@@ -121,6 +128,6 @@
 </div>
 <script type="text/javascript">
     $(function () {
-        $("#date").datepicker({dateFormat: 'yy-mm-dd'});
+        $(".date").datepicker({dateFormat: 'yy-mm-dd'});
     });
 </script>

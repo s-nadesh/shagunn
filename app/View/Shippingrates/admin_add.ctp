@@ -16,8 +16,8 @@
                            </select>
                             </dd>      
 				<dt><label for="name">City<span class="required">*</span></label></dt>     
-                            <dd><input type="text" name="data[Shippingrate][city]" id="city"  class="validate[required]" size="50"  /></dd>
-                           
+							<dd><input type="text" name="data[Shippingrate][city]" id="city"  class="validate[required]"/></dd>                           
+							<!--<dd><input type="text" name="data[Shippingrate][city]" id="city"  class="validate[required,maxSize[50]]" size="50" maxlength="50" /></dd>-->                           
                           
                             <dt><label for="name">Pincode<span class="required">*</span></label></dt>     
                            <dd><input type="text" name="data[Shippingrate][pincode]" id="pincode" onkeypress="return intnumbers(this, event)" maxlength="6"  class="validate[required,custom[integer],minSize[6]]" size="50"  /></dd>

@@ -80,7 +80,7 @@
         foreach ($product as $product): 
 		$vendor_name=ClassRegistry::init('Vendorcontact')->find('first',array('conditions'=>array('vendor_id'=>$product['Product']['vendor_id'])));
 		$vendor=ClassRegistry::init('Vendor')->find('first',array('conditions'=>array('vendor_id'=>$product['Product']['vendor_id'])));
-		$vendor_type=ClassRegistry::init('Type')->find('first',array('conditions'=>array('vendor_type_id'=>$vendor['Vendor']['vendor_type'])));
+		$vendor_type=ClassRegistry::init('Type')->find('first',array('conditions'=>array('vendor_type_id'=>@$vendor['Vendor']['vendor_type'])));
 		$category=ClassRegistry::init('Category')->find('first',array('conditions'=>array('category_id'=>$product['Product']['category_id'])));
 		$code=$category['Category']['category_code'];
 		$pattern = "/(\d+)/";
@@ -90,8 +90,8 @@
         <tr>
         <td align="center"><input type="checkbox" name="action[]" value="<?php echo h($product['Product']['product_id']); ?>"  class="validate[minCheckbox[1]] checkbox" rel="action" /></td>
         <td align="center"><?php echo h($i); ?></td>
-        <td align="left"><?php  echo $vendor['Vendor']['Company_name'];?></td>
-        <td align="left"><?php  echo $vendor['Vendor']['vendor_code'];?></td>
+        <td align="left"><?php  echo @$vendor['Vendor']['Company_name'];?></td>
+        <td align="left"><?php  echo @$vendor['Vendor']['vendor_code'];?></td>
         <td align="left"><?php echo $category['Category']['category']?></td>
         <td align="left"><?php  echo $product['Product']['product_name'];?></td>
         <td align="left"><?php echo $array[0];?><?php  echo $product['Product']['product_code'];?></td>

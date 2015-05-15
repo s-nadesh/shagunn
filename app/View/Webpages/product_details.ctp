@@ -226,7 +226,7 @@
                                         $diamonddiv = ClassRegistry::init('Productdiamond')->find('all', array('conditions' => array('product_id' => $product['Product']['product_id']), 'group' => array('clarity', 'color'), 'order' => "FIELD(`clarity`,'SI','VS','VVS'),FIELD(`color`,'IJ','GH','EF')"));
                                         ?>
                                         <tr>
-                                            <td align="center"><?php if (!empty($diamonddiv)) { ?>Diamond <?php } ?></td>
+                                           <td align="left"><?php  if(!empty($diamonddiv)){ ?><strong>Diamond</strong> <?php }?></td>
                                             <td width="100"></td>
                                             <td><?php
                                                 if (!empty($diamonddiv)) {
@@ -297,7 +297,7 @@
                             <?php } ?>
                             <tr class="show_non_gold">      <td colspan="9">&nbsp;</td></tr>
                             <tr>
-                                <td colspan="5"><strong>Expected delivery date to pincode :</strong></td>
+                                <td colspan="5"><strong>Expected Date of Delivery and COD Availability Update :</strong></td>
                                 <td colspan="5" style="margin: 5px;">
                                     <form id="deliveryForm" name="myForm" method="post">
                                         <input placeholder="Enter pincode" name="pincode" type="text" class="validate[required,minSize[6],custom[integer]] pincode" onkeypress="return intnumbers(this, event)" maxlength="6">&nbsp;&nbsp;&nbsp;
@@ -453,7 +453,7 @@
                     $category = ClassRegistry::init('Category')->find('first', array('conditions' => array('category_id' => $product['Product']['category_id'], 'status' => 'Active')));
                     $productnew = ClassRegistry::init('Product')->find('all', array('conditions' => array('category_id' => $category['Category']['category_id'], 'status' => 'Active'), 'order' => 'product_id DESC', 'limit' => 12));
                     ?> 
-                    <div class="best_seller"><h1>You May Also  Like</h1></div>
+                    <div class="best_seller" id="mayid"><h1>You May Also  Like</h1></div>
                     <div style="clear:both;"></div>  				
                     <div class="slider1">
                         <?php
@@ -476,10 +476,9 @@
                             <tr>
                                 <td><h3>Have a Question?</h3></td>
                                 <td>&nbsp;</td>
-                                <td align="right"><a href="<?php echo BASE_URL ?>faq-s"><h3>FAQS</h3></a></td>
                             </tr>
                             <tr>
-                                <td colspan="3">Call us at 1800 1022 066</td>
+                                <td colspan="3">Call us at 1800 102 2066</td>
                             </tr>
                             <tr><td colspan="3" height="10"></td></tr>
                             <tr>
@@ -527,7 +526,7 @@
                         <tr>
                             <td valign="top" width="160"> Review Title</td>
                             <td valign="top" width="20">:</td>
-                            <td><input type="text" name="data[Rating][title]" class="validate[required]"> <br /> <span class="font-size12">Maximum 20 words)</span>  </td>
+                            <td><input type="text" name="data[Rating][title]" class="validate[required]"> <br /> <span class="font-size12">(Maximum 20 words)</span>  </td>
                         </tr>
                         <tr><td colspan="3" height="10"></td></tr>
                         <tr>
@@ -585,13 +584,13 @@
                         <tr>
                             <td>&nbsp;</td>
                             <td>&nbsp;</td>
-                            <td>Have questions regarding this product? Please contact us by clicking <a href="#">here.</a> </td>
+                            <td>Have questions regarding this product? Please contact us by clicking <a href="#mayid">here.</a> </td>
                         </tr>
                         <tr><td colspan="3" height="10"></td></tr>
                         <tr>
                             <td>&nbsp;</td>
                             <td>&nbsp;</td>
-                            <td>Had a great experience buying on Shagunn Or do you think we can do better? Tell us <a href="#">here.</a> </td>
+                            <td>Had a great experience buying on Shagunn Or do you think we can do better? Tell us <a href="#mayid">here.</a> </td>
                         </tr>
                         <tr><td colspan="3">&nbsp;</td></tr>
                     </table>

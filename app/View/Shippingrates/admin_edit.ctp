@@ -21,7 +21,8 @@
                            </select>        </dd>
                     
 				<dt><label for="name">City<span class="required">*</span></label></dt>     
-                            <dd><input type="text" name="data[Shippingrate][city]" id="city"  class="validate[required]" size="50" value="<?php echo $shippingrate['Shippingrate']['city'];?>"  /></dd>
+                           <dd><input type="text" name="data[Shippingrate][city]" id="city"  class="validate[required]" value="<?php echo $shippingrate['Shippingrate']['city'];?>"  /></dd>
+                           <!--<dd><input type="text" name="data[Shippingrate][city]" id="city"  class="validate[required,maxSize[50]]" size="50" maxlength="50" value="<?php echo $shippingrate['Shippingrate']['city'];?>"  /></dd>-->
                            
                          
                             <dt><label for="name">Pincode<span class="required">*</span></label></dt>     

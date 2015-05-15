@@ -1,4 +1,3 @@
-
 <table border="0" cellpadding="0" cellspacing="0" width="100%">
     <tr><td align="right" valign="top" width="230" class="sidepromenu">
             <?php echo $this->Element('admin_order_leftsidebar'); ?></td>
@@ -66,8 +65,7 @@
 
                                 <?php if (($orderdetails['Order']['cod_status'] != 'CHQ/DD') && ($orderdetails['Orderstatus']['order_status'] != 'Pending')) { ?>
                                     <tr><td width="150"><strong>Transaction Id </strong></td>
-                                        <td><p><?php
-                                                $txid = isset($paymentdetail['Paymentdetails']) ? h($paymentdetail['Paymentdetails']['txnid']) : '';
+                                        <td><p><?php $txid = isset($paymentdetail['Paymentdetails']) ? h($paymentdetail['Paymentdetails']['txnid']) : '';
                                                 if (!empty($txid))
                                                     echo $txid;
                                                 else
@@ -87,8 +85,12 @@
                                 <tr><td width="150"><strong >Sub Total Amount</strong></td><td>Rs.<?php echo indian_number_format($netamount = $cart_amount[0]['subtotal']); ?></td></tr>
                                 <?php if ($orderdetails['Order']['discount_amount'] > 0) { ?>
 
-                                    <tr><td width="150"><strong >Discount Type</strong></td><td><?php echo $Discount['Discount']['type']; ?></td></tr>
-                                    <tr><td width="150"><strong >Discount Code</strong></td><td><?php echo $Discount['Discount']['voucher_code']; ?></td></tr>
+ <tr><td width="150"><strong >Discount Type</strong></td><td><?php if(!empty($Discounthistory['Discounthistory']['type'])){echo $Discounthistory['Discounthistory']['type'];}else{echo '-';}?></td></tr>
+   <tr><td width="150"><strong >Discount Code</strong></td><td><?php
+		if(isset($Discounthistory['Discounthistory']['coupon_code']) && !empty($Discounthistory['Discounthistory']['coupon_code'])){echo $Discounthistory['Discounthistory']['coupon_code'];}else{echo '-';}
+		 ?></td></tr>
+
+                                      <tr><td width="150"><strong >Discount Code</strong></td><td><?php echo @$Discount['Discount']['voucher_code']; ?></td></tr>
                                      <!--<tr><td width="150"><strong ><?php //if($Discount['Discount']['per_amou']=="1") { echo "Percentage" ;} else { echo "Amount"; }    ?></strong></td>
                                      <td><?php
                                     //if($Discount['Discount']['per_amou']=="1") { echo $Discount['Discount']['percentage']."  %  "; 	 } else {
@@ -153,17 +155,12 @@
                                         'condition' => array('is_active' => '1'),
 //                                        'order' => array('Orderstatus.order_status' => 'asc')
                                         ));
-//                $order_status_options = array(
-//                'Pending' => 'Pending', 
-//                'OrderProgress' => 'Progress', 
-//                'Shipping' => 'Shipping',
-//                'Delivered' => 'Delivered');
-//                
                                     ?>
                                     <td><p>
                                             <?php
                                             echo $this->Form->input('order_status_id', array(
                                                 'type' => 'select',
+                                                'id' => 'orderstatusid',
                                                 'options' => $order_status_options,
                                                 'label' => false,
                                                 'div' => false,
@@ -175,6 +172,10 @@
                                             ?>
                                             <?php // $st=h($orderdetails['Order']['order_status']); if(!empty($st))echo $st; else '-';  ?>
                                         </p></td>
+                                </tr>
+                                <tr id="remarks_tr" style="display: none">
+                                    <td width="150"><strong>Remarks</strong></td>
+                                <td><?php echo $this->Form->input('orderstatus_remarks', array('type' => 'textarea', 'div' => false, 'label' => false)); ?></td>
                                 </tr>
 
 <!--                <tr><td width="150"><strong>Order Status </strong></td>
@@ -295,3 +296,17 @@
         </td>
     </tr>
 </table>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var orderstatusid = <?php echo $orderdetails['Order']['order_status_id'] ?>;
+        
+        $("#orderstatusid").on('change', function(){
+            if(orderstatusid != $(this).val()){
+                $("#remarks_tr").show();
+            }else{
+                $("#remarks_tr").hide();
+            }
+        });
+    });
+</script>

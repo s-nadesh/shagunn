@@ -1,13 +1,13 @@
 <div id="content" class="clearfix">
     <div class="container">
         <div class="mainheading">
-            <div class="btnlink"><?php echo $this->Html->link(__('+Export'), array('action' => 'admin_brokerage_export', 'franschisee_brokerage'),array('class'=>'button')); ?></div>
+            <div class="btnlink"><?php echo $this->Html->link(__('+Export'), array('action' => 'admin_brokerage_export'.$search_string_url),array('class'=>'button')); ?></div>
             <div class="titletag">
                 <h1>Franchisee Brokerage</h1>
             </div>
         </div>
         <div class="tablefooter clearfix">
-            <form name="searchfilters" action="<?php echo BASE_URL?>admin/orders/vendors_brokerage" id="myForm1" method="get" style="width:100%;float:left;padding: 5px 10px;">
+            <form name="searchfilters" action="<?php echo BASE_URL?>admin/orders/franchisee_brokerage" id="myForm1" method="get" style="width:100%;float:left;padding: 5px 10px;">
                 <table cellpadding="0" cellspacing="2">
                     <tr>
                         <td><strong><?php echo __('Product Name'); ?> : </strong>&nbsp;</td>
@@ -17,10 +17,17 @@
                             }
                             ?>" /> </td>
                         <td>&nbsp;&nbsp;</td>
-                        <td><strong><?php echo __('Date'); ?> : </strong>&nbsp;</td>
-                        <td><input id="date" name="date" type="text" class="text-input" autocomplete="off" value="<?php
-                            if (isset($_REQUEST['date'])) {
-                                echo $_REQUEST['date'];
+                        <td><strong><?php echo __('From Date'); ?> : </strong>&nbsp;</td>
+                        <td><input name="from_date" type="text" class="text-input date" autocomplete="off" value="<?php
+                            if (isset($_REQUEST['from_date'])) {
+                                echo $_REQUEST['from_date'];
+                            }
+                            ?>" /> </td>
+                        <td>&nbsp;&nbsp;</td>
+                        <td><strong><?php echo __('To Date'); ?> : </strong>&nbsp;</td>
+                        <td><input name="to_date" type="text" class="text-input date" autocomplete="off" value="<?php
+                            if (isset($_REQUEST['to_date'])) {
+                                echo $_REQUEST['to_date'];
                             }
                             ?>" /> </td>
                         <td>&nbsp;&nbsp;</td>
@@ -29,7 +36,7 @@
                         <td>
                             <?php
                             if ($is_search) {
-                                echo $this->Html->link(__('Cancel'), array('action' => 'admin_vendors_brokerage'), array('class' => 'button small', 'style' => 'padding:3px 5px;', 'title' => 'Cancel Search'));
+                                echo $this->Html->link(__('Cancel'), array('action' => 'admin_franchisee_brokerage'), array('class' => 'button small', 'style' => 'padding:3px 5px;', 'title' => 'Cancel Search'));
                             }
                             ?></td>
                     </tr></table>
@@ -112,6 +119,6 @@
 </div>
 <script type="text/javascript">
     $(function () {
-        $("#date").datepicker({dateFormat: 'yy-mm-dd'});
+        $(".date").datepicker({dateFormat: 'yy-mm-dd'});
     });
 </script>

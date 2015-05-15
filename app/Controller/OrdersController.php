@@ -17,7 +17,7 @@ class OrdersController extends AppController {
      * @var array
      */
     public $components = array('Paginator', 'Session', 'Image', 'Mpdf');
-    public $uses = array('Order', 'User', 'Shipping', 'Shoppingcart', 'Discount', 'Paymentdetails', 'Discounthistory', 'Product', 'Productimage', 'Category', 'Productdiamond', 'Productgemstone', 'Vendorcontact', 'Products', 'Shippingrate', 'Partialpay');
+    public $uses = array('Order', 'User', 'Shipping', 'Shoppingcart', 'Discount', 'Paymentdetails', 'Discounthistory', 'Product', 'Productimage', 'Category', 'Productdiamond', 'Productgemstone', 'Vendorcontact', 'Products', 'Shippingrate', 'Partialpay', 'Orderhistory');
     public $layout = 'webpage';
 
     public function personal_details() {
@@ -31,8 +31,19 @@ class OrdersController extends AppController {
                 if (!empty($check)) {
                     $this->request->data['User']['user_id'] = $check['User']['user_id'];
                     $this->request->data['User']['created_date'] = date('Y-m-d H:i:s');
-                    $this->request->data['User']['date_of_birth'] = $this->request->data['User']['year'] . "-" . $this->request->data['User']['month'] . "-" . $this->request->data['User']['date'];
-                    $this->request->data['User']['anniversary'] = $this->request->data['User']['annu_year'] . "-" . $this->request->data['User']['annu_month'] . "-" . $this->request->data['User']['annu_date'];
+                     if(!empty($this->request->data['User']['year']) && !empty($this->request->data['User']['month']) && !empty($this->request->data['User']['date']))
+						{
+								$this->request->data['User']['date_of_birth'] = $this->request->data['User']['year'] . "-" . $this->request->data['User']['month'] . 
+								"-" . $this->request->data['User']['date'];
+						}else{
+							$this->request->data['User']['date_of_birth']='';
+						}
+                   if(!empty($this->request->data['User']['annu_year']) && !empty($this->request->data['User']['annu_month']) && !empty($this->request->data['User']['annu_date']))
+						{
+                        $this->request->data['User']['anniversary'] = $this->request->data['User']['annu_year'] . "-" . $this->request->data['User']['annu_month'] . "-" . $this->request->data['User']['annu_date'];
+						}else{
+							$this->request->data['User']['anniversary'] = '';
+						}
                     $this->User->save($this->request->data);
                     $this->Session->setFlash("<div class='success msg'>" . __('Personal detail  saved successfully') . "</div>");
                     $this->redirect(array('controller' => 'orders', 'action' => 'shipping_details'));
@@ -705,6 +716,15 @@ class OrdersController extends AppController {
                 $cat = $this->Category->find('first', array('conditions' => array('category_id' => $product['Product']['category_id'])));
                 $orders = $this->Order->find('first', array('conditions' => array('order_id' => $this->Session->read('Order'))));
 
+				$type=$orders['Order']['cod_status'];
+				if($type=='PayU'){
+					$type_view='Full Payment';
+				}elseif($type=='COD'){
+					$type_view='Partial Payment';
+				}elseif($type=='CHQ/DD'){
+					$type_view='CHQ/DD';
+				}
+
                 /* $msg.='<td align="left"><span><b>Product Name:</b></span>'.$product['Product']['product_name'].'</td>
                   <td align="left"><span><b>Product Code:</b></span>'.$cat['Category']['category_code'].''.$product['Product']['product_code'].'</td>
                   <td align="left"><span><b>Type:</b></span>'.$orders['Order']['cod_status'].'</td>
@@ -985,6 +1005,14 @@ public function track(){
             if ($this->Order->save($this->request->data)) {
 
                 if ($this->request->data['Order']['old_order_status_id'] != $this->request->data['Order']['order_status_id']) {
+                    $orderhistory = array(
+                        'Orderhistory' => array(
+                            'order_id' => $this->data['Order']['order_id'],
+                            'old_status_id' => $this->data['Order']['old_order_status_id'],
+                            'new_status_id' => $this->data['Order']['order_status_id'],
+                            'remarks' => $this->data['Order']['orderstatus_remarks'],
+                    ));
+                    $this->Orderhistory->save($orderhistory);
                     $this->order_status_mail($this->request->data['Order']['order_id']);
                 }
 
@@ -1331,19 +1359,30 @@ public function track(){
                 ), false
         );
 
+        $search_string_url = '?export=vendor_brokerage';
         if ($this->request->is('get')) {
             $is_search = true;
+            $search_string = array();
+            
             $search = array('Shoppingcart.order_id is not NULL');
             if ($this->request->query('pname') != '') {
                 $search[] = "Product.product_name Like '%" . $this->request->query('pname') . "%'";
+                $search_string[] = 'pname=' . $this->request->query['pname'];
             }
             if ($this->request->query('vendor') != '') {
                 $search[] = "Vendor.vendor_code Like '%" . $this->request->query('vendor') . "%'";
+                $search_string[] = 'vendor=' . $this->request->query['vendor'];
             }
-            if ($this->request->query('date') != '') {
-                $search[] = "DATE(Order.created_date) = '" . $this->request->query('date') . "'";
+            if ($this->request->query('from_date') != '' && $this->request->query('to_date') != '') {
+                $search[] = "DATE(Order.created_date) Between '" . $this->request->query('from_date') . "' And '" . $this->request->query('to_date') . "'";
+                $search_string[] = 'from_date=' . $this->request->query['from_date'];
+                $search_string[] = 'to_date=' . $this->request->query['to_date'];
             }
 
+            if (!empty($search_string)) {
+                $search_string_url .= '&' . implode('&', $search_string);
+            }
+            
             $this->paginate = array('conditions' => $search, 'order' => 'Order.order_id DESC');
             $this->set('orderdetails', $this->paginate('Shoppingcart'));
         } else {
@@ -1351,7 +1390,7 @@ public function track(){
             $this->set('orderdetails', $this->Paginator->paginate('Shoppingcart'));
         }
 
-        $this->set(compact('is_search'));
+        $this->set(compact('is_search', 'search_string_url'));
     }
 
     public function admin_franchisee_brokerage() {
@@ -1400,16 +1439,24 @@ public function track(){
                 ), false
         );
 
+        $search_string_url = '?export=franchisee_brokerage';
         if ($this->request->is('get')) {
             $is_search = true;
+            $search_string = array();
             $search = array('Shoppingcart.order_id is not NULL', 'User.user_type = "1"');
             if ($this->request->query('pname') != '') {
                 $search[] = "Product.product_name Like '%" . $this->request->query('pname') . "%'";
+                $search_string[] = 'pname=' . $this->request->query['pname'];
             }
-            if ($this->request->query('date') != '') {
-                $search[] = "DATE(Order.created_date) = '" . $this->request->query('date') . "'";
+            if ($this->request->query('from_date') != '' && $this->request->query('to_date') != '') {
+                $search[] = "DATE(Order.created_date) Between '" . $this->request->query('from_date') . "' And '" . $this->request->query('to_date') . "'";
+                $search_string[] = 'from_date=' . $this->request->query['from_date'];
+                $search_string[] = 'to_date=' . $this->request->query['to_date'];
             }
 
+            if (!empty($search_string)) {
+                $search_string_url .= '&' . implode('&', $search_string);
+            }
             $this->paginate = array('conditions' => $search, 'order' => 'Order.order_id DESC');
             $this->set('orderdetails', $this->paginate('Shoppingcart'));
         } else {
@@ -1417,10 +1464,11 @@ public function track(){
             $this->set('orderdetails', $this->Paginator->paginate('Shoppingcart'));
         }
 
-        $this->set(compact('is_search'));
+        $this->set(compact('is_search', 'search_string_url'));
     }
 
-    public function admin_brokerage_export($type) {
+    public function admin_brokerage_export() {
+        $type = $this->request->query('export');
         $filename = $type . ".csv";
         $user_type = $type == 'vendor_brokerage' ? 0 : 1;
         $this->layout = '';
@@ -1473,7 +1521,14 @@ public function track(){
             )
                 ), false
         );
-        $results = $this->Shoppingcart->find('all', array('conditions' => array('Shoppingcart.order_id !=' => NULL), 'order' => 'Shoppingcart.order_id DESC'));
+        $search = array('Shoppingcart.order_id is not NULL');
+        if ($this->request->query('pname') != '') {
+            $search[] = "Product.product_name Like '%" . $this->request->query('pname') . "%'";
+        }
+        if ($this->request->query('from_date') != '' && $this->request->query('to_date') != '') {
+            $search[] = "DATE(Order.created_date) Between '" . $this->request->query('from_date') . "' And '" . $this->request->query('to_date') . "'";
+        }
+        $results = $this->Shoppingcart->find('all', array('conditions' => $search, 'order' => 'Shoppingcart.order_id DESC'));
         $header_row = array("S.No", "Order ID", "Date", "Customer Name", "Vendor Code", "Company name", "Franchisee code", "Product Code", "Product Name", "Price", "Order Status", "Brokerage Status", "Brokeage Amount", "Order Value");
         if ($type == 'franschisee_brokerage') {
             unset($header_row[array_search('Vendor Code', $header_row)]);
@@ -1604,6 +1659,16 @@ public function track(){
         $this->Mpdf->setOutput($output);
 //            $this->Mpdf->Output($filename, 'D');
 //        $this->Mpdf->SetWatermarkText("Draft");
+    }
+    
+    public function admin_orderhistory_view() {
+        $this->layout = "admin";
+        $this->checkadmin();
+        $orderdetails = $this->Order->find('first', array('conditions' => array('order_id' => $this->params['pass']['0'])));
+        $orderhistory = $this->Orderhistory->find('all', array(
+            'recursive' => 2,
+            'conditions' => array('Orderhistory.order_id' => $this->params['pass']['0'])));
+        $this->set(compact('orderhistory', 'orderdetails'));
     }
 
 }
