@@ -31,19 +31,17 @@ class OrdersController extends AppController {
                 if (!empty($check)) {
                     $this->request->data['User']['user_id'] = $check['User']['user_id'];
                     $this->request->data['User']['created_date'] = date('Y-m-d H:i:s');
-                     if(!empty($this->request->data['User']['year']) && !empty($this->request->data['User']['month']) && !empty($this->request->data['User']['date']))
-						{
-								$this->request->data['User']['date_of_birth'] = $this->request->data['User']['year'] . "-" . $this->request->data['User']['month'] . 
-								"-" . $this->request->data['User']['date'];
-						}else{
-							$this->request->data['User']['date_of_birth']='';
-						}
-                   if(!empty($this->request->data['User']['annu_year']) && !empty($this->request->data['User']['annu_month']) && !empty($this->request->data['User']['annu_date']))
-						{
+                    if (!empty($this->request->data['User']['year']) && !empty($this->request->data['User']['month']) && !empty($this->request->data['User']['date'])) {
+                        $this->request->data['User']['date_of_birth'] = $this->request->data['User']['year'] . "-" . $this->request->data['User']['month'] .
+                                "-" . $this->request->data['User']['date'];
+                    } else {
+                        $this->request->data['User']['date_of_birth'] = '';
+                    }
+                    if (!empty($this->request->data['User']['annu_year']) && !empty($this->request->data['User']['annu_month']) && !empty($this->request->data['User']['annu_date'])) {
                         $this->request->data['User']['anniversary'] = $this->request->data['User']['annu_year'] . "-" . $this->request->data['User']['annu_month'] . "-" . $this->request->data['User']['annu_date'];
-						}else{
-							$this->request->data['User']['anniversary'] = '';
-						}
+                    } else {
+                        $this->request->data['User']['anniversary'] = '';
+                    }
                     $this->User->save($this->request->data);
                     $this->Session->setFlash("<div class='success msg'>" . __('Personal detail  saved successfully') . "</div>");
                     $this->redirect(array('controller' => 'orders', 'action' => 'shipping_details'));
@@ -149,7 +147,7 @@ class OrdersController extends AppController {
                     $this->Order->saveAll($this->request->data);
                     $order1 = $this->Order->find('first', array('conditions' => array('order_id' => $this->Session->read('Order'))));
                     $user = $this->User->find('first', array('conditions' => array('user_id' => $this->Session->read('User.user_id'))));
-                        $name = $user['User']['first_name'].' '.$user['User']['last_name'];
+                    $name = $user['User']['first_name'] . ' ' . $user['User']['last_name'];
                     $cart = $this->Shoppingcart->find('all', array('conditions' => array('order_id' => $this->Session->read('Order'))));
                     if ($user['User']['user_type'] == '0') {
                         if ($order1['Order']['cod_status'] == 'PayU') {
@@ -270,10 +268,10 @@ class OrdersController extends AppController {
                     $activateemail = $this->Emailcontent->find('first', array('conditions' => array('eid' => 11)));
                     $message = str_replace(array('{name}', '{details}', '{order_no}', '{order_date}', '{shipping_details}', '{payment_details}'), array($name, $msg, $in . $order1['Order']['invoice'], date('d-m-Y', strtotime($order1['Order']['created_date'])), $shipping_details, $paymentdetails), $activateemail['Emailcontent']['content']);
                     $adminmailid = $this->Adminuser->find('first', array('conditions' => array('admin_id' => '1')));
-                    
+
                     //added by prakash
                     $invoice = $this->requestAction(array('action' => 'orderpdf', $order1['Order']['order_id'], 'F'), array('return', 'bare' => false));
-                    $file = 'files/invoices/'.str_replace('/', '_', $in . $order1['Order']['invoice'] . '.pdf');
+                    $file = 'files/invoices/' . str_replace('/', '_', $in . $order1['Order']['invoice'] . '.pdf');
                     $this->mailsend(SITE_NAME, $activateemail['Emailcontent']['fromemail'], $user['User']['email'], $activateemail['Emailcontent']['subject'], $message, '', 1, $file, 'acknowledgment', '');
 
                     $email = $this->Emailcontent->find('first', array('conditions' => array('eid' => 12)));
@@ -411,7 +409,7 @@ class OrdersController extends AppController {
             }
         }
 
-        $name = $user['User']['first_name'].' '.$user['User']['last_name'];
+        $name = $user['User']['first_name'] . ' ' . $user['User']['last_name'];
         $cart = $this->Shoppingcart->find('all', array('conditions' => array('order_id' => $this->Session->read('Order'))));
         if ($order1['Order']['cod_status'] == 'COD') {
             $msg = '';
@@ -521,8 +519,8 @@ class OrdersController extends AppController {
 
             //added by prakash
             $invoice = $this->requestAction(array('action' => 'orderpdf', $order1['Order']['order_id'], 'F'), array('return', 'bare' => false));
-            $file = 'files/invoices/'.str_replace('/', '_', $in . $order1['Order']['invoice'] . '.pdf');
-            $subject = $activateemail['Emailcontent']['subject'].' '.$in.$order1['Order']['invoice'];
+            $file = 'files/invoices/' . str_replace('/', '_', $in . $order1['Order']['invoice'] . '.pdf');
+            $subject = $activateemail['Emailcontent']['subject'] . ' ' . $in . $order1['Order']['invoice'];
             $this->mailsend(SITE_NAME, $activateemail['Emailcontent']['fromemail'], $user['User']['email'], $subject, $message, '', 1, $file, 'acknowledgment', '');
 
             $email = $this->Emailcontent->find('first', array('conditions' => array('eid' => 9)));
@@ -637,11 +635,11 @@ class OrdersController extends AppController {
             $activateemail = $this->Emailcontent->find('first', array('conditions' => array('eid' => 10)));
             $message = str_replace(array('{name}', '{details}', '{order_no}', '{order_date}', '{shipping_details}', '{payment_details}'), array($name, $msg, $in . $order1['Order']['invoice'], date('d-m-Y', strtotime($order1['Order']['created_date'])), $shipping_details, $paymentdetails), $activateemail['Emailcontent']['content']);
             $adminmailid = $this->Adminuser->find('first', array('conditions' => array('admin_id' => '1')));
-            
+
             //added by prakash
             $invoice = $this->requestAction(array('action' => 'orderpdf', $order1['Order']['order_id'], 'F'), array('return', 'bare' => false));
-            $file = 'files/invoices/'.str_replace('/', '_', $in . $order1['Order']['invoice'] . '.pdf');
-            $subject = $activateemail['Emailcontent']['subject'].' '.$in.$order1['Order']['invoice'];
+            $file = 'files/invoices/' . str_replace('/', '_', $in . $order1['Order']['invoice'] . '.pdf');
+            $subject = $activateemail['Emailcontent']['subject'] . ' ' . $in . $order1['Order']['invoice'];
             $this->mailsend(SITE_NAME, $activateemail['Emailcontent']['fromemail'], $user['User']['email'], $subject, $message, '', 1, $file, 'acknowledgment', '');
 
             $email = $this->Emailcontent->find('first', array('conditions' => array('eid' => 9)));
@@ -705,7 +703,7 @@ class OrdersController extends AppController {
 
 
 
-        $name = $user['User']['first_name'].' '.$user['User']['last_name'];
+        $name = $user['User']['first_name'] . ' ' . $user['User']['last_name'];
         $cart = $this->Shoppingcart->find('all', array('conditions' => array('order_id' => $this->Session->read('Order'))));
         $msg = '<table cellpadding="0" cellspacing="0" id="example"  width="100%" border="1"><thead><tr><th>Product Name</th><th>Product Code</th><th>Type</th><th>Paid Amount</th></tr>';
         if (!empty($cart)) {
@@ -716,14 +714,14 @@ class OrdersController extends AppController {
                 $cat = $this->Category->find('first', array('conditions' => array('category_id' => $product['Product']['category_id'])));
                 $orders = $this->Order->find('first', array('conditions' => array('order_id' => $this->Session->read('Order'))));
 
-				$type=$orders['Order']['cod_status'];
-				if($type=='PayU'){
-					$type_view='Full Payment';
-				}elseif($type=='COD'){
-					$type_view='Partial Payment';
-				}elseif($type=='CHQ/DD'){
-					$type_view='CHQ/DD';
-				}
+                $type = $orders['Order']['cod_status'];
+                if ($type == 'PayU') {
+                    $type_view = 'Full Payment';
+                } elseif ($type == 'COD') {
+                    $type_view = 'Partial Payment';
+                } elseif ($type == 'CHQ/DD') {
+                    $type_view = 'CHQ/DD';
+                }
 
                 /* $msg.='<td align="left"><span><b>Product Name:</b></span>'.$product['Product']['product_name'].'</td>
                   <td align="left"><span><b>Product Code:</b></span>'.$cat['Category']['category_code'].''.$product['Product']['product_code'].'</td>
@@ -917,42 +915,42 @@ class OrdersController extends AppController {
         }
     }
 
-public function track(){
-		
-	}
-	
-	public function admin_order_track_index() {
-		$this->layout = 'admin';
-        $this->checkadmin();		
-        if (isset($this->request->data['submit'])) {			
+    public function track() {
+        
+    }
+
+    public function admin_order_track_index() {
+        $this->layout = 'admin';
+        $this->checkadmin();
+        if (isset($this->request->data['submit'])) {
             if (!empty($this->request->params['form']['importfile']['name'])) {
                 $filename = $this->request->params['form']['importfile'];
                 $filetype = $this->Image->getFileExtension($this->request->params['form']['importfile']['name']);
                 if ($filetype == 'xls') {
                     $tmp_name = $filename["tmp_name"];
                     App::import('Vendor', 'php-excel-reader/excel_reader2');
-                    $data = new Spreadsheet_Excel_Reader($tmp_name, true);				
+                    $data = new Spreadsheet_Excel_Reader($tmp_name, true);
                     $datas = $data->dumpdata(true, true);
-				}else{
-					$this->Session->setFlash("<div class='success msg'>" . __('Please upload CSV or XLS file.') . "</div>", '');
-               		$this->redirect(array('action'=>'shippingrates_import'));
-				}
+                } else {
+                    $this->Session->setFlash("<div class='success msg'>" . __('Please upload CSV or XLS file.') . "</div>", '');
+                    $this->redirect(array('action' => 'shippingrates_import'));
+                }
                 foreach ($datas as $datas) {
                     if (!empty($datas['Order_Id']) && !empty($datas['Way_Bill_No'])) {
                         $check = $this->Order->find('all', array('conditions' => array('invoice' => $datas['Order_Id'])));
-						if (!empty($check)) {
-							$this->request->data['Order']['order_id'] = $check[0]['Order']['order_id'];
+                        if (!empty($check)) {
+                            $this->request->data['Order']['order_id'] = $check[0]['Order']['order_id'];
                             $this->request->data['Order']['way_bill_no'] = $datas['Way_Bill_No'];
-							$this->Order->save($this->request->data);
+                            $this->Order->save($this->request->data);
                         }
                     }
                 }
-				$this->Session->setFlash("<div class='success msg'>" . __('Way bill number updated successfully') . "</div>", '');
-				$this->redirect(array('action' => 'index','controller'=>'orders'));
-               
+                $this->Session->setFlash("<div class='success msg'>" . __('Way bill number updated successfully') . "</div>", '');
+                $this->redirect(array('action' => 'index', 'controller' => 'orders'));
             }
         }
     }
+
     public function admin_view() {
         $this->layout = "admin";
         $this->checkadmin();
@@ -1181,107 +1179,107 @@ public function track(){
       }
       } */
 
-    public function apply_discount(){
-		if ($this->Session->read('User')== '' || $this->Session->read('cart_process')=='') {
-			$this->redirect(BASE_URL);
-		}
-		if($this->request->is('post')){
-			$user_id = $this->Session->read('User.user_id');
-			$coupon=$this->request->data['coupon'];
-			$check_discount = $this->Discount->find('first', array('conditions' => array('voucher_code' => $coupon, '"'.date('Y-m-d').'" BETWEEN start_date AND expired_date')));
-			$order=$this->Order->find('first',array('conditions'=>array('order_id'=>$this->Session->read('Order'))));
-			$cart_amount=$this->Shoppingcart->find('first',array('conditions'=>array('order_id'=>$order['Order']['order_id']),'fields'=>'SUM(quantity*total) AS subtotal'));
-			if(!empty($check_discount)){
-				 $already_used_or_not = $this->Discounthistory->find('first', array('conditions' => array('coupon_id' => $check_discount['Discount']['discount_id'], 'user_id' => $user_id)));
-				 if(empty($already_used_or_not)) {					 
-					if($check_discount['Discount']['type']=="Product"){
-						$cart=$this->Shoppingcart->find('first',array('conditions'=>array('product_id'=>explode(',',$check_discount['Discount']['product_id']),'order_id'=>$order['Order']['order_id']),'fields'=>array('SUM(total*quantity) AS total')));											
-						if(!empty($cart[0]['total'])){
-							if($check_discount['Discount']['per_amou']==1){	
-								$order['Order']['discount_per']=$check_discount['Discount']['percentage'];
-								$order['Order']['discount_amount']=round($cart['0']['total']*$check_discount['Discount']['percentage']/100);
-							}else{
-								$order['Order']['discount_amount']=$check_discount['Discount']['percentage'];
-							}
-							$this->Order->save($order);
-						}else{
-							 $this->Session->setFlash("<div class='error msg'>Please check the Product or Code.</div>");  
-							 $this->redirect(array('action' => 'order', 'controller' => 'orders'));
-						}						
-					}elseif($check_discount['Discount']['type']=="Category"){
-						$cart=$this->Shoppingcart->find('first',array('conditions'=>array('Shoppingcart.product_id'=>explode(',',$check_discount['Discount']['product_id']),'Product.category_id'=>explode(',',$check_discount['Discount']['category_id'])),'joins' =>
-                  array(
-                    array(
-                        'table' => 'products',
-                        'alias' => 'Product',
-                        'type' => 'inner',
-                        'foreignKey' => false,
-                        'conditions'=> array('Shoppingcart.product_id = Product.product_id')
-                    )),'fields'=>array('SUM(total*quantity) AS total')));
-						if(!empty($cart[0]['total'])){
-							if($check_discount['Discount']['per_amou']==1){	
-								$order['Order']['discount_per']=$check_discount['Discount']['percentage'];
-								$order['Order']['discount_amount']=round($cart['0']['total']*$check_discount['Discount']['percentage']/100);
-							}else{
-								$order['Order']['discount_amount']=$check_discount['Discount']['percentage'];
-							}
-							$this->Order->save($order);
-						}else{
-							 $this->Session->setFlash("<div class='error msg'>Please check the Product or Code.</div>");  
-							 $this->redirect(array('action' => 'order', 'controller' => 'orders'));
-						}
-					}elseif($check_discount['Discount']['type']=="User"){						
-						if(!in_array($user_id,explode(",",$check_discount['Discount']['user_id']))){	
-							 $this->Session->setFlash("<div class='error msg'>Invalid Coupon.</div>");  
-							 $this->redirect(array('action' => 'order', 'controller' => 'orders'));
-						}
-						if($check_discount['Discount']['per_amou']==1){	
-							$order['Order']['discount_per']=$check_discount['Discount']['percentage'];							
-							$order['Order']['discount_amount']=round($cart_amount[0]['subtotal']*$check_discount['Discount']['percentage']/100);
-						}else{
-							$order['Order']['discount_amount']=$check_discount['Discount']['percentage'];
-						}
-						$this->Order->save($order);						
-					}elseif($check_discount['Discount']['type']=="Vouchercode"){
-						if($check_discount['Discount']['per_amou']==1){	
-							$order['Order']['discount_per']=$check_discount['Discount']['percentage'];
-							$order['Order']['discount_amount']=round($cart_amount[0]['subtotal']*$check_discount['Discount']['percentage']/100);
-						}else{
-							$order['Order']['discount_amount']=$check_discount['Discount']['percentage'];
-						}
-						$this->Order->save($order);
-					}else{
-						 $this->Session->setFlash("<div class='error msg'>Invalid Coupon.</div>");  
-						 $this->redirect(array('action' => 'order', 'controller' => 'orders'));
-					}
-					
-					$this->request->data['Discounthistory']['user_id'] =$user_id;
-					$this->request->data['Discounthistory']['coupon_id'] =$check_discount['Discount']['discount_id'];
-					//$this->request->data['Discounthistory']['cart_id'] = $this->Session->read('cart_process');
-					$this->request->data['Discounthistory']['order_id'] = $this->Session->read('Order');
-					$this->request->data['Discounthistory']['date'] =date('Y-m-d H:i:s');
-					$this->request->data['Discounthistory']['coupon_code'] =$check_discount['Discount']['voucher_code'];
-					if($check_discount['Discount']['per_amou']==1){							
-						$this->request->data['Discounthistory']['percentage'] =$check_discount['Discount']['percentage'];
-					}else{
-						$this->request->data['Discounthistory']['amount'] =$check_discount['Discount']['percentage'];
-					}
-					$this->Discounthistory->save($this->request->data['Discounthistory']);
-					$this->Session->write('discount', '1');
-					$this->Session->setFlash("<div class='success msg'>Discount coupon applied Successfully</div>");  
-					$this->redirect(array('action' => 'order', 'controller' => 'orders'));
-				 }else{
-					 $this->Session->setFlash("<div class='error msg'>You have already used in this coupon.</div>");  
-					 $this->redirect(array('action' => 'order', 'controller' => 'orders'));
-				}				
-			}else{
-				 $this->Session->setFlash("<div class='error msg'>Please check the coupon validity or code.</div>");  
-      			 $this->redirect(array('action' => 'order', 'controller' => 'orders'));
-			}			
-		}else{
-			$this->redirect(BASE_URL);
-		}
-	}
+    public function apply_discount() {
+        if ($this->Session->read('User') == '' || $this->Session->read('cart_process') == '') {
+            $this->redirect(BASE_URL);
+        }
+        if ($this->request->is('post')) {
+            $user_id = $this->Session->read('User.user_id');
+            $coupon = $this->request->data['coupon'];
+            $check_discount = $this->Discount->find('first', array('conditions' => array('voucher_code' => $coupon, '"' . date('Y-m-d') . '" BETWEEN start_date AND expired_date')));
+            $order = $this->Order->find('first', array('conditions' => array('order_id' => $this->Session->read('Order'))));
+            $cart_amount = $this->Shoppingcart->find('first', array('conditions' => array('order_id' => $order['Order']['order_id']), 'fields' => 'SUM(quantity*total) AS subtotal'));
+            if (!empty($check_discount)) {
+                $already_used_or_not = $this->Discounthistory->find('first', array('conditions' => array('coupon_id' => $check_discount['Discount']['discount_id'], 'user_id' => $user_id)));
+                if (empty($already_used_or_not)) {
+                    if ($check_discount['Discount']['type'] == "Product") {
+                        $cart = $this->Shoppingcart->find('first', array('conditions' => array('product_id' => explode(',', $check_discount['Discount']['product_id']), 'order_id' => $order['Order']['order_id']), 'fields' => array('SUM(total*quantity) AS total')));
+                        if (!empty($cart[0]['total'])) {
+                            if ($check_discount['Discount']['per_amou'] == 1) {
+                                $order['Order']['discount_per'] = $check_discount['Discount']['percentage'];
+                                $order['Order']['discount_amount'] = round($cart['0']['total'] * $check_discount['Discount']['percentage'] / 100);
+                            } else {
+                                $order['Order']['discount_amount'] = $check_discount['Discount']['percentage'];
+                            }
+                            $this->Order->save($order);
+                        } else {
+                            $this->Session->setFlash("<div class='error msg'>Please check the Product or Code.</div>");
+                            $this->redirect(array('action' => 'order', 'controller' => 'orders'));
+                        }
+                    } elseif ($check_discount['Discount']['type'] == "Category") {
+                        $cart = $this->Shoppingcart->find('first', array('conditions' => array('Shoppingcart.product_id' => explode(',', $check_discount['Discount']['product_id']), 'Product.category_id' => explode(',', $check_discount['Discount']['category_id'])), 'joins' =>
+                            array(
+                                array(
+                                    'table' => 'products',
+                                    'alias' => 'Product',
+                                    'type' => 'inner',
+                                    'foreignKey' => false,
+                                    'conditions' => array('Shoppingcart.product_id = Product.product_id')
+                                )), 'fields' => array('SUM(total*quantity) AS total')));
+                        if (!empty($cart[0]['total'])) {
+                            if ($check_discount['Discount']['per_amou'] == 1) {
+                                $order['Order']['discount_per'] = $check_discount['Discount']['percentage'];
+                                $order['Order']['discount_amount'] = round($cart['0']['total'] * $check_discount['Discount']['percentage'] / 100);
+                            } else {
+                                $order['Order']['discount_amount'] = $check_discount['Discount']['percentage'];
+                            }
+                            $this->Order->save($order);
+                        } else {
+                            $this->Session->setFlash("<div class='error msg'>Please check the Product or Code.</div>");
+                            $this->redirect(array('action' => 'order', 'controller' => 'orders'));
+                        }
+                    } elseif ($check_discount['Discount']['type'] == "User") {
+                        if (!in_array($user_id, explode(",", $check_discount['Discount']['user_id']))) {
+                            $this->Session->setFlash("<div class='error msg'>Invalid Coupon.</div>");
+                            $this->redirect(array('action' => 'order', 'controller' => 'orders'));
+                        }
+                        if ($check_discount['Discount']['per_amou'] == 1) {
+                            $order['Order']['discount_per'] = $check_discount['Discount']['percentage'];
+                            $order['Order']['discount_amount'] = round($cart_amount[0]['subtotal'] * $check_discount['Discount']['percentage'] / 100);
+                        } else {
+                            $order['Order']['discount_amount'] = $check_discount['Discount']['percentage'];
+                        }
+                        $this->Order->save($order);
+                    } elseif ($check_discount['Discount']['type'] == "Vouchercode") {
+                        if ($check_discount['Discount']['per_amou'] == 1) {
+                            $order['Order']['discount_per'] = $check_discount['Discount']['percentage'];
+                            $order['Order']['discount_amount'] = round($cart_amount[0]['subtotal'] * $check_discount['Discount']['percentage'] / 100);
+                        } else {
+                            $order['Order']['discount_amount'] = $check_discount['Discount']['percentage'];
+                        }
+                        $this->Order->save($order);
+                    } else {
+                        $this->Session->setFlash("<div class='error msg'>Invalid Coupon.</div>");
+                        $this->redirect(array('action' => 'order', 'controller' => 'orders'));
+                    }
+
+                    $this->request->data['Discounthistory']['user_id'] = $user_id;
+                    $this->request->data['Discounthistory']['coupon_id'] = $check_discount['Discount']['discount_id'];
+                    //$this->request->data['Discounthistory']['cart_id'] = $this->Session->read('cart_process');
+                    $this->request->data['Discounthistory']['order_id'] = $this->Session->read('Order');
+                    $this->request->data['Discounthistory']['date'] = date('Y-m-d H:i:s');
+                    $this->request->data['Discounthistory']['coupon_code'] = $check_discount['Discount']['voucher_code'];
+                    if ($check_discount['Discount']['per_amou'] == 1) {
+                        $this->request->data['Discounthistory']['percentage'] = $check_discount['Discount']['percentage'];
+                    } else {
+                        $this->request->data['Discounthistory']['amount'] = $check_discount['Discount']['percentage'];
+                    }
+                    $this->Discounthistory->save($this->request->data['Discounthistory']);
+                    $this->Session->write('discount', '1');
+                    $this->Session->setFlash("<div class='success msg'>Discount coupon applied Successfully</div>");
+                    $this->redirect(array('action' => 'order', 'controller' => 'orders'));
+                } else {
+                    $this->Session->setFlash("<div class='error msg'>You have already used in this coupon.</div>");
+                    $this->redirect(array('action' => 'order', 'controller' => 'orders'));
+                }
+            } else {
+                $this->Session->setFlash("<div class='error msg'>Please check the coupon validity or code.</div>");
+                $this->redirect(array('action' => 'order', 'controller' => 'orders'));
+            }
+        } else {
+            $this->redirect(BASE_URL);
+        }
+    }
 
     //New function written by Nad at 2015-03-27
     public function order_status_mail($order_id) {
@@ -1307,7 +1305,7 @@ public function track(){
         $message .= "<p>Thanks.</p>";
 //        $invoice = $this->requestAction(array('action' => 'admin_orderpdf', $orderdetails['Order']['order_id'], 'F'), array('return', 'bare' => false));
 //        $email->attachments('files/invoices/'.$in . $orderdetails['Order']['invoice'].'.pdf');
-        
+
         $email->send($message);
         $email->reset();
     }
@@ -1363,7 +1361,7 @@ public function track(){
         if ($this->request->is('get')) {
             $is_search = true;
             $search_string = array();
-            
+
             $search = array('Shoppingcart.order_id is not NULL');
             if ($this->request->query('pname') != '') {
                 $search[] = "Product.product_name Like '%" . $this->request->query('pname') . "%'";
@@ -1382,7 +1380,7 @@ public function track(){
             if (!empty($search_string)) {
                 $search_string_url .= '&' . implode('&', $search_string);
             }
-            
+
             $this->paginate = array('conditions' => $search, 'order' => 'Order.order_id DESC');
             $this->set('orderdetails', $this->paginate('Shoppingcart'));
         } else {
@@ -1534,7 +1532,7 @@ public function track(){
             unset($header_row[array_search('Vendor Code', $header_row)]);
             unset($header_row[array_search('Company name', $header_row)]);
             $header_row[3] = 'Franchisee Name';
-        }elseif($type == 'vendor_brokerage'){
+        } elseif ($type == 'vendor_brokerage') {
             unset($header_row[array_search('Franchisee code', $header_row)]);
         }
         fputcsv($csv_file, $header_row, ',', '"');
@@ -1563,7 +1561,7 @@ public function track(){
             if ($type == 'franschisee_brokerage') {
                 unset($row[4]);
                 unset($row[5]);
-            }elseif($type == 'vendor_brokerage'){
+            } elseif ($type == 'vendor_brokerage') {
                 unset($row[6]);
             }
             $i++;
@@ -1621,13 +1619,13 @@ public function track(){
     public function orderpdf($order_id = NULL, $output = 'D') {
         $this->usercheck();
         $userid = $this->Session->read('User.user_id');
-        
+
         $this->layout = '';
         $orderdetails = $this->Order->find('first', array('conditions' => array('order_id' => $order_id)));
-        if($userid == $orderdetails['Order']['user_id']){
+        if ($userid == $orderdetails['Order']['user_id']) {
             $user = ClassRegistry::init('User')->find('first', array('conditions' => array('user_id' => $orderdetails['Order']['user_id'])));
             $in = $this->admin_get_invoice_prefix($user['User']['user_type'], $orderdetails['Order']['cod_status']);
-            
+
             $this->set(compact('orderdetails', 'user', 'in'));
             $filename = str_replace('/', '_', $in . $orderdetails['Order']['invoice'] . '.pdf');
             $this->Mpdf->init(array('en-GB-x', 'A4', '', '', 10, 10, 10, 10, 6, 3));
@@ -1636,7 +1634,7 @@ public function track(){
             $this->Mpdf->setFilename($filepath);
             $this->Mpdf->setOutput($output);
 //            $this->Mpdf->Output($filename, 'D');
-        }else{
+        } else {
             $this->Session->setFlash("<div class='error msg'>" . __('Access denied.') . "</div>");
             $this->redirect(array('controller' => 'orders', 'action' => 'my_orders'));
         }
@@ -1645,7 +1643,7 @@ public function track(){
 
     public function admin_orderpdf($order_id = NULL, $output = 'D') {
         $this->checkadmin();
-        
+
         $this->layout = '';
         $orderdetails = $this->Order->find('first', array('conditions' => array('order_id' => $order_id)));
         $user = ClassRegistry::init('User')->find('first', array('conditions' => array('user_id' => $orderdetails['Order']['user_id'])));
@@ -1660,7 +1658,7 @@ public function track(){
 //            $this->Mpdf->Output($filename, 'D');
 //        $this->Mpdf->SetWatermarkText("Draft");
     }
-    
+
     public function admin_orderhistory_view() {
         $this->layout = "admin";
         $this->checkadmin();
@@ -1669,6 +1667,152 @@ public function track(){
             'recursive' => 2,
             'conditions' => array('Orderhistory.order_id' => $this->params['pass']['0'])));
         $this->set(compact('orderhistory', 'orderdetails'));
+    }
+
+    public function franchisee_view() {
+        $this->usercheck();
+        if ($this->Session->read('User.user_type') == 2) {
+            $this->layout = 'webpage';
+            $orderdetails = $this->Order->find('first', array('conditions' => array('order_id' => $this->params['pass']['0'])));
+            $this->set(compact('orderdetails'));
+        } else {
+            return $this->redirect('/');
+        }
+    }
+
+    public function product_view() {
+        $this->usercheck();
+        if ($this->Session->read('User.user_type') == 2) {
+            $this->layout = 'webpage';
+            $orderdetails = $this->Order->find('first', array('conditions' => array('order_id' => $this->params['pass']['0'])));
+            $this->set(compact('orderdetails'));
+        } else {
+            return $this->redirect('/');
+        }
+    }
+
+    public function billing_view() {
+        $this->usercheck();
+        if ($this->Session->read('User.user_type') == 2) {
+            $this->layout = 'webpage';
+            $orderdetails = $this->Order->find('first', array('conditions' => array('order_id' => $this->params['pass']['0'])));
+            $this->set(compact('orderdetails'));
+        } else {
+            return $this->redirect('/');
+        }
+    }
+
+    public function shipping_view() {
+        $this->usercheck();
+        if ($this->Session->read('User.user_type') == 2) {
+            $this->layout = 'webpage';
+            $orderdetails = $this->Order->find('first', array('conditions' => array('order_id' => $this->params['pass']['0'])));
+            $this->set(compact('orderdetails'));
+        } else {
+            return $this->redirect('/');
+        }
+    }
+
+    public function user_view() {
+        $this->usercheck();
+        if ($this->Session->read('User.user_type') == 2) {
+            $this->layout = 'webpage';
+            $orderdetails = $this->Order->find('first', array('conditions' => array('order_id' => $this->params['pass']['0'])));
+            $this->set(compact('orderdetails'));
+        } else {
+            return $this->redirect('/');
+        }
+    }
+
+    public function order_view() {
+        $this->usercheck();
+        if ($this->Session->read('User.user_type') == 2) {
+            $this->layout = 'webpage';
+            if ($this->request->is('post') || $this->request->is('put')) {
+                if ($this->Order->save($this->request->data)) {
+
+                    if ($this->request->data['Order']['old_order_status_id'] != $this->request->data['Order']['order_status_id']) {
+                        $orderhistory = array(
+                            'Orderhistory' => array(
+                                'order_id' => $this->data['Order']['order_id'],
+                                'old_status_id' => $this->data['Order']['old_order_status_id'],
+                                'new_status_id' => $this->data['Order']['order_status_id'],
+                                'remarks' => $this->data['Order']['orderstatus_remarks'],
+                        ));
+                        $this->Orderhistory->save($orderhistory);
+                        $this->order_status_mail($this->request->data['Order']['order_id']);
+                    }
+
+                    $this->Session->setFlash('<div class="success msg">Order details updated successfully</div>', '');
+                } else {
+                    $this->Session->setFlash('<div class="error msg">Failed to update</div>', '');
+                }
+                $this->redirect(array('action' => 'order_view', $this->data['Order']['order_id'], 'controller' => 'orders'));
+            }
+            $orderdetails = $this->Order->find('first', array('conditions' => array('order_id' => $this->params['pass']['0'])));
+            $this->set(compact('orderdetails'));
+        } else {
+            return $this->redirect('/');
+        }
+    }
+
+    public function orderhistory_view() {
+        $this->usercheck();
+        if ($this->Session->read('User.user_type') == 2) {
+            $this->layout = 'webpage';
+            $orderdetails = $this->Order->find('first', array('conditions' => array('order_id' => $this->params['pass']['0'])));
+            $orderhistory = $this->Orderhistory->find('all', array(
+                'recursive' => 2,
+                'conditions' => array('Orderhistory.order_id' => $this->params['pass']['0'])));
+            $this->set(compact('orderhistory', 'orderdetails'));
+        } else {
+            return $this->redirect('/');
+        }
+    }
+
+    public function chq_dd_view() {
+        $this->usercheck();
+        if ($this->Session->read('User.user_type') == 2) {
+            $this->layout = 'webpage';
+            $orderdetails = $this->Order->find('first', array('conditions' => array('order_id' => $this->params['pass']['0'])));
+            $user = $this->User->find('first', array('conditions' => array('user_id' => $orderdetails['Order']['user_id'])));
+            $this->set('orderdetails', $orderdetails);
+            $paymentaldetails = $this->Paymentdetails->find('first', array('conditions' => array('order_id' => $this->params['pass']['0'])));
+            if (empty($paymentaldetails)) {
+                if ($this->request->is('post')) {
+                    $this->request->data['Paymentdetails']['order_id'] = $orderdetails['Order']['order_id'];
+                    $this->request->data['Paymentdetails']['user_id'] = $orderdetails['Order']['user_id'];
+                    $this->request->data['Paymentdetails']['status'] = 'Success';
+                    $this->request->data['Paymentdetails']['admin_status'] = 'Order in Progress';
+                    $this->request->data['Paymentdetails']['ip'] = $_SERVER['REMOTE_ADDR'];
+                    $this->request->data['Paymentdetails']['created_date'] = date('Y-m-d H:i:s');
+
+                    $this->Paymentdetails->save($this->request->data);
+                    $this->request->data['Order']['order_id'] = $orderdetails['Order']['order_id'];
+                    $this->request->data['Order']['status'] = 'Paid';
+                    if ($user['User']['user_type'] == '0') {
+                        $this->request->data['Order']['order_status'] = 'BookedbyUser';
+                    } elseif ($user['User']['user_type'] == '1') {
+                        $this->request->data['Order']['order_status'] = 'BookedbyFranchisee';
+                    }
+                    $this->Order->save($this->request->data);
+                    $this->Session->setFlash('<div class="success msg">CHQ/DD details added successfully.</div>', '');
+                    $this->redirect(array('action' => 'chq_dd_view', $this->params['pass']['0']));
+                }
+            } else {
+                $this->set('paymentaldetails', $paymentaldetails);
+                if ($this->request->is('post')) {
+                    $this->request->data['Paymentdetails']['paymentdetails_id'] = $paymentaldetails['Paymentdetails']['paymentdetails_id'];
+                    $this->request->data['Paymentdetails']['ip'] = $_SERVER['REMOTE_ADDR'];
+                    $this->request->data['Paymentdetails']['created_date'] = date('Y-m-d H:i:s');
+                    $this->Paymentdetails->save($this->request->data);
+                    $this->Session->setFlash('<div class="success msg">CHQ/DD details updated successfully.</div>', '');
+                    $this->redirect(array('action' => 'chq_dd_view', $this->params['pass']['0']));
+                }
+            }
+        } else {
+            return $this->redirect('/');
+        }
     }
 
 }

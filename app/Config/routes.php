@@ -40,7 +40,7 @@ Router::connect('/disclaimer', array('controller' => 'staticpages', 'action' => 
 Router::connect('/certified-jewelers', array('controller' => 'staticpages', 'action' => 'staticpage'));
 Router::connect('/delivery-details', array('controller' => 'staticpages', 'action' => 'staticpage'));
 Router::connect('/jewellery-experience', array('controller' => 'staticpages', 'action' => 'staticpage'));
-Router::connect('/shipping-returns-policy', array('controller' => 'staticpages', 'action' => 'staticpage'));
+Router::connect('/returns-policy', array('controller' => 'staticpages', 'action' => 'staticpage'));
 Router::connect('/transparent-pricing', array('controller' => 'staticpages', 'action' => 'staticpage'));
 Router::connect('/privacy-policy', array('controller' => 'staticpages', 'action' => 'staticpage'));
 Router::connect('/faq-s', array('controller' => 'staticpages', 'action' => 'staticpage'));
@@ -61,6 +61,9 @@ Router::connect('/account-details', array('controller' => 'staticpages', 'action
 Router::connect('/jewellery', array('controller' => 'webpages', 'action' => 'jewellery'));
 Router::connect('/orders/delete/*', array('controller' => 'orders','action'=>'delete'));
 Router::connect('/product/*', array('controller' => 'webpages','action'=>'product'));
+Router::connect('/shoppingcarts/remove/*', array('controller' => 'shoppingcarts','action'=>'remove'));
+Router::connect('/signin/profile/*', array('controller' => 'signin','action'=>'profile'));
+
 
 //nwely added
 Router::connect('/franchiseeproducts/edit/:id', array('controller' => 'franchiseeproducts', 'action' => 'productedit'), array('pass' => array('id')));
