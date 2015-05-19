@@ -1,4 +1,4 @@
-<?php //print_r($browse_product);exit;    ?>
+<?php //print_r($browse_product);exit;          ?>
 <div class="main">
     <header> &nbsp; </header>
     <div style="clear:both;">&nbsp;</div>
@@ -114,22 +114,22 @@
                             }
                             ?>
                             <?php if (in_array($product_category['Category']['category'], array('Gold Coins', 'Gold Coin'))) { ?>
-                            <tr>
-                                <td colspan="9"><hr /></td>
-                            </tr>
-                            <tr>
-                                <td colspan="9">
-                                    <?php
-                                    $exp_fineness = explode(',', $product['Product']['metal_fineness']);
-                                    $fineness = !empty($exp_fineness) ? " ({$exp_fineness[0]}) " : ' ';
-                                    ?>
-                                    <strong>Gold Coin In <?php echo $metals['Productmetal']['value'].'K'.$fineness; ?>Yellow Gold</strong>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td colspan="9">&nbsp;</td>
-                            </tr>
-                            <?php }?>
+                                <tr>
+                                    <td colspan="9"><hr /></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="9">
+                                        <?php
+                                        $exp_fineness = explode(',', $product['Product']['metal_fineness']);
+                                        $fineness = !empty($exp_fineness) ? " ({$exp_fineness[0]}) " : ' ';
+                                        ?>
+                                        <strong>Gold Coin In <?php echo $metals['Productmetal']['value'] . 'K' . $fineness; ?>Yellow Gold</strong>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="9">&nbsp;</td>
+                                </tr>
+                            <?php } ?>
                             <tr>
                                 <td colspan="9"><span class="b-star"><span style="width:<?php
                                         if (!empty($rating)) {
@@ -199,10 +199,10 @@
                                                             echo 'selected="selected"';
                                                         }
                                                         ?>><?php echo $ids; ?></option>
-                                                        <?php
-                                                        $i++;
-                                                    }
-                                                    ?>
+                                                                <?php
+                                                                $i++;
+                                                            }
+                                                            ?>
                                                 </select>
                                             </td>
                                             <td width="100"></td>
@@ -226,7 +226,7 @@
                                         $diamonddiv = ClassRegistry::init('Productdiamond')->find('all', array('conditions' => array('product_id' => $product['Product']['product_id']), 'group' => array('clarity', 'color'), 'order' => "FIELD(`clarity`,'SI','VS','VVS'),FIELD(`color`,'IJ','GH','EF')"));
                                         ?>
                                         <tr>
-                                           <td align="left"><?php  if(!empty($diamonddiv)){ ?><strong>Diamond</strong> <?php }?></td>
+                                            <td align="left"><?php if (!empty($diamonddiv)) { ?><strong>Diamond</strong> <?php } ?></td>
                                             <td width="100"></td>
                                             <td><?php
                                                 if (!empty($diamonddiv)) {
@@ -630,25 +630,41 @@
             <div id="slideshowWrapper">
                 <ul class="slideshow2">
                     <li style="width: 100%;">
-                        <?php
-                        //print_r($browse_product);exit;
-                        foreach ($browse_product as $browse_product) {
-                            $productimg = ClassRegistry::init('Productimage')->find('first', array('conditions' => array('product_id' => $browse_product['Product']['product_id'])));
-                            $category = ClassRegistry::init('Category')->find('first', array('conditions' => array('category_id' => $browse_product['Product']['category_id'])));
-                            $subcategory = ClassRegistry::init('Subcategory')->find('first', array('conditions' => array('subcategory_id' => $browse_product['Product']['subcategory_id'])));
-                            $Product_product_name = str_replace(" ", "_", $browse_product['Product']['product_name']);
-                            ?>
-                            <div class="best_seller_section best_seller_section2"> 
-                                <a href="<?php echo BASE_URL; ?><?php echo $category['Category']['category'] . "/" . $subcategory['Subcategory']['subcategory'] . "/" . $browse_product['Product']['product_id'] . '/' . $Product_product_name; ?>">
-                             <!--  <a href="<?php echo BASE_URL; ?>/webpages/product_details/<?php echo $browse_product['Product']['product_id']; ?>">-->
+                        <div class="best_seller_section best_seller_section2"> 
+                            <?php
+                            //print_r($browse_product);exit;
+                            $i = 0;
+                            $count_browseproduct = count($browse_product);
+                            foreach ($browse_product as $browse_product) {
+
+                                $productimg = ClassRegistry::init('Productimage')->find('first', array('conditions' => array('product_id' => $browse_product['Product']['product_id'])));
+
+                                $category = ClassRegistry::init('Category')->find('first', array('conditions' => array('category_id' => $browse_product['Product']['category_id'])));
+                                $subcategory = ClassRegistry::init('Subcategory')->find('first', array('conditions' => array('subcategory_id' => $browse_product['Product']['subcategory_id'])));
+                                if (!empty($subcategory)) {
+                                    $subcat = str_replace(' ', '_', trim($subcategory['Subcategory']['subcategory']));
+                                } else {
+                                    $subcat = 'all_items';
+                                }
+                                $Product_product_name = str_replace(" ", "_", trim($browse_product['Product']['product_name']));
+                                ?>
+
+                                <a href="<?php echo BASE_URL; ?><?php echo str_replace(' ', '_', trim($category['Category']['category'])) . "/" . $subcat . "/" . $browse_product['Product']['product_id'] . '/' . $Product_product_name; ?>">
                                     <div class="best_seller_section_menu">
                                         <div class="best_seller_section_menu_img" style="background-image: url(<?php echo BASE_URL; ?>img/product/small/<?php echo $productimg['Productimage']['imagename']; ?>);"></div>
                                         <h4><?php echo $browse_product['Product']['product_name'] ?></h4>
-                                        <!--<h3>19,599</h3>-->
                                     </div>
                                 </a>
-                            </div>
-                        <?php } ?>
+
+                                <?php
+                                $i++;
+                                if ($i % 4 == 0 && $i <= count($count_browseproduct)) {
+                                    echo '</div></li><li style="width: 100%;"><div class="best_seller_section best_seller_section2"> ';
+                                } else {
+                                    
+                                }
+                            }
+                            ?></div>
                     </li>
                 </ul>
                 <br clear="all" />
@@ -768,7 +784,7 @@ $(document).ready(function(){
             display: none;
         }
 <?php } ?>
-.productdetailsMian form {
-  margin: 15px 0 0;
-}
+    .productdetailsMian form {
+        margin: 15px 0 0;
+    }
 </style>

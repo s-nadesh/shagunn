@@ -67,36 +67,46 @@
                                     $date = $order['Order']['created_date'];
                                     echo $dob = date("d/m/Y", strtotime($date));
                                     ?></td>
-                                <td valign="top" class="bdrRNone"><?php
-                                    $i = 0;
-                                    foreach ($carts as $carts) {
-                                        if (!empty($carts)) {
-                                            $product = ClassRegistry::init('Product')->find('all', array('conditions' => array('product_id' => $carts['Shoppingcart']['product_id'])));
-                                            foreach ($product as $products) {
-
-                                                $metals = ClassRegistry::init('Productmetal')->find('first', array('conditions' => array('product_id' => $products['Product']['product_id'],
-                                                        'type' => 'Purity')));
-                                                $diamond = ClassRegistry::init('Productdiamond')->find('first', array('conditions' => array('product_id' => $products['Product']['product_id'])));
-
-                                                if (!empty($diamond)) {
-                                                    $dc = $diamond['Productdiamond']['clarity'];
-                                                    $dcol = $diamond['Productdiamond']['color'];
-                                                } else {
-                                                    $dc = '';
-                                                    $dcol = '';
-                                                }
-
-                                                $cat = ClassRegistry::init('Category')->find('first', array('conditions' => array('category_id' => $products['Product']['category_id'])));
-                                                $subcat = ClassRegistry::init('Subcategory')->find('first', array('conditions' => array('subcategory_id' => $products['Product']['subcategory_id'])));
-                                                ?>
-                           <a href="<?php echo BASE_URL?><?php echo str_replace(' ','_',trim($cat['Category']['category']))."/".str_replace(' ','_',trim($subcat['Subcategory']['subcategory']))."/".$products['Product']['product_id']."/".str_replace(' ','_',trim($products['Product']['product_name']))?>"> <?php
-                                                    echo $cat['Category']['category_code'] . $products['Product']['product_code'] . ' - ' . $metals['Productmetal']['value'] . 'K' .
-                                                    $dc . $dcol . '<br>';
-                                                    ?></a>
-                                                <?php
-                                            }
-                                        }
+                                <td valign="top" class="bdrRNone">
+                                    <?php
+                                    $k = 1;
+                                    $ordercart = ClassRegistry::init('Shoppingcart')->find('all', array('conditions' => array('order_id' => $order['Order']['order_id'])));
+                                    foreach ($ordercart as $ordercarts) {
+                                        $productdetails = ClassRegistry::init('Product')->find('first', array('conditions' => array('product_id' => $ordercarts['Shoppingcart']['product_id'])));
+                                        $subcat = ClassRegistry::init('Subcategory')->find('first', array('conditions' => array('subcategory_id' => $productdetails['Product']['subcategory_id'])));
+                                        $category = ClassRegistry::init('Category')->find('first', array('conditions' => array('category_id' => $productdetails['Product']['category_id'])));
+                                        $link = BASE_URL.str_replace(' ','_',trim($category['Category']['category']))."/".str_replace(' ','_',trim($subcat['Subcategory']['subcategory']))."/".$productdetails['Product']['product_id']."/".str_replace(' ','_',trim($productdetails['Product']['product_name']));
+                                        echo $this->Html->link($category['Category']['category_code'] . ' ' . $productdetails['Product']['product_code'] . "-" . $ordercarts['Shoppingcart']['purity'] . "K" . $ordercarts['Shoppingcart']['clarity'] . $ordercarts['Shoppingcart']['color'], $link).'<br />';
                                     }
+//                                    $i = 0;
+//                                    foreach ($carts as $carts) {
+//                                        if (!empty($carts)) {
+//                                            $product = ClassRegistry::init('Product')->find('all', array('conditions' => array('product_id' => $carts['Shoppingcart']['product_id'])));
+//                                            foreach ($product as $products) {
+//
+//                                                $metals = ClassRegistry::init('Productmetal')->find('first', array('conditions' => array('product_id' => $products['Product']['product_id'],
+//                                                        'type' => 'Purity')));
+//                                                $diamond = ClassRegistry::init('Productdiamond')->find('first', array('conditions' => array('product_id' => $products['Product']['product_id'])));
+//
+//                                                if (!empty($diamond)) {
+//                                                    $dc = $diamond['Productdiamond']['clarity'];
+//                                                    $dcol = $diamond['Productdiamond']['color'];
+//                                                } else {
+//                                                    $dc = '';
+//                                                    $dcol = '';
+//                                                }
+//
+//                                                $cat = ClassRegistry::init('Category')->find('first', array('conditions' => array('category_id' => $products['Product']['category_id'])));
+//                                                $subcat = ClassRegistry::init('Subcategory')->find('first', array('conditions' => array('subcategory_id' => $products['Product']['subcategory_id'])));
+//                                                ?>
+<!--                           <a href="<?php echo BASE_URL?><?php echo str_replace(' ','_',trim($cat['Category']['category']))."/".str_replace(' ','_',trim($subcat['Subcategory']['subcategory']))."/".$products['Product']['product_id']."/".str_replace(' ','_',trim($products['Product']['product_name']))?>"> <?php
+//                                                    echo $cat['Category']['category_code'] . $products['Product']['product_code'] . ' - ' . $metals['Productmetal']['value'] . 'K' .
+//                                                    $dc . $dcol . '<br>';
+//                                                    ?></a>-->
+                                                <?php
+//                                            }
+//                                        }
+//                                    }
                                     ?>
         <!-- <p align="center"><a href="#"></a></p>
         <a class='inline cancel_order_btn' href="#<?php echo $pays['Paymentdetails']['paymentdetails_id']; ?>">Cancel Order</a>	-->

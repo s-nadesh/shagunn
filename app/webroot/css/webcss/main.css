@@ -251,7 +251,7 @@ header{
   /*margin:8px 0px 0px 0px;
   padding:4px 35px 4px 35px;*/
   margin:4px 0px 0px 0px;
-  padding:6px 35px 0px 35px;
+  padding:6px 36px 0px;
   border-right:1px dashed #e2ba35;
   border-top: 1px solid rgba(255, 255, 255, .0) ; 
   -webkit-transition: all 0.2s;
@@ -489,18 +489,19 @@ header{
 .products_top{
     height: 250px;
     width: 80%;
-    margin: auto;
+    margin: 0 40px 20px;
+	/*margin-bottom:20px*/
     background-position: center;
     background-repeat: no-repeat;
     transition: all ease .3s; -webkit-transition: all ease .3s; -moz-transition: all ease .3s; -ms-transition: all ease .3s; -o-transition: all ease .3s;
 }
 
 .products1 li:hover .products_top{
-    transform: scale(1.4,1.4);
-    -webkit-transform: scale(1.4,1.4);
-    -moz-transform: scale(1.4,1.4);
-    -ms-transform: scale(1.4,1.4);
-    -o-transform: scale(1.4,1.4);
+    transform: scale(1.2,1.2);
+    -webkit-transform: scale(1.2,1.2);
+    -moz-transform: scale(1.2,1.2);
+    -ms-transform: scale(1.2,1.2);
+    -o-transform: scale(1.2,1.2);
 }
 
 .products_bottom{
@@ -564,7 +565,7 @@ header{
 .products2_img{
      height: 160px;
     width: 80%;
-    margin: 40px auto 0 auto;
+    margin: 40px auto 20px auto;
     background-position: center;
     background-repeat: no-repeat;
     transition: all ease .3s; -webkit-transition: all ease .3s; -moz-transition: all ease .3s; -ms-transition: all ease .3s; -o-transition: all ease .3s;
@@ -891,7 +892,7 @@ header{
 
 .features {
     width: 100%;
-    padding: 0px 0 50px 0;
+    padding: 0px 0 20px 0;
 	
 }
 
@@ -1067,8 +1068,8 @@ header{
     font-size: 14px;
     height: 30px;
     line-height: 30px;
-    margin-left: 30%;
-    width: 70%;
+    margin-left: 15%;
+    width: 83%;
 }
 
 .footer_menu1 li:first-child {
@@ -1247,7 +1248,7 @@ div#tabs li{width:100% !important;}
 .ui-tabs-vertical .ui-tabs-nav li.ui-tabs-active .arrow-r {border-left-color: #024a85;}
 .ui-tabs-vertical .ui-tabs-panel { padding: 1em; float: right; width: 68em;position:relative;left:330px;}
 div.clear{clear:both;}
-div.menu_product{width:170px;float:left;border-bottom:3px solid #eee;margin:2px 5px;padding:5px 0px;}
+div.menu_product{width:161px;float:left;border-bottom:3px solid #eee;margin:2px 5px;padding:5px 0px;}
 div.menu_product:hover{border-bottom:3px solid #CCC;} 
 div.menu_product:hover a{color:#dba715}
 div.menu_product a{font-family:'Droid Serif',Georgia,serif;font-size:12px;font-style:italic;display:block;width:176px;text-align:center;text-decoration:none;float:left;
@@ -1345,7 +1346,7 @@ box-shadow: 0px 0px 5px 2px #999;
 #nav .dropdown {
     display:none;
     background:#fff;
-    width:1055px;
+    width:975px;
     position:absolute;   
 	/*box-shadow: 0 0px 0px 0px #c19f36;*/	
     top:100%;
