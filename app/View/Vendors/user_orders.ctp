@@ -35,7 +35,7 @@
                         <th><?php echo 'Order No' ?></th> 
                         <th><?php echo 'Mode Type' ?></th>
                         <th><?php echo 'Order Status' ?></th> 
-                        <th><?php echo 'Admin Status' ?></th> 
+                        <th><?php echo 'Vendor Status' ?></th> 
                         <th align="center">View</th>
                     </tr>
                     <tbody>

@@ -8,16 +8,15 @@
         $subcategorycount = ClassRegistry::init('Subcategory')->find('all', array('conditions' => array('category_id' => $categorycount['Category']['category_id'], 'status' => 'Active')));
         $length = count($subcategorycount);
         ?>
-        <!--Modifed by prakash-->
-        <?php if(in_array($this->params['pass']['0'], array('rings', 'bangles', 'earrings', 'pendant', 'jewellery'))){?>
-        <p align="center">
-            <?php
-            echo $this->Html->image("all-{$this->params['pass']['0']}.jpg");
-            ?>
-        </p>
-        <?php }else{?>
-            <p align="center"><?php echo '<center><h1 style="color:#a53030;">'.ucwords($categorycount['Category']['category']).'</h1></center>';?></p>
-        <?php }?>
+          <p align="center"><?php echo '<center><h1 style="color:#a53030;">'.'All '.ucwords($categorycount['Category']['category']).'</h1></center>';?></p>
+	<?php /*$category = ClassRegistry::init('Category')->find('first', array('conditions' => array('link'=>$this->params['pass']['0'],'status' =>'Active'),'order'=>'category_id ASC')); 
+	if($category['Category']['category_id']==1){
+		echo $this->Html->image('rings_heading.jpg');
+	}else{*/
+		//echo $this->Html->image('all-jewellery.jpg');
+		
+		
+	//}?>
         <p align="center"><a style="color:#8d3446;">View all (<?php echo $length; ?>) </a></p>
         <div style="clear:both;">&nbsp;</div>
         <div class="shadow"><?php // echo $this->Html->image('shadow.png',array("alt" => "Image"));     ?></div>

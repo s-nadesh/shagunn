@@ -35,6 +35,10 @@ class Order extends AppModel {
         'Adminstatus' => array(
             'className' => 'Adminstatus',
             'foreignKey' => 'admin_status_id'
+        ),
+        'Brokeragestatus' => array(
+            'className' => 'Brokeragestatus',
+            'foreignKey' => 'brokerage_status_id'
         )
     );
 

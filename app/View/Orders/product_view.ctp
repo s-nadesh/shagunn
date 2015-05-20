@@ -61,7 +61,11 @@
 
                             <?php
                             $k = 1;
-                            $ordercart = ClassRegistry::init('Shoppingcart')->find('all', array('conditions' => array('order_id' => $orderdetails['Order']['order_id'])));
+                            $ordercart = ClassRegistry::init('Shoppingcart')->find('all', array(
+                                'conditions' => array(
+                                    'order_id' => $orderdetails['Order']['order_id'],
+                                    'product_id' => $product_ids
+                                    )));
                             $ordercartamount = ClassRegistry::init('Shoppingcart')->find('first', array('conditions' => array('order_id' => $orderdetails['Order']['order_id']), 'fields' => array('SUM(total) AS totamount')));
                             foreach ($ordercart as $ordercarts) {
                                 $productdetails = ClassRegistry::init('Product')->find('first', array('conditions' => array('product_id' => $ordercarts['Shoppingcart']['product_id'])));

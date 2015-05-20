@@ -19,6 +19,9 @@ The cart is the set of items that have been readied for purchase but have not be
 <li class="ui-state-default ui-corner-top ui-tabs-active ui-state"><a href="<?php echo BASE_URL ?>signin/address_book"  class="ui-tabs-anchor">Address Book</a></li>
 <li class="ui-state-default ui-corner-top ui-tabs-active ui-state"><a href="<?php echo BASE_URL ?>orders/my_order"  class="ui-tabs-anchor">My Order</a></li>
 <li class="ui-state-default ui-corner-top ui-tabs-active ui-state"><a href="<?php echo BASE_URL ?>signin/wishlist"  class="ui-tabs-anchor">Wishlist</a></li>
+            <?php if ($this->Session->read('User.user_type') == 2) { ?>
+                <li class="ui-state-default ui-corner-top ui-tabs-active"><a href="<?php echo BASE_URL ?>vendors/user_orders" class="ui-tabs-anchor">User Orders</a></li>
+            <?php } ?>
 
 </ul>
 <div id="tabs-1" class="">
@@ -96,7 +99,7 @@ The cart is the set of items that have been readied for purchase but have not be
 					}
 				}*/
                         ?>
-            	<td  class="details"><?php //if(!empty($user)){ if($user['User']['user_type']==0) {  if(!empty($user['User']['date_of_birth'])) { echo $array[0]."-".$array[2]."-".$array[4]; } } } ?><?php echo $user['User']['date_of_birth'];?> </td>
+            	<td  class="details"><?php //if(!empty($user)){ if($user['User']['user_type']==0) {  if(!empty($user['User']['date_of_birth'])) { echo $array[0]."-".$array[2]."-".$array[4]; } } } ?><?php if(!empty($user['User']['date_of_birth'])){echo $user['User']['date_of_birth']; }else{echo '--';};?> </td>
                 <td class="detail" style="display:none;">
                 
                 
@@ -134,7 +137,7 @@ The cart is the set of items that have been readied for purchase but have not be
             <tr>
             	<td>Anniversary date</td>
             	<td>:</td>
-            	<td  class="details"><?php echo $user['User']['anniversary'];?></td>
+            	<td  class="details"><?php if(!empty($user['User']['anniversary'])){echo $user['User']['anniversary'];}else{echo '--';}?></td>
                 
                 <td class="detail" style="display:none;">
                 

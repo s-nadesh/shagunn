@@ -152,15 +152,7 @@ class VendorsController extends AppController {
                 $activateemail['toemail'] = $user['User']['email'];
                 $message = str_replace(array('{link}', '{email}', '{password}'), array("<a target='_blank' href=" . BASE_URL . "signin/index/>" . BASE_URL . "signin/index" . "</a>", $activateemail['toemail'], $password), $activateemail['Emailcontent']['content']);
                 $adminmailid = $this->Adminuser->find('first', array('conditions' => array('admin_id' => '1')));
-                
-                App::uses('CakeEmail', 'Network/Email');
-                $email = new CakeEmail('gmail');
-                $email->from('prakash.paramanandam@arkinfotec.com');
-                $email->to($user['User']['email']);
-                $email->subject('Email Confirmation');
-                $email->send($message);
-                
-//                $this->mailsend(SITE_NAME, $adminmailid['Adminuser']['email'], $user['User']['email'], $activateemail['Emailcontent']['subject'], $message);
+                $this->mailsend(SITE_NAME, $adminmailid['Adminuser']['email'], $user['User']['email'], $activateemail['Emailcontent']['subject'], $message);
                 $this->User->save($user);
 
                 if (!empty($this->request->data['Vendor']['Product_category'])) {

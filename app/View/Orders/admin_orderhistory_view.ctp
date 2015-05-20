@@ -23,12 +23,12 @@
 
                                 <table width="950" align="left">
                                     <thead>
-                                    <th width="10">#</th>
-                                    <th width="10">Status Type</th>
-                                    <th width="20">Date</th>
-                                    <th width="15">Old Status</th>
-                                    <th width="15">New Status</th>
-                                    <th width="30">Remarks</th>
+                                    <th width="10" align="left">#</th>
+                                    <th width="10" align="left">Status Type</th>
+                                    <th width="20" align="left">Date</th>
+                                    <th width="15" align="left">Old Status</th>
+                                    <th width="15" align="left">New Status</th>
+                                    <th width="30" align="left">Remarks</th>
                                     </thead>
                                     <tbody>
                                         <?php if (!empty($orderhistory)) { ?>

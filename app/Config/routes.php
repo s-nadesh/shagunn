@@ -71,6 +71,15 @@ Router::connect('/franchiseeproducts/view/:id', array('controller' => 'franchise
 Router::connect('/orders/pdf/:id', array('controller' => 'orders', 'action' => 'orderpdf'), array('pass' => array('id')));
 Router::connect('/orders/mail/:id', array('controller' => 'orders', 'action' => 'send_email'), array('pass' => array('id')));
 
+Router::connect('/orders/user_view/:id', array('controller' => 'orders', 'action' => 'user_view'), array('pass' => array('id')));
+Router::connect('/orders/franchisee_view/:id', array('controller' => 'orders', 'action' => 'franchisee_view'), array('pass' => array('id')));
+Router::connect('/orders/product_view/:id', array('controller' => 'orders', 'action' => 'product_view'), array('pass' => array('id')));
+Router::connect('/orders/billing_view/:id', array('controller' => 'orders', 'action' => 'billing_view'), array('pass' => array('id')));
+Router::connect('/orders/shipping_view/:id', array('controller' => 'orders', 'action' => 'shipping_view'), array('pass' => array('id')));
+Router::connect('/orders/order_view/:id', array('controller' => 'orders', 'action' => 'order_view'), array('pass' => array('id')));
+Router::connect('/orders/orderhistory_view/:id', array('controller' => 'orders', 'action' => 'orderhistory_view'), array('pass' => array('id')));
+Router::connect('/orders/chq_dd_view/:id', array('controller' => 'orders', 'action' => 'chq_dd_view'), array('pass' => array('id')));
+
 ////$url =  $_SERVER['REQUEST_URI'];
 //$url =  explode('?',$_SERVER['REQUEST_URI']);
 //$url=$url[0];

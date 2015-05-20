@@ -153,7 +153,7 @@ class SigninController extends AppController {
         }
     }
 
-    public function personal() {
+     public function personal() {
         if ($this->request->is('post')) {
             if (!empty($this->request->data)) {
                 $user_id = $this->Session->read('User.user_id');
@@ -162,8 +162,19 @@ class SigninController extends AppController {
                     if ($check['User']['status'] == 'Active') {
                         $this->request->data['User']['user_id'] = $check['User']['user_id'];
                         $this->request->data['User']['created_date'] = date('Y-m-d H:i:s');
-                        $this->request->data['User']['date_of_birth'] = $this->request->data['User']['year'] . "-" . $this->request->data['User']['month'] . "-" . $this->request->data['User']['date'];
+						if(!empty($this->request->data['User']['year']) && !empty($this->request->data['User']['month']) && !empty($this->request->data['User']['date']))
+						{
+								$this->request->data['User']['date_of_birth'] = $this->request->data['User']['year'] . "-" . $this->request->data['User']['month'] . 
+								"-" . $this->request->data['User']['date'];
+						}else{
+							$this->request->data['User']['date_of_birth']='';
+						}
+						if(!empty($this->request->data['User']['annu_year']) && !empty($this->request->data['User']['annu_month']) && !empty($this->request->data['User']['annu_date']))
+						{
                         $this->request->data['User']['anniversary'] = $this->request->data['User']['annu_year'] . "-" . $this->request->data['User']['annu_month'] . "-" . $this->request->data['User']['annu_date'];
+						}else{
+							$this->request->data['User']['anniversary'] = '';
+						}
                         $this->User->save($this->request->data);
                         $this->redirect(array('controller' => 'signin', 'action' => 'details'));
                     }
@@ -328,7 +339,7 @@ class SigninController extends AppController {
         }
     }
 
-    public function admin_user_export() {
+   public function admin_user_export() {
 
         $this->layout = '';
         $this->render(false);
@@ -339,8 +350,8 @@ class SigninController extends AppController {
 
         header('Content-type: application/csv');
         header('Content-Disposition: attachment; filename="' . $filename . '"');
-        $results = $this->User->find('all'); //,array('conditions'=>array('status'=>'Active'))
-        $header_row = array("S.No", "Email", "Frist Name", "Last Name", "Phone No", "Address", "Birth day", "Anniversary", "status", "Shipping Address", "Shipping Landmark", "Billing Address", "Billing Landmark", "Pincode", "City", "State");
+        $results = $this->User->find('all',array('conditions'=>array('status !='=>'Trash','user_type'=>'0'))); //,array('conditions'=>array('status'=>'Active'))
+        $header_row = array("S.No", "Email", "Frist Name", "Last Name", "Phone No", "Address", "Birth day", "Anniversary", "status", "Shipping Address", "Shipping Landmark","Shipping Pincode","Shipping City","Shipping State", "Billing Address", "Billing Landmark", "Pincode", "City", "State");
         fputcsv($csv_file, $header_row, ',', '"');
         $i = 1;
         foreach ($results as $results) {
@@ -348,8 +359,12 @@ class SigninController extends AppController {
             if (!empty($shipping)) {
                 $address1 = $shipping['Shipping']['shipping_address'];
                 $land1 = $shipping['Shipping']['shipping_landmark'];
+				$shipping_pincode=$shipping['Shipping']['shipping_pincode'];
+				$shipping_city=$shipping['Shipping']['shipping_city'];
+				$shipping_state=$shipping['Shipping']['shipping_state'];
                 $address2 = $shipping['Shipping']['billing_address'];
                 $land2 = $shipping['Shipping']['billing_landmark'];
+				
                 $pincode = $shipping['Shipping']['pincode'];
                 $city = $shipping['Shipping']['city'];
                 $state = $shipping['Shipping']['state'];
@@ -368,6 +383,9 @@ class SigninController extends AppController {
                 $results['User']['status'],
                 $address1,
                 $land1,
+				$shipping_pincode,
+				$shipping_city,
+				$shipping_state,
                 $address2,
                 $land2,
                 $pincode,
@@ -379,6 +397,7 @@ class SigninController extends AppController {
         }
         fclose($csv_file);
     }
+
 
     public function facebook($cart = '') {
         $facebook = new Facebook(array(
@@ -392,10 +411,16 @@ class SigninController extends AppController {
 
             $user_profile = $facebook->api('/me');
 
-            $userpro = $this->User->find('first', array('conditions' => array('facebook_id' => $user_profile['id'])));
+			$userpro = $this->User->find('first', array('conditions' => array('facebook_id' => $user_profile['id'],'status !='=>'Trash')));
 
             if (!empty($userpro)) {
-                $this->redirect(array('action' => 'profile', $userpro['User']['user_id']));
+		if($userpro['User']['status']=="Active"){
+			$this->redirect(array('action' => 'profile', $userpro['User']['user_id']));
+		}else{
+			  $this->Session->setFlash("<div class='success msg'>" . __('You are deactivated by admin.') . "</div>");
+		  $this->redirect(array('action'=>'index'));
+		}
+                //$this->redirect(array('action' => 'profile', $userpro['User']['user_id']));
                 if ($cart == '') {
                     $this->redirect(array('controller' => 'signin', 'action' => 'personal'));
                 } else {
@@ -459,7 +484,8 @@ class SigninController extends AppController {
                 $users = $this->User->find('first', array('conditions' => array('user_id' => $this->Session->read('User.user_id'))));
                 if (!empty($users)) {
                     $this->request->data['User']['user_id'] = $users['User']['user_id'];
-                    $this->request->data['User']['user_id'] = sha1($users['User']['password']);
+                    $this->request->data['User']['password']= sha1($this->request->data['User']['password']);
+
                     $this->User->save($this->request->data);
                 }
             }
@@ -516,21 +542,13 @@ class SigninController extends AppController {
     public function wishlist() {
         $this->usercheck();
 
-        $user = $this->Whislist->find("all", array(
-            'conditions' => array(
-                'Whislist.user_id' => $this->Session->read('User.user_id'),
-                'Whislist.status'=>'Active',
-                'Whislist.product_id NOT IN (SELECT Shoppingcart.product_id FROM sha_shoppingcarts AS Shoppingcart WHERE Shoppingcart.order_id IN (SELECT Orders.order_id FROM `sha_orders` AS `Orders` WHERE Orders.user_id='.$this->Session->read('User.user_id').' AND (Orders.status=\'Paid\' OR Orders.status=\'Partialpaid\') AND Orders.created_date >= Whislist.created_date))'),
-            'joins'=>array(
-                array(
-                    'table'=>'products',
-                    'alias'=>'Product',
-                    'type'=>'inner',
-                    'foreignKey' => false,
-                    'conditions' => array(
-                        '`Product.product_id`=`Whislist.product_id`','Product.status'=>'Active')
-                    )),
-            'group'=>'Whislist.whislist_id'));
+        $user = $this->Whislist->find("all", array('conditions' => array('Whislist.user_id' => $this->Session->read('User.user_id'),'Whislist.status'=>'Active','Whislist.product_id NOT IN (SELECT Shoppingcart.product_id FROM sha_shoppingcarts AS Shoppingcart WHERE Shoppingcart.order_id IN (SELECT Orders.order_id FROM `sha_orders` AS `Orders` WHERE Orders.user_id='.$this->Session->read('User.user_id').' AND (Orders.status=\'Paid\' OR Orders.status=\'Partialpaid\') AND Orders.created_date >= Whislist.created_date))'),'joins'=>array(array(
+				'table'=>'products',
+				'alias'=>'Product',
+				'type'=>'inner',
+				 'foreignKey' => false,
+				'conditions' => array('`Product.product_id`=`Whislist.product_id`','Product.status'=>'Active')
+				)),'group'=>'Whislist.whislist_id'));
         $this->set('user', $user);
     }
 

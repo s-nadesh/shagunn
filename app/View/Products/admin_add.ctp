@@ -90,31 +90,47 @@
                         <dl class="inline">
                             <div>        
                                 <?php
-                                $menus = ClassRegistry::init('Menu')->find('all', array('recursive' => 2, 'conditions' => array('is_active' => 1, 'menu_id' => array(3, 4, 5, 6, 7, 8))));
+                                ClassRegistry::init('Menu')->Behaviors->attach('Containable');
+                                $menus = ClassRegistry::init('Menu')->find('all', array(
+                                    'contain' => array(
+                                        'Submenu' => array(
+                                            'Offer' => array(
+                                                'conditions' => array('Offer.is_active' => '1')
+                                            ),
+                                            'conditions' => array(
+                                                'Submenu.is_active' => '1'
+                                            )
+                                        )),
+                                    'conditions' => array(
+                                        'Menu.is_active' => '1',
+                                        'Menu.menu_id' => array(3, 4, 5, 6, 7, 8)
+                                )));
+                                
                                 foreach ($menus as $menu_id => $menu) {
                                     ?>
                                     <dt><label for="name"><?php echo $menu['Menu']['menu_name'] ?> Menu</label></dt>
                                     <dd>  
                                         <?php foreach ($menu['Submenu'] as $key => $submenu) { ?>
                                             <input type="checkbox" name="data[Product][submenu_ids][]"  size="50" value="<?php echo $submenu['submenu_id'] ?>"
-                                            data-offer="<?php echo $submenu['submenu_id']?>" class="submenu_ids <?php echo !empty($submenu['Offer']) ? 'submenu_offer_ids' : ''?>"/><?php echo $submenu['submenu_name'] ?> &nbsp;&nbsp; 
-                                    <?php } ?>
+                                                   data-offer="<?php echo $submenu['submenu_id'] ?>" class="submenu_ids <?php echo!empty($submenu['Offer']) ? 'submenu_offer_ids' : '' ?>"/><?php echo $submenu['submenu_name'] ?> &nbsp;&nbsp; 
+                                               <?php } ?>
                                     </dd>
-                                    
-                                    <?php 
-                                    foreach ($menu['Submenu'] as $key => $submenu) { 
-                                        if(!empty($submenu['Offer'])){?>
-                                                <dt class="offer_menu offer_menu_<?php echo $submenu['submenu_id']?>">
-                                                    <label for="name"><?php echo $submenu['submenu_name'] ?> Offer</label>
-                                                </dt>
-                                                <dd class="offer_menu offer_menu_<?php echo $submenu['submenu_id']?>">
-                                                <?php foreach ($submenu['Offer'] as $offer) {?>
-                                                    <input type="checkbox" name="data[Product][offer_ids][]"  size="50" value="<?php echo $offer['offer_id'] ?>" class="offer_ids_<?php echo $submenu['submenu_id']?>" /><?php echo $offer['offer_name'] ?> &nbsp;&nbsp; 
-                                                <?php } ?> 
-                                                </dd>
-                                            <?php  
+
+                                    <?php
+                                    foreach ($menu['Submenu'] as $key => $submenu) {
+                                        if (!empty($submenu['Offer'])) {
+                                            ?>
+                                            <dt class="offer_menu offer_menu_<?php echo $submenu['submenu_id'] ?>">
+                                            <label for="name"><?php echo $submenu['submenu_name'] ?> Offer</label>
+                                            </dt>
+                                            <dd class="offer_menu offer_menu_<?php echo $submenu['submenu_id'] ?>">
+                                                <?php foreach ($submenu['Offer'] as $offer) { ?>
+                                                    <input type="checkbox" name="data[Product][offer_ids][]"  size="50" value="<?php echo $offer['offer_id'] ?>" class="offer_ids_<?php echo $submenu['submenu_id'] ?>" /><?php echo $offer['offer_name'] ?> &nbsp;&nbsp; 
+                                            <?php } ?> 
+                                            </dd>
+                                            <?php
                                         }
-                                    } 
+                                    }
                                 }
                                 ?>
                             </div>
@@ -315,8 +331,8 @@
                                         }
                                         ?>
                                     </select></dd>
-                                <dt><label for="name">Size<span class="required">*</span></label></dt> 
-                                <dd><input type="text" name="data[Productgemstone][0][size]" class="validate[required]" size="50"  id="productsize"/></dd>   
+                                <dt><label for="name">Size</label></dt> 
+                                <dd><input type="text" name="data[Productgemstone][0][size]"  size="50"  id="productsize"/></dd>   
                                 <dt><label for="name">Stone Shape<span class="required">*</span></label></dt> 
                                 <dd><select name="data[Productgemstone][0][shape]" class="validate[required]" id="stone_clarity2">
                                         <option value="">Select Shape</option>
@@ -834,7 +850,7 @@
         /***start****/
         $('.addgem').live('click', function () {
             var values = parseInt($('#gemstone_details').val()) + 1;
-            $('.addgemstone').append('<div class="addgems"><fieldset><legend>Details</legend> <dt><label for="name">Gemstone<span class="required">*</span></label></dt> </dt><dd id="gem' + values + '"></dd>' + '<dt><label for="name">Size<span class="required">*</span></label></dt><input type="text" name="data[Productgemstone][' + values + '][size]" class="validate[required]" size="50"  id="productsize"/><br><br>' + '<dt><label for="name">Stone Shape<span class="required">*</span></label></dt>' + ' <dd id="clarity' + values + '"></dd>' + '<dt><label for="name">Setting Type<span class="required">*</span></label></dt> ' + ' <dd id="type' + values + '"></dd>' + '<dt><label for="name">No. of Gemstone<span class="required">*</span></label></dt>' + '<dd><input type="text" name="data[Productgemstone][' + values + '][no_of_stone]" onkeypress="return intnumbers(this,event)" class="validate[required,custom[integer]]" id="diamonds' + values + '" size="21" value=""/></dd>' + '<dt><label for="name">Stone Weight</label></dt> <dd><input type="text" name="data[Productgemstone][' + values + '][stone_weight]"  id="stone_weight' + values + '" onkeypress="return floatnumbers(this,event)" maxlength="6"  />&nbsp;Carat<dt></dt><dd><a class="remove_gemstone">Remove </a></dd></fieldset></div>');
+            $('.addgemstone').append('<div class="addgems"><fieldset><legend>Details</legend> <dt><label for="name">Gemstone<span class="required">*</span></label></dt> </dt><dd id="gem' + values + '"></dd>' + '<dt><label for="name">Size</label></dt><input type="text" name="data[Productgemstone][' + values + '][size]"  size="50"  id="productsize"/><br><br>' + '<dt><label for="name">Stone Shape<span class="required">*</span></label></dt>' + ' <dd id="clarity' + values + '"></dd>' + '<dt><label for="name">Setting Type<span class="required">*</span></label></dt> ' + ' <dd id="type' + values + '"></dd>' + '<dt><label for="name">No. of Gemstone<span class="required">*</span></label></dt>' + '<dd><input type="text" name="data[Productgemstone][' + values + '][no_of_stone]" onkeypress="return intnumbers(this,event)" class="validate[required,custom[integer]]" id="diamonds' + values + '" size="21" value=""/></dd>' + '<dt><label for="name">Stone Weight</label></dt> <dd><input type="text" name="data[Productgemstone][' + values + '][stone_weight]"  id="stone_weight' + values + '" onkeypress="return floatnumbers(this,event)" maxlength="6"  />&nbsp;Carat<dt></dt><dd><a class="remove_gemstone">Remove </a></dd></fieldset></div>');
             $('.addgems input').uniform();
 
             $('#gemstone_details').val(values);
@@ -948,46 +964,46 @@
         vendor_making_charge($("input[name='vendor_making_charge_calc']:checked").val());
         making_charge($("input[name='making_charge_calc']:checked").val());
 
-        $('.vendor_making_charge_calc').click(function(){
+        $('.vendor_making_charge_calc').click(function () {
             vendor_making_charge($(this).val());
         });
-        $('.making_charge_calc').click(function(){
+        $('.making_charge_calc').click(function () {
             making_charge($(this).val());
         });
-        $('.submenu_ids').click(function(){
-            if($(this).is(':checked')){
+        $('.submenu_ids').click(function () {
+            if ($(this).is(':checked')) {
                 show_offers($(this).data('offer'), 'show');
-            }else{
+            } else {
                 show_offers($(this).data('offer'), 'hide');
             }
         });
-        $('.submenu_offer_ids').each(function(){
-            if($(this).is(':checked')){
+        $('.submenu_offer_ids').each(function () {
+            if ($(this).is(':checked')) {
                 show_offers($(this).data('offer'), 'show');
-            }else{
+            } else {
                 show_offers($(this).data('offer'), 'hide');
             }
         });
     });
 
-    function vendor_making_charge(calc){
-        if(calc == 'PER'){
+    function vendor_making_charge(calc) {
+        if (calc == 'PER') {
             $('#vendor_making_charge_indicator').html('%');
-        }else{
+        } else {
             $('#vendor_making_charge_indicator').html('INR');
         }
         $('#vendor_making_charge_calc').val(calc);
     }
-    
-    function making_charge(calc){
-        if(calc == 'PER'){
+
+    function making_charge(calc) {
+        if (calc == 'PER') {
             $('#making_charge_indicator').html('%');
-        }else{
+        } else {
             $('#making_charge_indicator').html('INR');
         }
         $('#making_charge_calc').val(calc);
     }
-    
+
     function change_category() {
         var category = $("#category :selected").text();
         if (category.indexOf('Gold Coins') > -1 || category.indexOf('Gold Coin') > -1) {
@@ -1003,13 +1019,13 @@
             }
         }
     }
-    
-    function show_offers(id, mode){
-        if(mode == 'show'){
-            $('.offer_menu_'+id).show();
-        }else if(mode == 'hide'){
-            $('.offer_menu_'+id).hide();
-            $('.offer_ids_'+id).prop('checked', false);
+
+    function show_offers(id, mode) {
+        if (mode == 'show') {
+            $('.offer_menu_' + id).show();
+        } else if (mode == 'hide') {
+            $('.offer_menu_' + id).hide();
+            $('.offer_ids_' + id).prop('checked', false);
             $.uniform.update();
         }
     }

@@ -17,7 +17,9 @@ class OrdersController extends AppController {
      * @var array
      */
     public $components = array('Paginator', 'Session', 'Image', 'Mpdf');
-    public $uses = array('Order', 'User', 'Shipping', 'Shoppingcart', 'Discount', 'Paymentdetails', 'Discounthistory', 'Product', 'Productimage', 'Category', 'Productdiamond', 'Productgemstone', 'Vendorcontact', 'Products', 'Shippingrate', 'Partialpay', 'Orderhistory');
+    public $uses = array('Order', 'User', 'Shipping', 'Shoppingcart', 'Discount', 'Paymentdetails', 'Discounthistory', 'Product', 
+        'Productimage', 'Category', 'Productdiamond', 'Productgemstone', 'Vendorcontact', 'Products', 'Shippingrate', 'Partialpay', 
+        'Orderhistory', 'Vendor');
     public $layout = 'webpage';
 
     public function personal_details() {
@@ -1684,8 +1686,10 @@ class OrdersController extends AppController {
         $this->usercheck();
         if ($this->Session->read('User.user_type') == 2) {
             $this->layout = 'webpage';
+            $vendor = $this->Vendor->find('first', array('conditions' => array('user_id' => $this->Session->read('User.user_id'))));
+            $product_ids = $this->Product->find('list', array('conditions' => array('vendor_id' => $vendor['Vendor']['vendor_id'])));
             $orderdetails = $this->Order->find('first', array('conditions' => array('order_id' => $this->params['pass']['0'])));
-            $this->set(compact('orderdetails'));
+            $this->set(compact('orderdetails', 'product_ids', 'vendor'));
         } else {
             return $this->redirect('/');
         }
@@ -1729,23 +1733,13 @@ class OrdersController extends AppController {
         if ($this->Session->read('User.user_type') == 2) {
             $this->layout = 'webpage';
             if ($this->request->is('post') || $this->request->is('put')) {
-                if ($this->Order->save($this->request->data)) {
-
-                    if ($this->request->data['Order']['old_order_status_id'] != $this->request->data['Order']['order_status_id']) {
-                        $orderhistory = array(
-                            'Orderhistory' => array(
-                                'order_id' => $this->data['Order']['order_id'],
-                                'old_status_id' => $this->data['Order']['old_order_status_id'],
-                                'new_status_id' => $this->data['Order']['order_status_id'],
-                                'remarks' => $this->data['Order']['orderstatus_remarks'],
-                        ));
-                        $this->Orderhistory->save($orderhistory);
-                        $this->order_status_mail($this->request->data['Order']['order_id']);
+                if ($this->request->data['Order']['old_admin_status_id'] != $this->request->data['Order']['admin_status_id']) {
+                    if ($this->Order->save($this->request->data)) {
+                        $this->vendor_status_mail_to_admin($this->request->data['Order']['order_id']);
+                        $this->Session->setFlash('<div class="success msg">Vendor status updated successfully</div>', '');
+                    } else {
+                        $this->Session->setFlash('<div class="error msg">Failed to update</div>', '');
                     }
-
-                    $this->Session->setFlash('<div class="success msg">Order details updated successfully</div>', '');
-                } else {
-                    $this->Session->setFlash('<div class="error msg">Failed to update</div>', '');
                 }
                 $this->redirect(array('action' => 'order_view', $this->data['Order']['order_id'], 'controller' => 'orders'));
             }
@@ -1815,4 +1809,27 @@ class OrdersController extends AppController {
         }
     }
 
+    public function vendor_status_mail_to_admin($order_id) {
+        $orderdetails = $this->Order->find('first', array('conditions' => array('order_id' => $order_id)));
+        $user = ClassRegistry::init('User')->find('first', array('conditions' => array('user_id' => $orderdetails['Order']['user_id'])));
+        $in = $this->admin_get_invoice_prefix($user['User']['user_type'], $orderdetails['Order']['cod_status']);
+
+        $adminmailid = $this->Adminuser->find('first', array('conditions' => array('admin_id' => '1')));
+        App::uses('CakeEmail', 'Network/Email');
+
+        $email = new CakeEmail();
+        $email->emailFormat('html');
+        $email->from(array(trim($user['User']['email']) => SITE_NAME));
+        $email->template('default', 'default');
+        $email->to(trim($adminmailid['Adminuser']['email']));
+        $subject = " Order # " . $in . $orderdetails['Order']['invoice'] . " Order Status : " . $orderdetails['Adminstatus']['admin_status'];
+        $email->subject(SITE_NAME . $subject);
+        $message = "<p>Dear {$adminmailid['Adminuser']['admin_name']}</p>";
+        $message .= "<p>An Order status has been recently changed by {$user['User']['first_name']}for below order</p>";
+        $message .= "<p>Order # {$in}{$orderdetails['Order']['invoice']}</p>";
+        $message .= "<p>Order Status : {$orderdetails['Orderstatus']['order_status']}</p>";
+        $message .= "<p>Thanks.</p>";
+        $email->send($message);
+        $email->reset();
+    }
 }

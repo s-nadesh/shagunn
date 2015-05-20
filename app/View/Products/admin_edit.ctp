@@ -165,7 +165,22 @@
                         <dl class="inline">
                             <div>        
                                 <?php
-                                $menus = ClassRegistry::init('Menu')->find('all', array('recursive' => 2, 'conditions' => array('is_active' => 1, 'menu_id' => array(3, 4, 5, 6, 7, 8))));
+                                ClassRegistry::init('Menu')->Behaviors->attach('Containable');
+                                $menus = ClassRegistry::init('Menu')->find('all', array(
+                                    'contain' => array(
+                                        'Submenu' => array(
+                                            'Offer' => array(
+                                                'conditions' => array('Offer.is_active' => '1')
+                                            ),
+                                            'conditions' => array(
+                                                'Submenu.is_active' => '1'
+                                            )
+                                        )),
+                                    'conditions' => array(
+                                        'Menu.is_active' => '1',
+                                        'Menu.menu_id' => array(3, 4, 5, 6, 7, 8)
+                                )));
+//                                $menus = ClassRegistry::init('Menu')->find('all', array('recursive' => 2, 'conditions' => array('is_active' => 1, 'menu_id' => array(3, 4, 5, 6, 7, 8))));
                                 $product_menus = explode(",", $product['Product']['submenu_ids']);
                                 $product_offers = explode(",", $product['Product']['offer_ids']);
                                 foreach ($menus as $menu_id => $menu) {
@@ -616,8 +631,8 @@
                                         }
                                         ?>
                                     </select></dd>
-                                <dt><label for="name">Size<span class="required">*</span></label></dt> 
-                                <dd><input type="text" name="data[Productgemstone][0][size]" class="validate[required]" size="50"  id="productsize"  value="<?php
+                                <dt><label for="name">Size</label></dt> 
+                                <dd><input type="text" name="data[Productgemstone][0][size]" size="50"  id="productsize"  value="<?php
                                     if (!empty($new_stone['Productgemstone']['size'])) {
                                         echo $new_stone['Productgemstone']['size'];
                                     }
@@ -680,8 +695,8 @@
                                 }
                                 ?>
                             </select></dd>
-                        <dt><label for="name">Size<span class="required">*</span></label></dt> 
-                        <dd><input type="text" name="data[Productgemstone][0][size]" class="validate[required]" size="50"  id="productsize"/></dd>   
+                        <dt><label for="name">Size</label></dt> 
+                        <dd><input type="text" name="data[Productgemstone][0][size]"  size="50"  id="productsize"/></dd>   
                         <dt><label for="name">Stone Shape<span class="required">*</span></label></dt> 
                         <dd><select name="data[Productgemstone][0][shape]" class="validate[required]" id="stone_clarity">
                                 <option value="">Select Shape</option>

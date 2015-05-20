@@ -46,6 +46,8 @@
                 <h2>Order Details</h2>
 
                 <div style="float:left; width:100%;">
+                    <?php echo $this->Form->create('Order', array('method' => 'post')) ?> 
+
                     <table class="bdrdottTd" width="45%" cellspacing="0" cellpadding="0" border="0">
                         <?php
                         $orderinvoice = ClassRegistry::init('Order')->find('first', array('conditions' => array('order_id' => $orderdetails['Order']['order_id'])));
@@ -189,30 +191,29 @@
                             <?php
                             $order_status_options = ClassRegistry::init('Orderstatus')->find('list', array('fields' => array('order_sts_id', 'order_status'),
                                 'condition' => array('is_active' => '1'),
-//                                        'order' => array('Orderstatus.order_status' => 'asc')
                             ));
                             ?>
                             <td><p>
                                     <?php
-                                    echo $this->Form->input('order_status_id', array(
-                                        'type' => 'select',
-                                        'id' => 'orderstatusid',
-                                        'options' => $order_status_options,
-                                        'label' => false,
-                                        'div' => false,
-                                        'value' => $orderdetails['Order']['order_status_id'],
-//                                                'empty' => ''
-                                    ));
-
-                                    echo $this->Form->input('old_order_status_id', array('type' => 'hidden', 'value' => $orderdetails['Order']['order_status_id']));
+                                    echo $orderdetails['Orderstatus']['order_status'];
+//                                    echo $this->Form->input('order_status_id', array(
+//                                        'type' => 'select',
+//                                        'id' => 'orderstatusid',
+//                                        'options' => $order_status_options,
+//                                        'label' => false,
+//                                        'div' => false,
+//                                        'value' => $orderdetails['Order']['order_status_id'],
+////                                                'empty' => ''
+//                                    ));
+//
+//                                    echo $this->Form->input('old_order_status_id', array('type' => 'hidden', 'value' => $orderdetails['Order']['order_status_id']));
                                     ?>
-                                    <?php // $st=h($orderdetails['Order']['order_status']); if(!empty($st))echo $st; else '-';    ?>
                                 </p></td>
                         </tr>
-                        <tr id="remarks_tr" style="display: none">
+<!--                        <tr id="remarks_tr" style="display: none">
                             <td width="150"><strong>Remarks</strong></td>
                             <td><?php echo $this->Form->input('orderstatus_remarks', array('type' => 'textarea', 'div' => false, 'label' => false)); ?></td>
-                        </tr>
+                        </tr>-->
 
 <!--                <tr><td width="150"><strong>Order Status </strong></td>
 <td><p><?php
@@ -223,7 +224,7 @@
                             '-';
                         ?></p></td></tr>-->
                         <tr>
-                            <td width="150"><strong>Admin Status </strong></td>
+                            <td width="150"><strong>Vendor Status </strong></td>
                             <?php
                             $admin_status_options = ClassRegistry::init('Adminstatus')->find('list', array('fields' => array('admin_sts_id', 'admin_status'),
                                 'condition' => array('is_active' => '1'),
@@ -245,6 +246,7 @@
                                         'value' => $orderdetails['Order']['admin_status_id'],
 //                         'empty' => ''
                                     ));
+                                    echo $this->Form->input('old_admin_status_id', array('type' => 'hidden', 'value' => $orderdetails['Order']['admin_status_id']));
                                     ?>
                                     <?php // $st=h($orderdetails['Order']['order_status']); if(!empty($st))echo $st; else '-';   ?>
                                 </p></td>
@@ -258,13 +260,14 @@
                             ?>
                             <td><p>
                                     <?php
-                                    echo $this->Form->input('brokerage_status_id', array(
-                                        'type' => 'select',
-                                        'options' => $brokerage_status_options,
-                                        'label' => false,
-                                        'div' => false,
-                                        'value' => $orderdetails['Order']['brokerage_status_id'],
-                                    ));
+                                    echo $orderdetails['Brokeragestatus']['brokerage_status'];
+//                                    echo $this->Form->input('brokerage_status_id', array(
+//                                        'type' => 'select',
+//                                        'options' => $brokerage_status_options,
+//                                        'label' => false,
+//                                        'div' => false,
+//                                        'value' => $orderdetails['Order']['brokerage_status_id'],
+//                                    ));
                                     ?>
                                 </p></td>
                         </tr>
@@ -322,6 +325,7 @@
                             <td width="150"><?php echo $this->Form->submit('Save', array('class' => 'button')); ?></td>
                         </tr>
                     </table>
+                        <?php echo $this->Form->end(); ?>
                 </div>
 
             </div>
