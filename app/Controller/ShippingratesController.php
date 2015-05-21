@@ -52,7 +52,8 @@ class ShippingratesController extends AppController {
             $conditions['status !='] = 'Trash';
 
             if ($this->request->query('searchterm') != '') {
-                $conditions['city'] = $this->request->query('searchterm');
+               // $conditions['city'] = $this->request->query('searchterm');
+			   $conditions['city LIKE'] = '%'.$this->request->query('searchterm').'%';
             }
             if ($this->request->query('searchpincode') != '') {
                 $conditions['pincode LIKE'] = '%' . $this->request->query('searchpincode') . '%';

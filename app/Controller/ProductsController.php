@@ -150,6 +150,8 @@ class ProductsController extends AppController {
                 $this->request->data['Product']['pid'] = $tiid;
                 $projectcode = sprintf("%06d", $tiid);
                 $this->request->data['Product']['product_code'] = $projectcode;
+
+				$this->request->data['Product']['product_name']= trim($this->request->data['Product']['product_name']);
                 /* saran */
                 $this->request->data['Product']['metal_purity'] = $this->request->data['Productmetal']['purity'][0];
                 /* saran */
@@ -209,7 +211,9 @@ class ProductsController extends AppController {
                         if (!empty($image['name'])) {
                             $this->request->data['Productimage']['status'] = 'Active';
                             $this->request->data['Productimage']['product_id'] = $product_id;
-                            $this->request->data['Productimage']['imagename'] = $this->Image->upload_image_and_thumbnail($image, 800, 800, 215, 133, "product", '1');
+                           // $this->request->data['Productimage']['imagename'] = $this->Image->upload_image_and_thumbnail($image, 800, 800, 215, 133, "product", '1');
+						   $this->request->data['Productimage']['imagename'] = $this->Image->upload_image_and_thumbnail($image, 800, 800, 215, 133, "product");
+
                             $this->Productimage->saveAll($this->request->data);
                         }
                     }
@@ -308,18 +312,27 @@ class ProductsController extends AppController {
                 $this->request->data['Product']['metal_purity'] = $this->request->data['Productmetal']['purity'][0];
                 /* saran */
                 //$this->request->data['Product']['product_size']=$this->request->data['Productmetal']['size'][0];
-                if (!empty($this->request->data['Product']['product_type'])) {
-                    $this->request->data['Product']['product_type'] = implode(",", $this->request->data['Product']['product_type']);
-                }
-                if (!empty($this->request->data['Product']['collection_type'])) {
-                    $this->request->data['Product']['collection_type'] = implode(",", $this->request->data['Product']['collection_type']);
-                }
-                if (!empty($this->request->data['Product']['product_view_type'])) {
-                    $this->request->data['Product']['product_view_type'] = implode(",", $this->request->data['Product']['product_view_type']);
-                }
-                if (empty($this->request->data['Product']['best_seller'])) {
-                    $this->request->data['Product']['best_seller'] = 0;
-                }
+                if(!empty($this->request->data['Product']['product_type'])){
+               		 $this->request->data['Product']['product_type'] = implode(",", $this->request->data['Product']['product_type']);
+			     }else{
+					  $this->request->data['Product']['product_type'] = "";
+				 }
+				 if(!empty($this->request->data['Product']['collection_type'])){
+				$this->request->data['Product']['collection_type'] = implode(",", $this->request->data['Product']['collection_type']);
+				}else{
+					$this->request->data['Product']['collection_type']="";
+				}
+				if(!empty($this->request->data['Product']['product_view_type'])){
+				$this->request->data['Product']['product_view_type'] = implode(",", $this->request->data['Product']['product_view_type']);
+				}else{
+					$this->request->data['Product']['product_view_type']="";
+				}
+              if(empty($this->request->data['Product']['best_seller'])){
+				$this->request->data['Product']['best_seller'] =0;
+			  }
+				
+			   $this->request->data['Product']['product_name']= trim($this->request->data['Product']['product_name']);
+
 
                 //added by prakash
                 $this->request->data['Product']['metal_fineness'] = !empty($this->data['Product']['metal_fineness']) ? implode(",", $this->data['Product']['metal_fineness']) : 0;
@@ -376,7 +389,9 @@ class ProductsController extends AppController {
                         if (!empty($image['name'])) {
                             $this->request->data['Productimage']['status'] = 'Active';
                             $this->request->data['Productimage']['product_id'] = $product_id;
-                            $this->request->data['Productimage']['imagename'] = $this->Image->upload_image_and_thumbnail($image, 800, 800, 215, 133, "product", '1');
+                           // $this->request->data['Productimage']['imagename'] = $this->Image->upload_image_and_thumbnail($image, 800, 800, 215, 133, "product", '1');
+						   $this->request->data['Productimage']['imagename'] = $this->Image->upload_image_and_thumbnail($image, 800, 800, 215, 133, "product");
+
                             $this->Productimage->saveAll($this->request->data);
                         }
                     }
