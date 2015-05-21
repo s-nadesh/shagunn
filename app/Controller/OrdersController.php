@@ -276,7 +276,7 @@ class OrdersController extends AppController {
                     $file = 'files/invoices/' . str_replace('/', '_', $in . $order1['Order']['invoice'] . '.pdf');
                     $this->mailsend(SITE_NAME, $activateemail['Emailcontent']['fromemail'], $user['User']['email'], $activateemail['Emailcontent']['subject'], $message, '', 1, $file, 'acknowledgment', '');
                     //send sms
-                    $sms_message = "Dear {$user['User']['first_name']}, Your Order #{$in}{$order1['Order']['invoice']} Placed.";
+                    $sms_message = "Dear {$user['User']['first_name']}, Thank You for placing your order with Shagunn. Your Order #{$in}{$order1['Order']['invoice']} has been confirmed and is being processed.";
                     $this->sendsms($user['User']['mobile_no'], $sms_message);
                     
                     $email = $this->Emailcontent->find('first', array('conditions' => array('eid' => 12)));
@@ -528,7 +528,7 @@ class OrdersController extends AppController {
             $subject = $activateemail['Emailcontent']['subject'] . ' ' . $in . $order1['Order']['invoice'];
             $this->mailsend(SITE_NAME, $activateemail['Emailcontent']['fromemail'], $user['User']['email'], $subject, $message, '', 1, $file, 'acknowledgment', '');
             //send sms
-            $sms_message = "Dear {$user['User']['first_name']}, Your Order #{$in}{$order1['Order']['invoice']} Placed.";
+            $sms_message = "Dear {$user['User']['first_name']}, Thank You for placing your order with Shagunn. Your Order #{$in}{$order1['Order']['invoice']} has been confirmed and is being processed.";
             $this->sendsms($user['User']['mobile_no'], $sms_message);
 
             $email = $this->Emailcontent->find('first', array('conditions' => array('eid' => 9)));
@@ -650,7 +650,7 @@ class OrdersController extends AppController {
             $subject = $activateemail['Emailcontent']['subject'] . ' ' . $in . $order1['Order']['invoice'];
             $this->mailsend(SITE_NAME, $activateemail['Emailcontent']['fromemail'], $user['User']['email'], $subject, $message, '', 1, $file, 'acknowledgment', '');
             //send sms
-            $sms_message = "Dear {$user['User']['first_name']}, Your Order #{$in}{$order1['Order']['invoice']} Placed.";
+            $sms_message = "Dear {$user['User']['first_name']}, Thank You for placing your order with Shagunn. Your Order #{$in}{$order1['Order']['invoice']} has been confirmed and is being processed.";
             $this->sendsms($user['User']['mobile_no'], $sms_message);
 
             $email = $this->Emailcontent->find('first', array('conditions' => array('eid' => 9)));
@@ -1029,7 +1029,7 @@ class OrdersController extends AppController {
                         $user = $this->User->findByUserId($order['Order']['user_id']);
                         if(!empty($user)){
                             $in = $this->admin_get_invoice_prefix($user['User']['user_type'], $order['Order']['cod_status']);
-                            $message = "Dear {$user['User']['first_name']}, Your Order #{$in}{$order['Order']['invoice']} Delivered Successfully.";
+                            $message = "Dear {$user['User']['first_name']}, Your Order #{$in}{$order['Order']['invoice']} delivered Successfully.";
                             $this->sendsms($user['User']['mobile_no'], $message);
                         }
                     }
