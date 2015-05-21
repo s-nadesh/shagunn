@@ -17,9 +17,9 @@ class OrdersController extends AppController {
      * @var array
      */
     public $components = array('Paginator', 'Session', 'Image', 'Mpdf');
-    public $uses = array('Order', 'User', 'Shipping', 'Shoppingcart', 'Discount', 'Paymentdetails', 'Discounthistory', 'Product', 
-        'Productimage', 'Category', 'Productdiamond', 'Productgemstone', 'Vendorcontact', 'Products', 'Shippingrate', 'Partialpay', 
-        'Orderhistory', 'Vendor');
+    public $uses = array('Order', 'User', 'Shipping', 'Shoppingcart', 'Discount', 'Paymentdetails', 'Discounthistory', 'Product',
+        'Productimage', 'Category', 'Productdiamond', 'Productgemstone', 'Vendorcontact', 'Products', 'Shippingrate', 'Partialpay',
+        'Orderhistory', 'Vendor', 'Orderstatus');
     public $layout = 'webpage';
 
     public function personal_details() {
@@ -275,7 +275,10 @@ class OrdersController extends AppController {
                     $invoice = $this->requestAction(array('action' => 'orderpdf', $order1['Order']['order_id'], 'F'), array('return', 'bare' => false));
                     $file = 'files/invoices/' . str_replace('/', '_', $in . $order1['Order']['invoice'] . '.pdf');
                     $this->mailsend(SITE_NAME, $activateemail['Emailcontent']['fromemail'], $user['User']['email'], $activateemail['Emailcontent']['subject'], $message, '', 1, $file, 'acknowledgment', '');
-
+                    //send sms
+                    $sms_message = "Dear {$user['User']['first_name']}, Your Order #{$in}{$order1['Order']['invoice']} Placed.";
+                    $this->sendsms($user['User']['mobile_no'], $sms_message);
+                    
                     $email = $this->Emailcontent->find('first', array('conditions' => array('eid' => 12)));
 
                     $messagen = str_replace(array('{name}', '{details}', '{order_no}', '{order_date}', '{shipping_details}', '{payment_details}'), array($name, $msg, $in . $order1['Order']['invoice'], date('d-m-Y', strtotime($order1['Order']['created_date'])), $shipping_details, $paymentdetails), $email['Emailcontent']['content']);
@@ -524,6 +527,9 @@ class OrdersController extends AppController {
             $file = 'files/invoices/' . str_replace('/', '_', $in . $order1['Order']['invoice'] . '.pdf');
             $subject = $activateemail['Emailcontent']['subject'] . ' ' . $in . $order1['Order']['invoice'];
             $this->mailsend(SITE_NAME, $activateemail['Emailcontent']['fromemail'], $user['User']['email'], $subject, $message, '', 1, $file, 'acknowledgment', '');
+            //send sms
+            $sms_message = "Dear {$user['User']['first_name']}, Your Order #{$in}{$order1['Order']['invoice']} Placed.";
+            $this->sendsms($user['User']['mobile_no'], $sms_message);
 
             $email = $this->Emailcontent->find('first', array('conditions' => array('eid' => 9)));
             $amountedit = $this->Paymentdetails->find('first', array('conditions' => array('paymentdetails_id' => $last_id)));
@@ -643,6 +649,9 @@ class OrdersController extends AppController {
             $file = 'files/invoices/' . str_replace('/', '_', $in . $order1['Order']['invoice'] . '.pdf');
             $subject = $activateemail['Emailcontent']['subject'] . ' ' . $in . $order1['Order']['invoice'];
             $this->mailsend(SITE_NAME, $activateemail['Emailcontent']['fromemail'], $user['User']['email'], $subject, $message, '', 1, $file, 'acknowledgment', '');
+            //send sms
+            $sms_message = "Dear {$user['User']['first_name']}, Your Order #{$in}{$order1['Order']['invoice']} Placed.";
+            $this->sendsms($user['User']['mobile_no'], $sms_message);
 
             $email = $this->Emailcontent->find('first', array('conditions' => array('eid' => 9)));
             $amountedit = $this->Paymentdetails->find('first', array('conditions' => array('paymentdetails_id' => $last_id)));
@@ -1003,7 +1012,6 @@ class OrdersController extends AppController {
         $this->checkadmin();
         if ($this->request->is('post') || $this->request->is('put')) {
             if ($this->Order->save($this->request->data)) {
-
                 if ($this->request->data['Order']['old_order_status_id'] != $this->request->data['Order']['order_status_id']) {
                     $orderhistory = array(
                         'Orderhistory' => array(
@@ -1014,6 +1022,17 @@ class OrdersController extends AppController {
                     ));
                     $this->Orderhistory->save($orderhistory);
                     $this->order_status_mail($this->request->data['Order']['order_id']);
+                    $order_status = $this->Orderstatus->findByOrderStsId($this->data['Order']['order_status_id']);
+                    $haystack = array('Completed', 'completed', 'Finished', 'finished');
+                    if(!empty($order_status) && in_array($order_status['Orderstatus']['order_status'], $haystack)){
+                        $order = $this->Order->findByOrderId($this->data['Order']['order_id']);
+                        $user = $this->User->findByUserId($order['Order']['user_id']);
+                        if(!empty($user)){
+                            $in = $this->admin_get_invoice_prefix($user['User']['user_type'], $order['Order']['cod_status']);
+                            $message = "Dear {$user['User']['first_name']}, Your Order #{$in}{$order['Order']['invoice']} Delivered Successfully.";
+                            $this->sendsms($user['User']['mobile_no'], $message);
+                        }
+                    }
                 }
 
                 $this->Session->setFlash('<div class="success msg">Order details updated successfully</div>', '');
@@ -1832,4 +1851,5 @@ class OrdersController extends AppController {
         $email->send($message);
         $email->reset();
     }
+
 }

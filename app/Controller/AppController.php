@@ -223,5 +223,11 @@ class AppController extends Controller {
         );
         $this->set($params);
     }
+    
+    public function sendsms($phone, $message) {
+        include 'sendsms.php';
+        $sendsms = new sendsms(SMS_SITE, SMS_METHOD, SMS_API_KEY, SMS_SENDER_ID);
+        $sendsms->send_sms($phone, $message, '', 'xml');
+    }
 
 }

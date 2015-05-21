@@ -43,7 +43,7 @@
                                                 </tr>
                                             <?php } ?>
                                         <?php }else{ ?>
-                                                <tr>
+                                                <tr style="text-align: center">
                                                     <td colspan="6">No Order History</td>
                                                 </tr>
                                         <?php } ?>
