@@ -29,6 +29,7 @@ Cache::config('default', array('engine' => 'File'));
 define('FACEBOOK_API_KEY','1572625609644961');
 define('FACEBOOK_API_SECRET','2c6f3e6276ded2833301ca5fdb025ddc');
 
+define('ENABLE_SMS',TRUE);
 define('SMS_SITE','http://alerts.sinfini.com/api/v3');
 define('SMS_METHOD','sms');
 define('SMS_API_KEY','14328fib06qu253pb9z4d');

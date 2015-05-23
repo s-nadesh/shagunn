@@ -180,6 +180,7 @@ class OrdersController extends AppController {
 							<th style=" border-bottom:1px solid #000;" >Price</th>
 						  </tr>';
                         $i = 1;
+                        $productnames = '';
                         foreach ($cart as $carts) {
                             $product = $this->Product->find('first', array('conditions' => array('product_id' => $carts['Shoppingcart']['product_id'])));
                             $productdiamond = $this->Productdiamond->find('first', array('conditions' => array('product_id' => $carts['Shoppingcart']['product_id'], 'clarity' => $carts['Shoppingcart']['clarity'], 'color' => $carts['Shoppingcart']['color']), 'fields' => array('SUM(noofdiamonds) AS no_diamond', 'SUM(stone_weight) AS sweight')));
@@ -190,6 +191,8 @@ class OrdersController extends AppController {
                             $cat = $this->Category->find('first', array('conditions' => array('category_id' => $product['Product']['category_id'])));
                             $image = $this->Productimage->find('first', array('conditions' => array('product_id' => $product['Product']['product_id'])));
                             $orders = $this->Order->find('first', array('conditions' => array('order_id' => $this->Session->read('Order'))));
+                            
+                            $productnames .= $product['Product']['product_name'].',';
                             $msg.='<tr align="center" >
             <td valign="top" style="border-bottom:1px solid #000;border-right:1px solid #000; " >' . $i . '</td>
             <td valign="top" style=" border-bottom:1px solid #000;border-right:1px solid #000; ">' . $cat['Category']['category_code'] . '' . $product['Product']['product_code'] . '-' . $carts['Shoppingcart']['purity'] . 'K' . $carts['Shoppingcart']['clarity'] . $carts['Shoppingcart']['color'] . '</td>
@@ -276,8 +279,10 @@ class OrdersController extends AppController {
                     $file = 'files/invoices/' . str_replace('/', '_', $in . $order1['Order']['invoice'] . '.pdf');
                     $this->mailsend(SITE_NAME, $activateemail['Emailcontent']['fromemail'], $user['User']['email'], $activateemail['Emailcontent']['subject'], $message, '', 1, $file, 'acknowledgment', '');
                     //send sms
-                    $sms_message = "Dear {$user['User']['first_name']}, Thank You for placing your order with Shagunn. Your Order #{$in}{$order1['Order']['invoice']} has been confirmed and is being processed.";
-                    $this->sendsms($user['User']['mobile_no'], $sms_message);
+//                    $sms_message = "Dear {$user['User']['first_name']}, Thank You for placing your order with Shagunn. Your Order #{$in}{$order1['Order']['invoice']} has been confirmed and is being processed.";
+                    $productnames = rtrim($productnames,',');
+                    $sms_message = "Hi, your order for {$productnames} has been placed and is currently being processed. Team Shagunn (1800 200 2066)";
+                    $this->sendsms($user['User']['phone_no'], $sms_message);
                     
                     $email = $this->Emailcontent->find('first', array('conditions' => array('eid' => 12)));
 
@@ -428,6 +433,7 @@ class OrdersController extends AppController {
 							<th style=" border-bottom:1px solid #000;" >Price</th>
 						  </tr>';
                 $i = 1;
+                $productnames = '';
                 foreach ($cart as $carts) {
                     $product = $this->Product->find('first', array('conditions' => array('product_id' => $carts['Shoppingcart']['product_id'])));
                     $productdiamond = $this->Productdiamond->find('first', array('conditions' => array('product_id' => $carts['Shoppingcart']['product_id'], 'clarity' => $carts['Shoppingcart']['clarity'], 'color' => $carts['Shoppingcart']['color']), 'fields' => array('SUM(noofdiamonds) AS no_diamond', 'SUM(stone_weight) AS sweight')));
@@ -438,6 +444,8 @@ class OrdersController extends AppController {
                     $cat = $this->Category->find('first', array('conditions' => array('category_id' => $product['Product']['category_id'])));
                     $image = $this->Productimage->find('first', array('conditions' => array('product_id' => $product['Product']['product_id'])));
                     $orders = $this->Order->find('first', array('conditions' => array('order_id' => $this->Session->read('Order'))));
+                    
+                    $productnames .= $product['Product']['product_name'].',';
                     $msg.='<tr align="center" >
             <td valign="top" style="border-bottom:1px solid #000;border-right:1px solid #000; " >' . $i . '</td>
             <td valign="top" style=" border-bottom:1px solid #000;border-right:1px solid #000; ">' . $cat['Category']['category_code'] . '' . $product['Product']['product_code'] . '-' . $carts['Shoppingcart']['purity'] . 'K' . $carts['Shoppingcart']['clarity'] . $carts['Shoppingcart']['color'] . '</td>
@@ -528,8 +536,10 @@ class OrdersController extends AppController {
             $subject = $activateemail['Emailcontent']['subject'] . ' ' . $in . $order1['Order']['invoice'];
             $this->mailsend(SITE_NAME, $activateemail['Emailcontent']['fromemail'], $user['User']['email'], $subject, $message, '', 1, $file, 'acknowledgment', '');
             //send sms
-            $sms_message = "Dear {$user['User']['first_name']}, Thank You for placing your order with Shagunn. Your Order #{$in}{$order1['Order']['invoice']} has been confirmed and is being processed.";
-            $this->sendsms($user['User']['mobile_no'], $sms_message);
+//            $sms_message = "Dear {$user['User']['first_name']}, Thank You for placing your order with Shagunn. Your Order #{$in}{$order1['Order']['invoice']} has been confirmed and is being processed.";
+            $productnames = rtrim($productnames,',');
+            $sms_message = "Hi, your order for {$productnames} has been placed and is currently being processed. Team Shagunn (1800 200 2066)";
+            $this->sendsms($user['User']['phone_no'], $sms_message);
 
             $email = $this->Emailcontent->find('first', array('conditions' => array('eid' => 9)));
             $amountedit = $this->Paymentdetails->find('first', array('conditions' => array('paymentdetails_id' => $last_id)));
@@ -549,6 +559,7 @@ class OrdersController extends AppController {
 							<th style=" border-bottom:1px solid #000;" >Price</th>
 						  </tr>';
                 $i = 1;
+                $productnames = '';
                 foreach ($cart as $carts) {
                     $product = $this->Product->find('first', array('conditions' => array('product_id' => $carts['Shoppingcart']['product_id'])));
                     $productdiamond = $this->Productdiamond->find('first', array('conditions' => array('product_id' => $carts['Shoppingcart']['product_id'], 'clarity' => $carts['Shoppingcart']['clarity'], 'color' => $carts['Shoppingcart']['color']), 'fields' => array('SUM(noofdiamonds) AS no_diamond', 'SUM(stone_weight) AS sweight')));
@@ -559,6 +570,8 @@ class OrdersController extends AppController {
                     $cat = $this->Category->find('first', array('conditions' => array('category_id' => $product['Product']['category_id'])));
                     $image = $this->Productimage->find('first', array('conditions' => array('product_id' => $product['Product']['product_id'])));
                     $orders = $this->Order->find('first', array('conditions' => array('order_id' => $this->Session->read('Order'))));
+                    
+                    $productnames .= $product['Product']['product_name'].',';
                     $msg.='<tr align="center" >
             <td valign="top" style="border-bottom:1px solid #000;border-right:1px solid #000; " >' . $i . '</td>
             <td valign="top" style=" border-bottom:1px solid #000;border-right:1px solid #000; ">' . $cat['Category']['category_code'] . '' . $product['Product']['product_code'] . '-' . $carts['Shoppingcart']['purity'] . 'K' . $carts['Shoppingcart']['clarity'] . $carts['Shoppingcart']['color'] . '</td>
@@ -650,8 +663,10 @@ class OrdersController extends AppController {
             $subject = $activateemail['Emailcontent']['subject'] . ' ' . $in . $order1['Order']['invoice'];
             $this->mailsend(SITE_NAME, $activateemail['Emailcontent']['fromemail'], $user['User']['email'], $subject, $message, '', 1, $file, 'acknowledgment', '');
             //send sms
-            $sms_message = "Dear {$user['User']['first_name']}, Thank You for placing your order with Shagunn. Your Order #{$in}{$order1['Order']['invoice']} has been confirmed and is being processed.";
-            $this->sendsms($user['User']['mobile_no'], $sms_message);
+//            $sms_message = "Dear {$user['User']['first_name']}, Thank You for placing your order with Shagunn. Your Order #{$in}{$order1['Order']['invoice']} has been confirmed and is being processed.";
+            $productnames = rtrim($productnames,',');
+            $sms_message = "Hi, your order for {$productnames} has been placed and is currently being processed. Team Shagunn (1800 200 2066)";
+            $this->sendsms($user['User']['phone_no'], $sms_message);
 
             $email = $this->Emailcontent->find('first', array('conditions' => array('eid' => 9)));
             $amountedit = $this->Paymentdetails->find('first', array('conditions' => array('paymentdetails_id' => $last_id)));
@@ -946,13 +961,27 @@ class OrdersController extends AppController {
                     $this->Session->setFlash("<div class='success msg'>" . __('Please upload CSV or XLS file.') . "</div>", '');
                     $this->redirect(array('action' => 'shippingrates_import'));
                 }
+
                 foreach ($datas as $datas) {
                     if (!empty($datas['Order_Id']) && !empty($datas['Way_Bill_No'])) {
-                        $check = $this->Order->find('all', array('conditions' => array('invoice' => $datas['Order_Id'])));
+                        $check = $this->Order->find('first', array('conditions' => array('invoice' => $datas['Order_Id'])));
                         if (!empty($check)) {
-                            $this->request->data['Order']['order_id'] = $check[0]['Order']['order_id'];
+                            $this->request->data['Order']['order_id'] = $check['Order']['order_id'];
                             $this->request->data['Order']['way_bill_no'] = $datas['Way_Bill_No'];
                             $this->Order->save($this->request->data);
+                            
+                            //added by prakash
+                            $user = $this->User->findByUserId($check['Order']['user_id']);
+                            $cart = $this->Shoppingcart->find('all', array('conditions' => array('order_id' => $check['Order']['order_id'])));
+                            $productnames = '';
+                            foreach ($cart as $carts) {
+                                $product = $this->Product->find('first', array('conditions' => array('product_id' => $carts['Shoppingcart']['product_id'])));
+                                $productnames .= $product['Product']['product_name'].',';
+                            }
+                            $productnames = rtrim($productnames, ',');
+                            $date = date('d/m/Y');
+                            $message = "Hi, your order for {$productnames} has been dispatch via Blue Dart , {$datas['Way_Bill_No']} on {$date}. Team Shagunn (1800 200 2066)";
+                            $this->sendsms($user['User']['phone_no'], $message);
                         }
                     }
                 }
@@ -1023,14 +1052,29 @@ class OrdersController extends AppController {
                     $this->Orderhistory->save($orderhistory);
                     $this->order_status_mail($this->request->data['Order']['order_id']);
                     $order_status = $this->Orderstatus->findByOrderStsId($this->data['Order']['order_status_id']);
-                    $haystack = array('Completed', 'completed', 'Finished', 'finished');
+                    $haystack = array('Completed', 'completed', 'Finished', 'finished', 'Delivered', 'delivered', 'Cancelled', 'cancelled');
                     if(!empty($order_status) && in_array($order_status['Orderstatus']['order_status'], $haystack)){
                         $order = $this->Order->findByOrderId($this->data['Order']['order_id']);
                         $user = $this->User->findByUserId($order['Order']['user_id']);
+                        $cart = $this->Shoppingcart->find('all', array('conditions' => array('order_id' => $order['Order']['order_id'])));
+
+                        $productnames = '';
+                        foreach ($cart as $carts) {
+                            $product = $this->Product->find('first', array('conditions' => array('product_id' => $carts['Shoppingcart']['product_id'])));
+                            $productnames .= $product['Product']['product_name'].',';
+                        }
                         if(!empty($user)){
+                            $productnames = rtrim($productnames, ',');
                             $in = $this->admin_get_invoice_prefix($user['User']['user_type'], $order['Order']['cod_status']);
-                            $message = "Dear {$user['User']['first_name']}, Your Order #{$in}{$order['Order']['invoice']} delivered Successfully.";
-                            $this->sendsms($user['User']['mobile_no'], $message);
+//                            $message = "Dear {$user['User']['first_name']}, Your Order #{$in}{$order['Order']['invoice']} is {$order_status['Orderstatus']['order_status']}.";
+                            if(in_array($order_status['Orderstatus']['order_status'], array('Cancelled', 'cancelled'))){
+                                $message = "Hi, your order for {$productnames} has been cancelled successfully. Team Shagunn (1800 200 2066)";
+                            }else{
+                                $date = date('d/m/Y');
+                                $message = "Hi, your order for {$productnames} has been delivered on {$date} and accepted by {$user['User']['first_name']}. Team Shagunn (1800 200 2066)";
+                            }
+
+                            $this->sendsms($user['User']['phone_no'], $message);
                         }
                     }
                 }
@@ -1838,13 +1882,13 @@ class OrdersController extends AppController {
 
         $email = new CakeEmail();
         $email->emailFormat('html');
-        $email->from(array(trim($user['User']['email']) => SITE_NAME));
+        $email->from(trim($user['User']['email']));
         $email->template('default', 'default');
         $email->to(trim($adminmailid['Adminuser']['email']));
         $subject = " Order # " . $in . $orderdetails['Order']['invoice'] . " Order Status : " . $orderdetails['Adminstatus']['admin_status'];
         $email->subject(SITE_NAME . $subject);
         $message = "<p>Dear {$adminmailid['Adminuser']['admin_name']}</p>";
-        $message .= "<p>An Order status has been recently changed by {$user['User']['first_name']}for below order</p>";
+        $message .= "<p>An order status has been recently changed by {$user['User']['first_name']} for the below order: </p>";
         $message .= "<p>Order # {$in}{$orderdetails['Order']['invoice']}</p>";
         $message .= "<p>Order Status : {$orderdetails['Orderstatus']['order_status']}</p>";
         $message .= "<p>Thanks.</p>";
