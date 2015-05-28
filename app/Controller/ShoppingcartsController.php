@@ -46,7 +46,7 @@ class ShoppingcartsController extends AppController {
     }
 	/*Add Shopping Carts */
     public function addcart() {
-        if (isset($this->request->data['Shopping']['shoppingsubmit'])) {		
+        if (isset($this->request->data['Shopping']['shoppingsubmit'])) {
             if ($this->Session->read('cart_process') == '') {
                 $this->Session->write('cart_process');
                 $cart_session = $this->str_rand(15);

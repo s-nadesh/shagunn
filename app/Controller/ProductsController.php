@@ -1164,4 +1164,39 @@ class ProductsController extends AppController {
         }
         return $brokerage_amount;
     }
+    
+    public function metalcolor_dd() {
+        $this->layout = '';
+        $this->render(false);
+        $id = $_REQUEST['id'];
+        $dd = "<select name='mcolor' style='width:100px;'>";
+        if ($id != '0' && $id != '') {
+            $metalnew = $this->Metal->find('first', array('conditions' => array('metal_name' => $id)));
+            $metals = $this->Metalcolor->find('all', array('conditions' => array('metal_id' => $metalnew['Metal']['metal_id'])));
+            if (!empty($metals)) {
+//                $dd .= "<option value=''>&nbsp;</option>";
+                foreach ($metals as $metal) {
+                    $dd .= "<option value='{$metal['Metalcolor']['metalcolor']}'>{$metal['Metalcolor']['metalcolor']}</option>";
+                }
+            }
+        }
+        $dd .= "</select>";
+        echo $dd;
+    }
+    
+    public function metal_weight_dd() {
+        $this->layout = '';
+        $this->render(false);
+        $jewel = $this->Size->find('all', array('conditions' => array('category_id' => $_REQUEST['id'])));
+        $purity = $this->Purity->find('all', array('conditions' => array('status' => 'Active')));
+        $dd = "<select name='mpurity' style='width:100px;'>";
+        if (!empty($purity)) {
+//            $dd .= "<option value=''>&nbsp;</option>";
+            foreach ($purity as $purities) {
+                $dd .= "<option value='{$purities['Purity']['purity']}'>{$purities['Purity']['purity']} K</option>";
+            }
+        }
+        $dd .= "</select>";
+        echo $dd;
+    }
 }

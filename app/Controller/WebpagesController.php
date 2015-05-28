@@ -17,7 +17,7 @@ class WebpagesController extends AppController {
      * @var array
      */
     public $components = array('Paginator', 'Session', 'Cookie', 'Image');
-    public $uses = array('Banner', 'Advertisement', 'Newsletter', 'Jeweltype', 'Testimonial', 'Enquries', 'Question', 'Rating', 'Product', 'Whislist', 'Shippingrate', 'Subcategory', 'Productsize', 'Price', 'Productstone', 'Category', 'Size', 'Metalcolor', 'Metal', 'Diamond', 'Gemstone', 'Clarity', 'Color', 'Carat', 'Shape', 'Settingtype', 'Purity', 'Productmetal', 'Productgemstone', 'Productdiamond', 'Staticpage', 'Category', 'Jewellrequest', 'Jewelldiamond', 'Jewellstone', 'Collectiontype', 'Submenu', 'Offer');
+    public $uses = array('Banner', 'Advertisement', 'Newsletter', 'Jeweltype', 'Testimonial', 'Enquries', 'Question', 'Rating', 'Product', 'Whislist', 'Shippingrate', 'Subcategory', 'Productsize', 'Price', 'Productstone', 'Category', 'Size', 'Metalcolor', 'Metal', 'Diamond', 'Gemstone', 'Clarity', 'Color', 'Carat', 'Shape', 'Settingtype', 'Purity', 'Productmetal', 'Productgemstone', 'Productdiamond', 'Staticpage', 'Category', 'Jewellrequest', 'Jewelldiamond', 'Jewellstone', 'Collectiontype', 'Submenu', 'Offer','User');
     public $layout = 'webpage';
 
     public function index() {
@@ -440,6 +440,14 @@ class WebpagesController extends AppController {
         $this->layout = '';
         $this->render(false);
         if ($this->request->data) {
+			/*  $lastCreated = $this->User->find('count', array(
+        'conditions' => array('user_type' => '1')
+    ));
+	print_r($lastCreated); */
+	 $check_pin = $this->User->find('first', array('conditions' => array('user_type' => 1,'pincode' => $this->request->data['Enquries']['pincode'], 'status !=' => 'Trash')));
+	 
+	 //$paymentcount = $this->Payment->find("count", array('conditions' => array('user_id' => $results['User']['user_id'])));
+	if($check_pin){
             if (!empty($this->request->data['Enquries']['name'])) {
                 $check = $this->Enquries->create();
                 if (empty($check)) {
@@ -449,7 +457,11 @@ class WebpagesController extends AppController {
                     $this->redirect(array('action' => 'index'));
                 }
             }
-        }
+        }else{
+			$this->Session->setFlash("<div class='error msg'>" . __("Sorry, We don't have a Jewellery Outlet nearest to your Location.") . "</div>");
+			$this->redirect(array('action' => 'index'));
+		}
+	}
     }
 
     public function admin_home_enquiries() {
@@ -976,7 +988,7 @@ class WebpagesController extends AppController {
                 $stone = $this->Gemstone->find('first', array('conditions' => array('stone' => $gemstones['Productgemstone']['gemstone'])));
                 $stone_shape = $this->Shape->find('first', array('conditions' => array('shape' => $gemstones['Productgemstone']['shape'])));
                 $prices = $this->Price->find('first', array('conditions' => array('gemstone_id' => $stone['Gemstone']['gemstone_id'], 'gemstoneshape' => $stone_shape['Shape']['shape_id'])));
-                $gemprice+=round($prices['Price']['price']) * $gemstones['Productgemstone']['stone_weight'];
+                $gemprice+=round($prices['Price']['price'] * $gemstones['Productgemstone']['stone_weight']);
                 $gemstone_wt+=$gemstones['Productgemstone']['stone_weight'] / 5;
             }
         } else {
@@ -2102,6 +2114,127 @@ class WebpagesController extends AppController {
         return $array;
 //        $array = array_merge(array('pricediv' => $price, 'product_details' => $product_details, 'stonedetails' => $stonehtml, 'gemstonediv' => $gemstone, 'cartdiv' => $cart), $json);
 //        return $array;
+    }
+    
+    public function calculate_price_request($customid, $size, $productid, $gcolor) {
+        echo $customid.'<br />';
+        echo $size.'<br />';
+        echo $productid.'<br />';
+        echo $gcolor.'<br />';
+        exit;
+        $product = $this->Product->find('first', array('conditions' => array('product_id' => $productid)));
+        $category = $this->Category->find('first', array('conditions' => array('category_id' => $product['Product']['category_id'])));
+        if ($product['Product']['stone'] == 'Yes') {
+            $diamond = $this->Productdiamond->find('all', array('conditions' => array('product_id' => $productid)));
+            $this->set('diamonddetails', $diamond);
+        }
+        if ($product['Product']['gemstone'] == 'Yes') {
+            $gemstone = $this->Productgemstone->find('all', array('conditions' => array('product_id' => $productid)));
+            $this->set('sgemstone', $gemstone);
+        }
+
+        //gold
+        $propurity = $this->Productmetal->find('first', array('conditions' => array('product_id' => $productid, 'type' => 'Purity')));
+        $material = explode("K", $customid);
+        //pr($material);exit;
+        if (!empty($size)) {
+            $product_wt = $product['Product']['metal_weight'];
+            if ($category['Category']['category'] != "Bangles") {
+                $t = '1';
+            } else {
+                $t = '0.125';
+            }
+
+            $minsize = $this->Productmetal->find('first', array('fields' => array('MIN(value) as minsizes'), 'conditions' => array('product_id' => $productid, 'type' => 'Size')));
+            $minsizenew = $minsize[0]['minsizes'];
+            if ($size == $minsizenew) {
+                $add_wt = 0;
+            } else {
+                $nsize = $this->Size->find('first', array('conditions' => array('size_value BETWEEN ' . ($minsizenew + $t) . ' AND ' . $size, 'goldpurity' => $material[0], 'category_id' => $category['Category']['category_id'], 'status' => 'Active'), 'fields' => array('SUM(gold_diff) AS tot_wt')));
+
+                $add_wt = $nsize[0]['tot_wt'];
+            }
+            $tot_weight = $product_wt + $add_wt;
+        } else {
+            $tot_weight = $product['Product']['metal_weight'];
+        }
+
+        if (!empty($gcolor)) {
+            $mcolor = $this->Metalcolor->find('first', array('conditions' => array('metalcolor' => $gcolor, 'status' => 'Active')));
+            //modified by prakash
+            $goldprice = $this->Price->find('first', array('conditions' => array('metalcolor_id' => $mcolor['Metalcolor']['metalcolor_id'], 'metal_id' => '1', 'metal_fineness' => $product['Product']['metal_fineness'])));
+            $gprice = !empty($goldprice['Price']['price']) ? $goldprice['Price']['price'] : 0;
+
+            $gold_price = round(round($gprice * ($material[0] / 24)) * $tot_weight);
+//            $gold_price = round(round($goldprice['Price']['price'] * ($material[0] / 24)) * $tot_weight);
+            $purity = $material[0];
+            $making_charge = $product['Product']['making_charge'];
+        } else {
+            $gold_price = '0';
+            $making_charge = '0';
+            $purity = '';
+        }
+
+        //diamond
+        if (!empty($material[1])) {
+            list($clarity, $color) = explode("-", $material[1]);
+            $stone_price = '0';
+            $diamond_wt = '0';
+            $stone_details = $this->Productdiamond->find('first', array('conditions' => array('clarity' => $clarity, 'color' => $color, 'product_id' => $productid), 'fields' => array('SUM(stone_weight) AS sweight', 'SUM(noofdiamonds) AS stone_nos')));
+            $clarities = $this->Clarity->find('first', array('conditions' => array('clarity' => $clarity)));
+            $colors = $this->Color->find('first', array('conditions' => array('color' => $color, 'clarity' => $clarity)));
+            $stoneprice = $this->Price->find('first', array('conditions' => array('clarity_id' => $clarities['Clarity']['clarity_id'], 'color_id' => $colors['Color']['color_id'])));
+            $stone_price = round($stoneprice['Price']['price'] * $stone_details['0']['sweight'], 0, PHP_ROUND_HALF_DOWN);
+            $diamond_wt = $stone_details['0']['sweight'] / 5;
+            $all_stone_details = $this->Productdiamond->find('all', array('conditions' => array('clarity' => $clarity, 'color' => $color, 'product_id' => $productid)));
+
+            $this->set('stone_details', $all_stone_details);
+            $this->set('stoneweight', $stone_details['0']['sweight']);
+            $this->set('noofstones', $stone_details['0']['stone_nos']);
+            $this->set('stoneprice', $stoneprice);
+        } else {
+            $clarity = $color = '';
+            $stone_price = '0';
+            $diamond_wt = '0';
+        }
+
+        //gemstone
+        if (!empty($gemstone)) {
+            $gemprice = 0;
+            $gemstone_wt = 0;
+            foreach ($gemstone as $gemstones) {
+                $stone = $this->Gemstone->find('first', array('conditions' => array('stone' => $gemstones['Productgemstone']['gemstone'])));
+                $stone_shape = $this->Shape->find('first', array('conditions' => array('shape' => $gemstones['Productgemstone']['shape'])));
+                $prices = $this->Price->find('first', array('conditions' => array('gemstone_id' => $stone['Gemstone']['gemstone_id'], 'gemstoneshape' => $stone_shape['Shape']['shape_id'])));
+                $gemprice+=round($prices['Price']['price'] * $gemstones['Productgemstone']['stone_weight']);
+                $gemstone_wt+=$gemstones['Productgemstone']['stone_weight'] / 5;
+            }
+        } else {
+            $gemprice = '0';
+            $gemstone_wt = '';
+        }
+
+
+        $sub_total = $gold_price + $stone_price + $gemprice;
+        $making = 0;
+        //addded by prakash
+        if ($product['Product']['making_charge_calc'] == 'PER') {
+            $making = round($gold_price * ($making_charge / 100), 0, PHP_ROUND_HALF_DOWN);
+        } elseif ($product['Product']['making_charge_calc'] == 'INR') {
+            $making = $making_charge;
+        }
+        $vat = round(($sub_total + $making) * ($product['Product']['vat_cst'] / 100), 0, PHP_ROUND_HALF_DOWN);
+        $total = $sub_total + $making + $vat;
+
+        $total_weight = $tot_weight + $diamond_wt + $gemstone_wt;
+
+        $jsonarray = array('size' => $size, 'purity' => $purity, 'clarity' => $clarity, 'color' => $color, 'gold_price' => indian_number_format($gold_price), 'gold_color' => $gcolor, 'stone_price' => indian_number_format($stone_price), 'making_charge' => indian_number_format($making), 'vat' => indian_number_format($vat), 'total' => indian_number_format($total), 'gemstone' => indian_number_format($gemprice), 'weight' => $total_weight, 'goldweight' => $tot_weight);
+
+        $this->set('json', $jsonarray);
+        $this->set('goldprice', $goldprice);
+
+        $this->set('product', $product);
+        $this->set('total_weight', $total_weight);
     }
 
 }

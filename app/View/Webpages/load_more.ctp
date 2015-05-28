@@ -15,6 +15,44 @@ foreach ($product as $products) {
 	}
 	$Product_product_name=str_replace(" ","_",$products['Product']['product_name']);
 	 if(isset($_REQUEST['goldpurity'])){ $urls= '?purity='.$_REQUEST['goldpurity'];}else{$urls='';}
+         
+        $hdn_st = $hdn_color = $hdn_diamond = $hdn_purity = '';
+
+        $Productmetal = ClassRegistry::init('Productmetal')->find('all', array('conditions' => array('product_id' => $products['Product']['product_id'], 'type' => 'Size', 'status' => 'Active'), 'order' => 'productmetal_id ASC'));
+        $ids = explode(',', $products['Product']['metal_color']);
+        $diamonddiv = ClassRegistry::init('Productdiamond')->find('all', array('conditions' => array('product_id' => $products['Product']['product_id']), 'group' => array('clarity', 'color'), 'order' => "FIELD(`clarity`,'SI','VS','VVS'),FIELD(`color`,'IJ','GH','EF')"));
+        $purity = ClassRegistry::init('Productmetal')->find('all', array('conditions' => array('product_id' => $products['Product']['product_id'], 'type' => 'Purity', 'status' => 'Active'), 'order' => 'value ASC'));
+
+        if (!empty($Productmetal)) {
+            if ($category['Category']['category'] != "Bangles") {
+                $hdn_st = $Productmetal[0]['Productmetal']['value'];
+            } else {
+                $nt = number_format($Productmetal[0]['Productmetal']['value'], 3, '.', '');
+                $size = ClassRegistry::init('Size')->find('first', array('conditions' => array('size_value' => $nt), 'group' => 'size', 'order' => 'size_id ASC'));
+                $hdn_st = $size['Size']['size_value'];
+            }
+        }
+
+        if (!empty($ids))
+            $hdn_color = $ids[0];
+
+        if (!empty($diamonddiv))
+            $hdn_diamond = $diamonddiv[0]['Productdiamond']['clarity'] . '-' . $diamonddiv[0]['Productdiamond']['color'];
+
+        if (!empty($purity))
+            $hdn_purity = $purity[0]['Productmetal']['value'];
+
+        $productdiv.= '<form method="post" action="'.BASE_URL.'shoppingcarts/addcart" name="Shopping" class="shoppingdetails">';
+        $productdiv.= "<div class='hidden_div' data-productid='{$products['Product']['product_id']}'>";
+        $productdiv.= "<input type='hidden' value='{$products['Product']['product_id']}' name='product_id' id='hidden_product_id_{$products['Product']['product_id']}'/>";
+        $productdiv.= "<input type='hidden' value='$hdn_st' name='size' id='hidden_size_{$products['Product']['product_id']}'/>";
+        $productdiv.= "<input type='hidden' value='$hdn_color' name='color' id='hidden_color_{$products['Product']['product_id']}'/>";
+        $productdiv.= "<input type='hidden' value='$hdn_diamond' name='data[Product][stone]' id='hidden_stone_{$products['Product']['product_id']}'/>";
+        $productdiv.= "<input type='hidden' value='$hdn_purity' name='data[Product][goldpurity]' id='hidden_purity_{$products['Product']['product_id']}'/>";
+        $productdiv.= "<input type='hidden' name='data[Shopping][shoppingsubmit]' value='1' />";
+        $productdiv.= "</div>";
+        $productdiv.= "<div id='cart_div_{$products['Product']['product_id']}' class='hide'></div>";
+
 $productdiv.='   <div class="gridproduct"><div class="productDiv ">
             <div style="position:relative;">
             <div style="position:absolute; right:-18px;"></div>
@@ -27,10 +65,14 @@ $productdiv.='   <div class="gridproduct"><div class="productDiv ">
 			   $image='No Image Found';
 		   }
 			  
-		 $productdiv.='<p style="height:133px;">'.$image.'</p> <p align="center">'.substr($products['Product']['product_name'],0,25).(strlen($products['Product']['product_name'])>25?'...':'').'</p>
+		 $productdiv.='<p style="height:133px;">'.$image.'</p> <p align="center">Rs. '.indian_number_format($products[0]['totprice']).'</p>
           <div style="border-bottom:1px solid #ccc; float:left; width:100%; padding-bottom:5px;">
             <div style="float:left; color:#dba715; font-size:18px; font-weight:bold;">&nbsp;</div>
             <div style="float:right;">';
+//		 $productdiv.='<p style="height:133px;">'.$image.'</p> <p align="center">'.substr($products['Product']['product_name'],0,25).(strlen($products['Product']['product_name'])>25?'...':'').'</p>
+//          <div style="border-bottom:1px solid #ccc; float:left; width:100%; padding-bottom:5px;">
+//            <div style="float:left; color:#dba715; font-size:18px; font-weight:bold;">&nbsp;</div>
+//            <div style="float:right;">';
 		
 			$reviewcount=ClassRegistry::init('Rating')->find('count',array('conditions'=>array('product_id'=>$products['Product']['product_id'])));
 			
@@ -49,9 +91,8 @@ $productdiv.='   <div class="gridproduct"><div class="productDiv ">
           <div style="clear:both;"></div>
           <div style="border-bottom:1px solid #ccc; float:left; width:100%;">
             <p align="center">			
-             <a href="'.BASE_URL.$category['Category']['category']."/".$subcat."/".$products['Product']['product_id']."/".$Product_product_name.$urls.'"><input name="" type="button" value="" class="addBtn" ></a>
-            <a href="'.BASE_URL.'/webpages/whislist/'.$category['Category']['link'].'/'.$products['Product']['product_id'].'/'.(!empty($images)?$images['Productimage']['image_id']:'').'"> 
-			 <input name="" type="button" value="" class="wish_list_btn"></a>
+             <a href="'.BASE_URL.$category['Category']['category']."/".$subcat."/".$products['Product']['product_id']."/".$Product_product_name.$urls.'"><input name="" type="submit" value="" class="addBtn" ></a>
+<a href="'.BASE_URL.'webpages/whislist/'.$category['Category']['link'].'/'.$products['Product']['product_id'].'/'.(!empty($images)?$images['Productimage']['image_id']:'').'">			 <input name="" type="button" value="" class="wish_list_btn"></a>
             </p>
           </div> </div></div>';
 		  $productdiv.='<div class="listproduct">
@@ -92,12 +133,13 @@ $productdiv.='   <div class="gridproduct"><div class="productDiv ">
 			 }
 		}
          $productdiv.='</div><div style="float:left; width:270px;">
-               <a href="'.BASE_URL.$category['Category']['category']."/".$subcat."/".$products['Product']['product_id']."/".$Product_product_name.$urls.'"><input name="" type="button" value="" class="addBtn" ></a>
-            <a href="'.BASE_URL.'/webpages/whislist/'.$products['Product']['product_id'].'/'.(!empty($images)?$images['Productimage']['image_id']:'').'">  <input name="" type="button" value="" class="wish_list_btn"></a>
+               <a href="'.BASE_URL.$category['Category']['category']."/".$subcat."/".$products['Product']['product_id']."/".$Product_product_name.$urls.'"><input name="" type="submit" value="" class="addBtn" ></a>
+ <a href="'.BASE_URL.'webpages/whislist/'.$category['Category']['link'].'/'.$products['Product']['product_id'].'/'.(!empty($images)?$images['Productimage']['image_id']:'').'">
           </div> 
           <div style="clear:both;"></div>
          </div>
-        </div>';
+        </div>
+        </form>';
   }
  	    $flag='Yes';		
 		$array=array_merge(array('productdiv'=>$productdiv,'flag'=>$flag,'count'=>count($product)));

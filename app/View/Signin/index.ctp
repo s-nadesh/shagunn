@@ -112,6 +112,15 @@ $( "#tabs2" ).tabs({
                     <tr>
                         <td colspan="2"><?php echo $this->Form->input('', array('div' => false, 'error' => false, 'name' => "data[User][cpassword]", 'class' => 'validate[required,minSize[6],equals[Userpassword]]', 'type' => 'password', 'size' => '50', 'id' => 'cpassword')); ?></td>
                     </tr>
+                    
+                    <tr><td colspan="2" height="10"></td></tr>
+                    <tr>
+                        <td colspan="2">Phone</td>
+                    </tr>
+                    <tr><td colspan="2" height="10"></td></tr>
+                    <tr>
+                        <td colspan="2"><input name="data[User][phone_no]" type="text" class="validate[required,custom[integer],minSize[10]] mobile" onkeypress="return intnumbers(this, event)" maxlength="10"></td>
+                    </tr>
 
                     <tr><td colspan="2">&nbsp;</td></tr>
                     <tr>
