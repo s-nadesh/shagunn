@@ -761,7 +761,7 @@ class ProductsController extends AppController {
                         $Productmetal_value.=$productmetaldiv['Productmetal']['value'] . ",";
                     } else {
                         $productbanglesize = $this->Size->find('first', array('conditions' => array('size_value' => $productmetaldiv['Productmetal']['value'])));
-                        $Productmetal_value.=$productbanglesize['Size']['size'] . ",";
+                        isset($productbanglesize['Size']['size']) ? $Productmetal_value.=$productbanglesize['Size']['size'] . "," : '';
                     }
                 }
                 $Productmetal_type = rtrim($Productmetal_type, ",");
@@ -795,6 +795,10 @@ class ProductsController extends AppController {
             $name = $vendor['Vendor']['Company_name'];
 
             $category = $this->Category->find('first', array('conditions' => array('category_id' => $results['Product']['category_id'])));
+            $code=$category['Category']['category_code'];
+            $pattern = "/(\d+)/";
+            $array = preg_split($pattern, $code, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
+                
             $category1 = $category['Category']['category'];
             if (!empty($results['Product']['subcategory_id'])) {
                 $sub = $this->Subcategory->find('first', array('conditions' => array('subcategory_id' => $results['Product']['subcategory_id'])));
@@ -805,7 +809,7 @@ class ProductsController extends AppController {
             $row = array(
                 $i,
                 $results['Product']['product_name'],
-                $results['Product']['product_code'],
+                $array[0].$results['Product']['product_code'],
                 $results['Product']['link'],
                 $category1,
                 $subcategory,

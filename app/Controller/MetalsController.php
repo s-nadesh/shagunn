@@ -34,7 +34,7 @@ class MetalsController extends AppController {
         }
 
         $this->paginate = array('conditions' => $conditions, 'order' => 'metal_id DESC');
-        $this->set('metal', $this->Paginator->paginate('Metal'));
+        $this->set('metals', $this->Paginator->paginate('Metal'));
     }
 
     public function admin_add() {

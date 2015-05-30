@@ -54,7 +54,7 @@
                                 <th  width="600"align="left">Product Details</th>
                                 <!--<th width="300" align="left">Vendor Details </th>
                                 -->          <th width="50" align="left">Quantity </th>
-                                <th width="50" align="left">Price </th>
+                                <!--<th width="50" align="left">Price </th>-->
                             </tr>
                         </thead>
                         <tbody>
@@ -216,7 +216,7 @@
                                 ?>
 
 
-                                <tr>
+<!--                                <tr>
                                     <td width="600" colspan="2">
                                         <table width="600">
                                             <tr><th colspan="2"><strong>Price Details</strong></th></tr>
@@ -253,7 +253,7 @@
 
                                             </tr>
                                         </table>
-                                    </td></tr>
+                                    </td></tr>-->
 
                         </table>
                         </td>
@@ -270,7 +270,7 @@
                               
                         </td>-->
                         <td   width="50"align="left " valign="top"><?php echo $ordercarts['Shoppingcart']['quantity'] ?>  </td>
-                        <td   width="50"align="left "valign="top"><span>Rs.</span><?php echo indian_number_format($ordercarts['Shoppingcart']['total'] * $ordercarts['Shoppingcart']['quantity']) ?> </td>
+                        <!--<td   width="50"align="left "valign="top"><span>Rs.</span><?php echo indian_number_format($ordercarts['Shoppingcart']['total'] * $ordercarts['Shoppingcart']['quantity']) ?> </td>-->
                         </tr>
                         <?php
                         $k++;

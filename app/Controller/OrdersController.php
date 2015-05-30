@@ -1804,6 +1804,22 @@ class OrdersController extends AppController {
                         $this->Session->setFlash('<div class="error msg">Failed to update</div>', '');
                     }
                 }
+                if ($this->request->data['Order']['old_order_status_id'] != $this->request->data['Order']['order_status_id']) {
+                    $orderhistory = array(
+                        'Orderhistory' => array(
+                            'order_id' => $this->data['Order']['order_id'],
+                            'old_status_id' => $this->data['Order']['old_order_status_id'],
+                            'new_status_id' => $this->data['Order']['order_status_id'],
+                            'remarks' => $this->data['Order']['orderstatus_remarks'],
+                    ));
+                    $this->Orderhistory->save($orderhistory);
+                    if ($this->Order->save($this->request->data)) {
+                        $this->order_status_mail_to_admin($this->request->data['Order']['order_id']);
+                        $this->Session->setFlash('<div class="success msg">Order status updated successfully</div>', '');
+                    } else {
+                        $this->Session->setFlash('<div class="error msg">Failed to update</div>', '');
+                    }
+                }
                 $this->redirect(array('action' => 'order_view', $this->data['Order']['order_id'], 'controller' => 'orders'));
             }
             $orderdetails = $this->Order->find('first', array('conditions' => array('order_id' => $this->params['pass']['0'])));
@@ -1885,7 +1901,31 @@ class OrdersController extends AppController {
         $email->from(trim($user['User']['email']));
         $email->template('default', 'default');
         $email->to(trim($adminmailid['Adminuser']['email']));
-        $subject = " Order # " . $in . $orderdetails['Order']['invoice'] . " Order Status : " . $orderdetails['Adminstatus']['admin_status'];
+        $subject = " Order # " . $in . $orderdetails['Order']['invoice'] . " Vendor Status : " . $orderdetails['Adminstatus']['admin_status'];
+        $email->subject(SITE_NAME . $subject);
+        $message = "<p>Dear {$adminmailid['Adminuser']['admin_name']}</p>";
+        $message .= "<p>A vendor status has been recently changed by {$user['User']['first_name']} for the below order: </p>";
+        $message .= "<p>Order # {$in}{$orderdetails['Order']['invoice']}</p>";
+        $message .= "<p>Vendor Status : {$orderdetails['Adminstatus']['admin_status']}</p>";
+        $message .= "<p>Thanks.</p>";
+        $email->send($message);
+        $email->reset();
+    }
+
+    public function order_status_mail_to_admin($order_id) {
+        $orderdetails = $this->Order->find('first', array('conditions' => array('order_id' => $order_id)));
+        $user = ClassRegistry::init('User')->find('first', array('conditions' => array('user_id' => $orderdetails['Order']['user_id'])));
+        $in = $this->admin_get_invoice_prefix($user['User']['user_type'], $orderdetails['Order']['cod_status']);
+
+        $adminmailid = $this->Adminuser->find('first', array('conditions' => array('admin_id' => '1')));
+        App::uses('CakeEmail', 'Network/Email');
+
+        $email = new CakeEmail();
+        $email->emailFormat('html');
+        $email->from(trim($user['User']['email']));
+        $email->template('default', 'default');
+        $email->to(trim($adminmailid['Adminuser']['email']));
+        $subject = " Order # " . $in . $orderdetails['Order']['invoice'] . " Order Status : " . $orderdetails['Orderstatus']['order_status'];
         $email->subject(SITE_NAME . $subject);
         $message = "<p>Dear {$adminmailid['Adminuser']['admin_name']}</p>";
         $message .= "<p>An order status has been recently changed by {$user['User']['first_name']} for the below order: </p>";

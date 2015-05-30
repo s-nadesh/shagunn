@@ -17,9 +17,6 @@ The cart is the set of items that have been readied for purchase but have not be
 <li class="ui-state-default ui-corner-top ui-tabs-active ui-state"><a href="<?php echo BASE_URL ?>signin/address_book"  class="ui-tabs-anchor">Address Book</a></li>
 <li class="ui-state-default ui-corner-top ui-tabs-active ui-state"><a href="<?php echo BASE_URL ?>orders/my_order"  class="ui-tabs-anchor">My Order</a></li>
 <li class="ui-state-default ui-corner-top ui-tabs-active ui-state-active"><a  class="ui-tabs-anchor">Wishlist</a></li>
-            <?php if ($this->Session->read('User.user_type') == 2) { ?>
-                <li class="ui-state-default ui-corner-top ui-tabs-active"><a  href="<?php echo BASE_URL ?>vendors/user_orders" class="ui-tabs-anchor">User Orders</a></li>
-            <?php } ?>
 </ul>
 <div id="tabs-1" class="">
 <p></p>

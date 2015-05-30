@@ -13,10 +13,6 @@
             </div>
         </div>
         <ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
-            <li class="ui-state-default ui-corner-top ui-tabs-active ui-state"><a  href="<?php echo BASE_URL ?>signin/details"  class="ui-tabs-anchor">PERSONAL DETAILS</a></li>
-            <li class="ui-state-default ui-corner-top ui-tabs-active ui-state"><a href="<?php echo BASE_URL ?>signin/address_book"  class="ui-tabs-anchor">Address Book</a></li>
-            <li class="ui-state-default ui-corner-top ui-tabs-active ui-state"><a href="<?php echo BASE_URL ?>orders/my_order" class="ui-tabs-anchor">My Order</a></li>
-            <li class="ui-state-default ui-corner-top ui-tabs-active ui-state"><a href="<?php echo BASE_URL ?>signin/wishlist"  class="ui-tabs-anchor">Wishlist</a></li>
             <?php if ($this->Session->read('User.user_type') == 2) { ?>
                 <li class="ui-state-default ui-corner-top ui-tabs-active ui-state-active"><a  class="ui-tabs-anchor">User Orders</a></li>
             <?php } ?>
@@ -30,11 +26,11 @@
                     <tr>
                         <th><?php echo __('#'); ?></th>        
                         <th><?php echo 'Date' ?></th>         
-                        <th><?php echo 'User Name' ?></th> 
-                        <th><?php echo 'User Type' ?></th> 
+<!--                        <th><?php echo 'User Name' ?></th> 
+                        <th><?php echo 'User Type' ?></th> -->
                         <th><?php echo 'Order No' ?></th> 
-                        <th><?php echo 'Mode Type' ?></th>
-                        <th><?php echo 'Order Status' ?></th> 
+<!--                        <th><?php echo 'Mode Type' ?></th>
+                        <th><?php echo 'Order Status' ?></th> -->
                         <th><?php echo 'Vendor Status' ?></th> 
                         <th align="center">View</th>
                     </tr>
@@ -57,60 +53,51 @@
                                         echo $ndt = date('d - m - Y', strtotime($dt));
                                         ?>
                                     </td>
-                                    <td align="left"><?php echo $user['User']['first_name']; ?>&nbsp;
-                                        <?php echo $user['User']['last_name']; ?></td>
-                                    <td align="left"><?php
-                                        if ($user['User']['user_type'] == '0') {
-                                            echo 'User';
-                                            if ($order['Order']['cod_status'] == 'PayU') {
-                                                $in = 'SGN-ON-';
-                                                $paymentmode = 'Full Payment';
-                                            } elseif ($order['Order']['cod_status'] == 'CHQ/DD') {
-                                                $in = 'SGN-CHQ/DD-';
-                                                $paymentmode = 'CHQ/DD';
-                                            } elseif ($order['Order']['cod_status'] == 'COD') {
-                                                $in = 'SGN-CD-';
-                                                $paymentmode = 'Partial Payment';
-                                            }
-                                        } else {
-                                            echo 'Franchisee';
-                                            if ($order['Order']['cod_status'] == 'PayU') {
-                                                $in = 'SGN-FN-';
-                                                $paymentmode = 'Full Payment';
-                                            } elseif ($order['Order']['cod_status'] == 'COD') {
-                                                $in = 'SGN-FNCD-';
-                                                $paymentmode = 'Partial Payment ';
-                                            } elseif ($order['Order']['cod_status'] == 'CHQ/DD') {
-                                                $in = 'SGN-FNCHQ/DD-';
-                                                $paymentmode = 'CHQ/DD';
-                                            }
+        <!--                                    <td align="left"><?php echo $user['User']['first_name']; ?>&nbsp;
+                                    <?php echo $user['User']['last_name']; ?></td>-->
+                                    <?php
+                                    if ($user['User']['user_type'] == '0') {
+                                        if ($order['Order']['cod_status'] == 'PayU') {
+                                            $in = 'SGN-ON-';
+                                            $paymentmode = 'Full Payment';
+                                        } elseif ($order['Order']['cod_status'] == 'CHQ/DD') {
+                                            $in = 'SGN-CHQ/DD-';
+                                            $paymentmode = 'CHQ/DD';
+                                        } elseif ($order['Order']['cod_status'] == 'COD') {
+                                            $in = 'SGN-CD-';
+                                            $paymentmode = 'Partial Payment';
                                         }
-                                        ?>&nbsp;</td>
+                                    } else {
+                                        if ($order['Order']['cod_status'] == 'PayU') {
+                                            $in = 'SGN-FN-';
+                                            $paymentmode = 'Full Payment';
+                                        } elseif ($order['Order']['cod_status'] == 'COD') {
+                                            $in = 'SGN-FNCD-';
+                                            $paymentmode = 'Partial Payment ';
+                                        } elseif ($order['Order']['cod_status'] == 'CHQ/DD') {
+                                            $in = 'SGN-FNCHQ/DD-';
+                                            $paymentmode = 'CHQ/DD';
+                                        }
+                                    }
+                                    ?>
                                     <td align="left"><?php echo $in . $order['Order']['invoice']; ?></td>
-                                    <td align="left"><?php echo $paymentmode; ?></td>
-                                    <td align="left">
-                                        <?php
-                                        $order_sts = ClassRegistry::init('Orderstatus')->find('first', array('conditions' => array('Orderstatus.order_sts_id' => $order['Order']['order_status_id'])));
-                                        echo $order_sts['Orderstatus']['order_status'];
-                                        ?>
-                                    </td>
+                                    <!--<td align="left"><?php echo $paymentmode; ?></td>-->
+        <!--                                    <td align="left">
+                                    <?php
+                                    $order_sts = ClassRegistry::init('Orderstatus')->find('first', array('conditions' => array('Orderstatus.order_sts_id' => $order['Order']['order_status_id'])));
+                                    echo $order_sts['Orderstatus']['order_status'];
+                                    ?>
+                                    </td>-->
                                     <td align="left">
                                         <?php
                                         $admin_sts = ClassRegistry::init('Adminstatus')->find('first', array('conditions' => array('Adminstatus.admin_sts_id' => $order['Order']['admin_status_id'])));
                                         echo $admin_sts['Adminstatus']['admin_status'];
                                         ?>
                                     </td>
-                                    <?php if ($user['User']['user_type'] == 0) { ?>
-                                        <td align="center"><?php
-                                            echo $this->Html->image('icons/view.png', array('url' => array('controller' => 'orders', 'action' => 'user_view', $order['Order']['order_id']), 'border' => 0,
-                                                'alt' => __('View')));
-                                            ?></td>
-                                    <?php } else { ?>
-                                        <td align="center"><?php
-                                            echo $this->Html->image('icons/view.png', array('url' => array('controller' => 'orders', 'action' => 'franchisee_view', $order['Order']['order_id']), 'border' => 0,
-                                                'alt' => __('View')));
-                                            ?></td>
-                                    <?php } ?>
+                                    <td align="center"><?php
+                                        echo $this->Html->image('icons/view.png', array('url' => array('controller' => 'orders', 'action' => 'product_view', $order['Order']['order_id']), 'border' => 0,
+                                            'alt' => __('View')));
+                                        ?></td>
                                 </tr>
                                 <?php
                                 $i++;

@@ -195,25 +195,25 @@
                             ?>
                             <td><p>
                                     <?php
-                                    echo $orderdetails['Orderstatus']['order_status'];
-//                                    echo $this->Form->input('order_status_id', array(
-//                                        'type' => 'select',
-//                                        'id' => 'orderstatusid',
-//                                        'options' => $order_status_options,
-//                                        'label' => false,
-//                                        'div' => false,
-//                                        'value' => $orderdetails['Order']['order_status_id'],
-////                                                'empty' => ''
-//                                    ));
-//
-//                                    echo $this->Form->input('old_order_status_id', array('type' => 'hidden', 'value' => $orderdetails['Order']['order_status_id']));
+//                                    echo $orderdetails['Orderstatus']['order_status'];
+                                    echo $this->Form->input('order_status_id', array(
+                                        'type' => 'select',
+                                        'id' => 'orderstatusid',
+                                        'options' => $order_status_options,
+                                        'label' => false,
+                                        'div' => false,
+                                        'value' => $orderdetails['Order']['order_status_id'],
+//                                                'empty' => ''
+                                    ));
+
+                                    echo $this->Form->input('old_order_status_id', array('type' => 'hidden', 'value' => $orderdetails['Order']['order_status_id']));
                                     ?>
                                 </p></td>
                         </tr>
-<!--                        <tr id="remarks_tr" style="display: none">
+                        <tr id="remarks_tr" style="display: none">
                             <td width="150"><strong>Remarks</strong></td>
                             <td><?php echo $this->Form->input('orderstatus_remarks', array('type' => 'textarea', 'div' => false, 'label' => false)); ?></td>
-                        </tr>-->
+                        </tr>
 
 <!--                <tr><td width="150"><strong>Order Status </strong></td>
 <td><p><?php

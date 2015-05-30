@@ -40,6 +40,7 @@
 
         <script type="text/javascript">
             jQuery(document).ready(function () {
+                $('.header_menu').show();
                 jQuery('#demo1').skdslider({'delay': 5000, 'animationSpeed': 2000, 'showNextPrev': true, 'showPlayButton': true, 'autoSlide': true, 'animationType': 'fading'});
                 jQuery('#demo2').skdslider({'delay': 5000, 'animationSpeed': 1000, 'showNextPrev': true, 'showPlayButton': false, 'autoSlide': true, 'animationType': 'sliding'});
                 jQuery('#demo3').skdslider({'delay': 5000, 'animationSpeed': 2000, 'showNextPrev': true, 'showPlayButton': true, 'autoSlide': true, 'animationType': 'fading'});
@@ -104,9 +105,9 @@
 
                 $('#nav > li').hover(function () {
                     _jewel = $(this).find('.shagun_megamenu');
-                    if(_jewel.length > 0){
+                    if (_jewel.length > 0) {
 //                        $(_jewel).css('border-top', '3px solid #e2ba35');
-                    }else{
+                    } else {
                     }
                     $('#nav > li, #nav > li.home_icn').not(this).css('border-bottom', '3px solid #e2ba35');
                     $(this).css('border-right', '1px solid #e2ba35');

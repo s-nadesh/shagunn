@@ -59,7 +59,7 @@
                 </div>
             </div>
 
-            <div class="header_menu"> 
+            <div class="header_menu" style="display: none"> 
                 <ul id="nav">
                     <li class="home_icn"><a href="<?php echo BASE_URL; ?>"><?php echo $this->Html->image("home_icn.png", array("alt" => "index")); ?></a></li>
                     <?php

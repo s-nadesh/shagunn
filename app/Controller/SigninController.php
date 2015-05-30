@@ -111,11 +111,16 @@ class SigninController extends AppController {
                                         }
                                     }else {
 										
-                                        $this->Session->setFlash("<div class='success msg'>" . __('Successfully Loged in') . "</div>");
-                                        if ($check['User']['first_name'] != '' && $check['User']['phone_no'] != '')
-                                            $this->redirect(array('controller' => 'signin', 'action' => 'details'));
-                                        else
+                                        $this->Session->setFlash("<div class='success msg'>" . __('Successfully Logged in') . "</div>");
+                                        if ($check['User']['first_name'] != '' && $check['User']['phone_no'] != ''){
+                                            if($check['User']['user_type'] == '2'){
+                                                $this->redirect(array('controller' => 'vendors', 'action' => 'user_orders'));
+                                            }else{
+                                                $this->redirect(array('controller' => 'signin', 'action' => 'details'));
+                                            }
+                                        }else{
                                             $this->redirect(array('controller' => 'signin', 'action' => 'personal'));
+                                        }
 
                                         //$this->redirect(array('controller' => 'signin', 'action' => 'index','n'=>'tab-2'));
                                     }

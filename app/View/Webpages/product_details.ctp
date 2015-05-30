@@ -1,4 +1,4 @@
-<?php //print_r($browse_product);exit;          ?>
+<?php //print_r($browse_product);exit;           ?>
 <div class="main">
     <header> &nbsp; </header>
     <div style="clear:both;">&nbsp;</div>
@@ -295,10 +295,11 @@
                                                     ?></select>
                                     </td></tr>
                             <?php } ?>
-                            <tr class="show_non_gold">      <td colspan="9">&nbsp;</td></tr>
+                            <tr class="show_non_gold">      
+                                <td colspan="9">&nbsp;</td></tr>
                             <tr>
-                                <td colspan="5"><strong>Expected Date of Delivery and COD Availability Update :</strong></td>
-                                <td colspan="5" style="margin: 5px;">
+                                <td colspan="4"><strong>Expected Date of Delivery and COD Availability Update :</strong></td>
+                                <td colspan="6" style="margin: 5px;">
                                     <form id="deliveryForm" name="myForm" method="post">
                                         <input placeholder="Enter pincode" name="pincode" type="text" class="validate[required,minSize[6],custom[integer]] pincode" onkeypress="return intnumbers(this, event)" maxlength="6">&nbsp;&nbsp;&nbsp;
                                         <input type="submit" name="update" class="update" value="Update" id="update" /></form>&nbsp;&nbsp;&nbsp;<span class="delivery_date"></span> </td>
