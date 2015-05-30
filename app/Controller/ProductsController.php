@@ -16,7 +16,9 @@ class ProductsController extends AppController {
      * @var array
      */
     public $components = array('Paginator', 'Session', 'Image');
-    public $uses = array('Product', 'Vendorcontact', 'Vendor', 'Category', 'Subcategory', 'Productstone', 'Productimage', 'Size', 'Metalcolor', 'Metal', 'Diamond', 'Clarity', 'Color', 'Carat', 'Shape', 'Settingtype', 'Purity', 'Productmetal', 'Productgemstone', 'Productdiamond', 'Gemstone', 'Price', 'Collectiontype', 'Order', 'Franchiseebrokerage');
+    public $uses = array('Product', 'Vendorcontact', 'Vendor', 'Category', 'Subcategory', 'Productstone', 'Productimage', 'Size',
+        'Metalcolor', 'Metal', 'Diamond', 'Clarity', 'Color', 'Carat', 'Shape', 'Settingtype', 'Purity', 'Productmetal',
+        'Productgemstone', 'Productdiamond', 'Gemstone', 'Price', 'Collectiontype', 'Order', 'Franchiseebrokerage', 'Menu');
     public $layout = 'admin';
 
     public function admin_index() {
@@ -151,13 +153,11 @@ class ProductsController extends AppController {
                 $projectcode = sprintf("%06d", $tiid);
                 $this->request->data['Product']['product_code'] = $projectcode;
 
-				$this->request->data['Product']['product_name']= trim($this->request->data['Product']['product_name']);
+                $this->request->data['Product']['product_name'] = trim($this->request->data['Product']['product_name']);
                 /* saran */
                 $this->request->data['Product']['metal_purity'] = $this->request->data['Productmetal']['purity'][0];
                 /* saran */
                 //$this->request->data['Product']['product_size']=$this->request->data['Productmetal']['size'][0];
-                
-                
                 //added by prakash
                 $this->request->data['Product']['metal_fineness'] = !empty($this->data['Product']['metal_fineness']) ? implode(",", $this->data['Product']['metal_fineness']) : 0;
                 $this->request->data['Product']['submenu_ids'] = !empty($this->data['Product']['submenu_ids']) ? implode(",", $this->data['Product']['submenu_ids']) : '';
@@ -211,8 +211,8 @@ class ProductsController extends AppController {
                         if (!empty($image['name'])) {
                             $this->request->data['Productimage']['status'] = 'Active';
                             $this->request->data['Productimage']['product_id'] = $product_id;
-                           // $this->request->data['Productimage']['imagename'] = $this->Image->upload_image_and_thumbnail($image, 800, 800, 215, 133, "product", '1');
-						   $this->request->data['Productimage']['imagename'] = $this->Image->upload_image_and_thumbnail($image, 800, 800, 215, 133, "product");
+                            // $this->request->data['Productimage']['imagename'] = $this->Image->upload_image_and_thumbnail($image, 800, 800, 215, 133, "product", '1');
+                            $this->request->data['Productimage']['imagename'] = $this->Image->upload_image_and_thumbnail($image, 800, 800, 215, 133, "product");
 
                             $this->Productimage->saveAll($this->request->data);
                         }
@@ -312,26 +312,26 @@ class ProductsController extends AppController {
                 $this->request->data['Product']['metal_purity'] = $this->request->data['Productmetal']['purity'][0];
                 /* saran */
                 //$this->request->data['Product']['product_size']=$this->request->data['Productmetal']['size'][0];
-                if(!empty($this->request->data['Product']['product_type'])){
-               		 $this->request->data['Product']['product_type'] = implode(",", $this->request->data['Product']['product_type']);
-			     }else{
-					  $this->request->data['Product']['product_type'] = "";
-				 }
-				 if(!empty($this->request->data['Product']['collection_type'])){
-				$this->request->data['Product']['collection_type'] = implode(",", $this->request->data['Product']['collection_type']);
-				}else{
-					$this->request->data['Product']['collection_type']="";
-				}
-				if(!empty($this->request->data['Product']['product_view_type'])){
-				$this->request->data['Product']['product_view_type'] = implode(",", $this->request->data['Product']['product_view_type']);
-				}else{
-					$this->request->data['Product']['product_view_type']="";
-				}
-              if(empty($this->request->data['Product']['best_seller'])){
-				$this->request->data['Product']['best_seller'] =0;
-			  }
-				
-			   $this->request->data['Product']['product_name']= trim($this->request->data['Product']['product_name']);
+                if (!empty($this->request->data['Product']['product_type'])) {
+                    $this->request->data['Product']['product_type'] = implode(",", $this->request->data['Product']['product_type']);
+                } else {
+                    $this->request->data['Product']['product_type'] = "";
+                }
+                if (!empty($this->request->data['Product']['collection_type'])) {
+                    $this->request->data['Product']['collection_type'] = implode(",", $this->request->data['Product']['collection_type']);
+                } else {
+                    $this->request->data['Product']['collection_type'] = "";
+                }
+                if (!empty($this->request->data['Product']['product_view_type'])) {
+                    $this->request->data['Product']['product_view_type'] = implode(",", $this->request->data['Product']['product_view_type']);
+                } else {
+                    $this->request->data['Product']['product_view_type'] = "";
+                }
+                if (empty($this->request->data['Product']['best_seller'])) {
+                    $this->request->data['Product']['best_seller'] = 0;
+                }
+
+                $this->request->data['Product']['product_name'] = trim($this->request->data['Product']['product_name']);
 
 
                 //added by prakash
@@ -389,8 +389,8 @@ class ProductsController extends AppController {
                         if (!empty($image['name'])) {
                             $this->request->data['Productimage']['status'] = 'Active';
                             $this->request->data['Productimage']['product_id'] = $product_id;
-                           // $this->request->data['Productimage']['imagename'] = $this->Image->upload_image_and_thumbnail($image, 800, 800, 215, 133, "product", '1');
-						   $this->request->data['Productimage']['imagename'] = $this->Image->upload_image_and_thumbnail($image, 800, 800, 215, 133, "product");
+                            // $this->request->data['Productimage']['imagename'] = $this->Image->upload_image_and_thumbnail($image, 800, 800, 215, 133, "product", '1');
+                            $this->request->data['Productimage']['imagename'] = $this->Image->upload_image_and_thumbnail($image, 800, 800, 215, 133, "product");
 
                             $this->Productimage->saveAll($this->request->data);
                         }
@@ -673,11 +673,10 @@ class ProductsController extends AppController {
     }
 
     public function admin_product_export() {
-
         $this->layout = '';
         $this->render(false);
         ini_set('max_execution_time', 600);
-        //create a file
+//        create a file
         $filename = "product_details.csv";
         $csv_file = fopen('php://output', 'w');
 
@@ -694,14 +693,54 @@ class ProductsController extends AppController {
 
 
         $results = $this->Product->find('all', array('conditions' => array('status !=' => 'Trash')));
-        $header_row = array("S.No", "Product Nmae", "Product Code", "Link", "Category", "Sub Category", "Vendor", "vendor product code", "Metal", "Metal Color", "Product weight", "Stone", "Special Work", "Gemstone", "Special Work Description", "Special work charge", "vendor_making_charge", "vat_cst", "vendor_delivery_tat", "product_delivery_tat", "status", "Diamond", "Stone Clarity", "Stone Color", "Stone Carat", "no_of_diamonds", "stone_shape", "stone weight", "setting_type", "Gemstone ", "size ", "Shape ", "Stone weight ", "no of Stone ", "Setting type ", "Size ", "Purity");
+        //added by prakash
+        $product_type = array(
+            '1' => 'Plain Gold',
+            '2' => 'Diamond',
+            '3' => 'Gemstone'
+        );
+        $collection_type = $this->Collectiontype->find('list', array('fields' => array('collectiontype_id', 'collection_name'), 'conditions' => '', 'order' => 'collectiontype_id ASC'));
+        $product_view_type = array(
+            '1' => 'New',
+            '2' => 'Sale',
+        );
+        $this->Menu->Behaviors->attach('Containable');
+        $menus = $this->Menu->find('all', array(
+            'contain' => array(
+                'Submenu' => array(
+                    'Offer' => array(
+                        'conditions' => array('Offer.is_active' => '1')
+                    ),
+                    'conditions' => array(
+                        'Submenu.is_active' => '1'
+                    )
+                )),
+            'conditions' => array(
+                'Menu.is_active' => '1',
+                'Menu.menu_id' => array(3, 4, 5, 6, 7, 8)
+        )));
+
+        $header_menus_list = array();
+        foreach ($menus as $menu) {
+            $header_menus_list[] = $menu['Menu']['menu_name'];
+        }
+        //
+        $header_row = array("S.No", "Product Nmae", "Product Code", "Link", "Category", "Sub Category", "Vendor", "vendor product code",
+            "Metal", "Metal Color", "Product weight", "Stone", "Special Work", "Gemstone", "Special Work Description",
+            "Special work charge", "vendor_making_charge", "vat_cst", "vendor_delivery_tat", "product_delivery_tat", "status",
+            "Diamond", "Stone Clarity", "Stone Color", "Stone Carat", "no_of_diamonds", "stone_shape", "stone weight",
+            "setting_type", "Gemstone ", "size ", "Shape ", "Stone weight ", "no of Stone ", "Setting type ", "Size ", "Purity",
+            "Product Type", "Collection Type");
+
+        $header_row = array_merge($header_row, $header_menus_list);
         fputcsv($csv_file, $header_row, ',', '"');
+
         $i = 1;
         foreach ($results as $results) {
 
-            $product = $this->Productdiamond->find('all', array('conditions' => array('product_id' => $results['Product']['product_id']), array('limit' => '1')));
+            $product = $this->Productdiamond->find('all', array('conditions' => array('product_id' => $results['Product']['product_id']), array(/* 'limit' => '1' */)));
             $product_count = $this->Productdiamond->find('count', array('conditions' => array('product_id' => $results['Product']['product_id'])));
-            $productgem = $this->Productgemstone->find('all', array('conditions' => array('product_id' => $results['Product']['product_id']), array('limit' => '1')));
+            $productgem = $this->Productgemstone->find('all', array('conditions' => array('product_id' => $results['Product']['product_id']), array(/*'limit' => '1'*/)));
             $productgem_count = $this->Productgemstone->find('count', array('conditions' => array('product_id' => $results['Product']['product_id'])));
             $productmetal = $this->Productmetal->find('all', array('conditions' => array('product_id' => $results['Product']['product_id'], 'type' => 'Size')));
             $productmetal_count = $this->Productmetal->find('count', array('conditions' => array('product_id' => $results['Product']['product_id'], 'type' => 'Size')));
@@ -720,16 +759,48 @@ class ProductsController extends AppController {
                 $products[] = ' ';
                 $products[] = ' ';
             } else {
+                $p_stone = $p_clr = $p_col = $p_car = $p_no_dia = $p_shp = $p_st_wgh = $p_set = '';
+                foreach ($product as $key => $p_diamond) {
+                    $p_stone_name = $p_diamond['Productdiamond']['diamond'];
+                    $p_clr_name = $p_diamond['Productdiamond']['clarity'];
+                    $p_col_name = $p_diamond['Productdiamond']['color'];
+                    $p_car_name = $p_diamond['Productdiamond']['carat'];
+                    $p_no_dia_name = $p_diamond['Productdiamond']['noofdiamonds'];
+                    $p_shp_name = $p_diamond['Productdiamond']['shape'];
+                    $p_st_wgh_name = $p_diamond['Productdiamond']['stone_weight'];
+                    $p_set_name = $p_diamond['Productdiamond']['settingtype'];
 
+                    if ($p_stone_name != '') {
+                        $p_stone .= $key == 0 ? $p_stone_name : ', ' . $p_stone_name;
+                    }
+                    if ($p_clr_name != '') {
+                        $p_clr .= $key == 0 ? $p_clr_name : ', ' . $p_clr_name;
+                    }
+                    if ($p_col_name != '') {
+                        $p_col .= $key == 0 ? $p_col_name : ', ' . $p_col_name;
+                    }
+                    if ($p_car_name != '') {
+                        $p_car .= $key == 0 ? $p_car_name : ', ' . $p_car_name;
+                    }
+                    if ($p_shp_name != '') {
+                        $p_shp .= $key == 0 ? $p_shp_name : ', ' . $p_shp_name;
+                    }
+                    if ($p_st_wgh_name != '') {
+                        $p_st_wgh .= $key == 0 ? $p_st_wgh_name : ', ' . $p_st_wgh_name;
+                    }
+                    if ($p_set_name != '') {
+                        $p_set .= $key == 0 ? $p_set_name : ', ' . $p_set_name;
+                    }
+                }
 
-                $products[] = $product[0]['Productdiamond']['diamond'];
-                $products[] = $product[0]['Productdiamond']['clarity'];
-                $products[] = $product[0]['Productdiamond']['color'];
-                $products[] = $product[0]['Productdiamond']['carat'];
-                $products[] = $product[0]['Productdiamond']['noofdiamonds'];
-                $products[] = $product[0]['Productdiamond']['shape'];
-                $products[] = $product[0]['Productdiamond']['stone_weight'];
-                $products[] = $product[0]['Productdiamond']['settingtype'];
+                $products[] = $p_stone;
+                $products[] = $p_clr;
+                $products[] = $p_col;
+                $products[] = $p_car;
+                $products[] = $p_no_dia;
+                $products[] = $p_shp;
+                $products[] = $p_st_wgh;
+                $products[] = $p_set;
             }
             $productgemstonenew = array();
             if ($productgem_count == 0) {
@@ -740,12 +811,41 @@ class ProductsController extends AppController {
                 $productgemstonenew[] = ' ';
                 $productgemstonenew[] = ' ';
             } else {
-                $productgemstonenew[] = $productgem[0]['Productgemstone']['gemstone'];
-                $productgemstonenew[] = $productgem[0]['Productgemstone']['size'];
-                $productgemstonenew[] = $productgem[0]['Productgemstone']['shape'];
-                $productgemstonenew[] = $productgem[0]['Productgemstone']['no_of_stone'];
-                $productgemstonenew[] = $productgem[0]['Productgemstone']['stone_weight'];
-                $productgemstonenew[] = $productgem[0]['Productgemstone']['settingtype'];
+                $p_stone = $p_size = $p_no_dia = $p_shp = $p_st_wgh = $p_set = '';
+                foreach ($productgem as $key => $p_gem) {
+                    $p_stone_name = $p_gem['Productgemstone']['gemstone'];
+                    $p_no_dia_name = $p_gem['Productgemstone']['no_of_stone'];
+                    $p_shp_name = $p_gem['Productgemstone']['shape'];
+                    $p_st_wgh_name = $p_gem['Productgemstone']['stone_weight'];
+                    $p_set_name = $p_gem['Productgemstone']['settingtype'];
+                    $p_size_name = $p_gem['Productgemstone']['size'];
+
+                    if ($p_stone_name != '') {
+                        $p_stone .= $key == 0 ? $p_stone_name : ', ' . $p_stone_name;
+                    }
+                    if ($p_car_name != '') {
+                        $p_car .= $key == 0 ? $p_car_name : ', ' . $p_car_name;
+                    }
+                    if ($p_shp_name != '') {
+                        $p_shp .= $key == 0 ? $p_shp_name : ', ' . $p_shp_name;
+                    }
+                    if ($p_st_wgh_name != '') {
+                        $p_st_wgh .= $key == 0 ? $p_st_wgh_name : ', ' . $p_st_wgh_name;
+                    }
+                    if ($p_set_name != '') {
+                        $p_set .= $key == 0 ? $p_set_name : ', ' . $p_set_name;
+                    }
+                    if ($p_size_name != '') {
+                        $p_size .= $key == 0 ? $p_size_name : ', ' . $p_size_name;
+                    }
+                }
+
+                $products[] = $p_stone;
+                $products[] = $p_no_dia;
+                $products[] = $p_shp;
+                $products[] = $p_st_wgh;
+                $products[] = $p_set;
+                $products[] = $p_size;
             }
             $productmetalnew = array();
             if ($productmetal_count == 0) {
@@ -795,10 +895,10 @@ class ProductsController extends AppController {
             $name = $vendor['Vendor']['Company_name'];
 
             $category = $this->Category->find('first', array('conditions' => array('category_id' => $results['Product']['category_id'])));
-            $code=$category['Category']['category_code'];
+            $code = $category['Category']['category_code'];
             $pattern = "/(\d+)/";
             $array = preg_split($pattern, $code, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
-                
+
             $category1 = $category['Category']['category'];
             if (!empty($results['Product']['subcategory_id'])) {
                 $sub = $this->Subcategory->find('first', array('conditions' => array('subcategory_id' => $results['Product']['subcategory_id'])));
@@ -809,7 +909,7 @@ class ProductsController extends AppController {
             $row = array(
                 $i,
                 $results['Product']['product_name'],
-                $array[0].$results['Product']['product_code'],
+                $array[0] . $results['Product']['product_code'],
                 $results['Product']['link'],
                 $category1,
                 $subcategory,
@@ -834,10 +934,66 @@ class ProductsController extends AppController {
             $row = array_merge($row, $productmetalnew);
             $row = array_merge($row, $productsizenew);
 
+            //added by prakash
+            $p_type = $col_type = $p_v_type = $b_seller = '';
+            if ($results['Product']['product_type'] != '') {
+                $p_type_exp = explode(',', $results['Product']['product_type']);
+                foreach ($p_type_exp as $key => $exp) {
+                    $p_type .= $key == 0 ? $product_type[$exp] : ', ' . $product_type[$exp];
+                }
+            }
+            if ($results['Product']['collection_type'] != '') {
+                $col_type_exp = explode(',', $results['Product']['collection_type']);
+                foreach ($col_type_exp as $key => $exp) {
+                    $col_type .= $key == 0 ? $collection_type[$exp] : ', ' . $collection_type[$exp];
+                }
+            }
+            if ($results['Product']['product_view_type'] != '') {
+                $p_v_type_exp = explode(',', $results['Product']['product_view_type']);
+                foreach ($p_v_type_exp as $key => $exp) {
+                    $p_v_type .= $key == 0 ? $product_view_type[$exp] : ', ' . $product_view_type[$exp];
+                }
+            }
+            if ($results['Product']['best_seller'] != 1) {
+                $b_seller = 'Yes';
+            }
+
+            $row = array_merge($row, array($p_type));
+            $row = array_merge($row, array($col_type));
+            $row = array_merge($row, array($p_v_type));
+            $row = array_merge($row, array($b_seller));
+
+            $p_menu_exp = explode(",", $results['Product']['submenu_ids']);
+            $p_offer_exp = explode(",", $results['Product']['offer_ids']);
+            foreach ($menus as $menu) {
+                $p_menu = $off_name = '';
+                if ($results['Product']['submenu_ids'] != '') {
+                    foreach ($menu['Submenu'] as $key => $submenu) {
+                        if (in_array($submenu['submenu_id'], $p_menu_exp)) {
+                            $sb_name = $submenu['submenu_name'];
+
+                            if ($results['Product']['offer_ids'] != '') {
+                                if (!empty($submenu['Offer'])) {
+                                    $off_name = '(';
+                                    foreach ($submenu['Offer'] as $o_key => $offer) {
+                                        if (in_array($offer['offer_id'], $p_offer_exp)) {
+                                            $off_name .= $o_key == 0 ? $offer['offer_name'] : ', ' . $offer['offer_name'];
+                                        }
+                                    }
+                                    $off_name .= ')';
+                                }
+                                $sb_name .= $off_name;
+                            }
+                            $p_menu .= $key == 0 ? $sb_name : ', ' . $sb_name;
+                        }
+                    }
+                }
+                $row = array_merge($row, array($p_menu));
+            }
+            //
             $i++;
             fputcsv($csv_file, $row, ',', '"');
         }
-
         fclose($csv_file);
     }
 
@@ -1116,51 +1272,51 @@ class ProductsController extends AppController {
         $product = $this->Product->findByProductId($productid);
         $this->Shoppingcart->bindModel(
                 array(
-                    'belongsTo' => array(
-                        'Order' => array(
-                            'type' => 'Inner',
-                            'conditions' => array('Shoppingcart.order_id = Order.order_id'),
-                            'foreignKey' => false,
-                        ),
-                        'User' => array(
-                            'type' => 'Inner',
-                            'conditions' => array('Order.user_id = User.user_id'),
-                            'foreignKey' => false,
-                        ),
-                    )
+            'belongsTo' => array(
+                'Order' => array(
+                    'type' => 'Inner',
+                    'conditions' => array('Shoppingcart.order_id = Order.order_id'),
+                    'foreignKey' => false,
+                ),
+                'User' => array(
+                    'type' => 'Inner',
+                    'conditions' => array('Order.user_id = User.user_id'),
+                    'foreignKey' => false,
+                ),
+            )
                 ), false
         );
         $cart = $this->Shoppingcart->findByCartId($cartid);
         $brokerage_amount = $making_charge = 0;
-        if(!empty($product) && !empty($cart)){
+        if (!empty($product) && !empty($cart)) {
             $netamt = $cart['Shoppingcart']['total'] * $cart['Shoppingcart']['quantity'];
-            
+
             //vendor brokerage
-            if($cart['User']['user_type'] == 0){
+            if ($cart['User']['user_type'] == 0) {
                 $special_charge = $product['Product']['special_work_charge'];
-                if($product['Product']['vendor_making_charge_calc'] == 'PER'){
+                if ($product['Product']['vendor_making_charge_calc'] == 'PER') {
                     $making_charge = $netamt * ($product['Product']['vendor_making_charge'] / 100);
-                }elseif($product['Product']['vendor_making_charge_calc'] == 'INR'){
+                } elseif ($product['Product']['vendor_making_charge_calc'] == 'INR') {
                     $making_charge = $product['Product']['vendor_making_charge'];
                 }
-            //franchisee brokerage
-            }elseif($cart['User']['user_type'] == 1){
+                //franchisee brokerage
+            } elseif ($cart['User']['user_type'] == 1) {
                 $frans_brkge = $this->Franchiseebrokerage->findByFranchiseeBrkgeUserId($cart['User']['user_id']);
                 $special_charge = 0;
-                
-                if(!empty($frans_brkge)){
-                    if($cart['User']['pincode'] == $cart['Order']['pincode']){
+
+                if (!empty($frans_brkge)) {
+                    if ($cart['User']['pincode'] == $cart['Order']['pincode']) {
                         $frans_brkge_charge = $frans_brkge['Franchiseebrokerage']['pincodewise_brkge_value'];
-                    }else{
+                    } else {
                         $frans_brkge_charge = $frans_brkge['Franchiseebrokerage']['general_brkge_value'];
                     }
-                    
-                    if($frans_brkge['Franchiseebrokerage']['brkge_calc'] == 'PER'){
+
+                    if ($frans_brkge['Franchiseebrokerage']['brkge_calc'] == 'PER') {
                         $making_charge = $netamt * ($frans_brkge_charge / 100);
-                    }elseif($frans_brkge['Franchiseebrokerage']['brkge_calc'] == 'INR'){
+                    } elseif ($frans_brkge['Franchiseebrokerage']['brkge_calc'] == 'INR') {
                         $making_charge = $frans_brkge_charge;
                     }
-                }else{
+                } else {
                     $making_charge = 0;
                 }
             }
@@ -1168,17 +1324,17 @@ class ProductsController extends AppController {
         }
         return $brokerage_amount;
     }
-    
+
     public function metalcolor_dd() {
         $this->layout = '';
         $this->render(false);
         $id = $_REQUEST['id'];
         $dd = "<select name='mcolor' style='width:100px;'>";
+        $dd .= "<option value=''>Select</option>";
         if ($id != '0' && $id != '') {
             $metalnew = $this->Metal->find('first', array('conditions' => array('metal_name' => $id)));
             $metals = $this->Metalcolor->find('all', array('conditions' => array('metal_id' => $metalnew['Metal']['metal_id'])));
             if (!empty($metals)) {
-//                $dd .= "<option value=''>&nbsp;</option>";
                 foreach ($metals as $metal) {
                     $dd .= "<option value='{$metal['Metalcolor']['metalcolor']}'>{$metal['Metalcolor']['metalcolor']}</option>";
                 }
@@ -1187,15 +1343,15 @@ class ProductsController extends AppController {
         $dd .= "</select>";
         echo $dd;
     }
-    
+
     public function metal_weight_dd() {
         $this->layout = '';
         $this->render(false);
         $jewel = $this->Size->find('all', array('conditions' => array('category_id' => $_REQUEST['id'])));
         $purity = $this->Purity->find('all', array('conditions' => array('status' => 'Active')));
         $dd = "<select name='mpurity' style='width:100px;'>";
+        $dd .= "<option value=''>Select</option>";
         if (!empty($purity)) {
-//            $dd .= "<option value=''>&nbsp;</option>";
             foreach ($purity as $purities) {
                 $dd .= "<option value='{$purities['Purity']['purity']}'>{$purities['Purity']['purity']} K</option>";
             }
@@ -1203,4 +1359,5 @@ class ProductsController extends AppController {
         $dd .= "</select>";
         echo $dd;
     }
+
 }

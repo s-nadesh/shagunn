@@ -2339,3 +2339,11 @@ width:205px;
 #offers_navmenu .ui-tabs-nav li a{
     width: 184px;
 }
+
+.footer li{
+    display: inline-table;
+}
+
+.offer_top{
+    border-top: 3px solid #e7c765 !important;
+}

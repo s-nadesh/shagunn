@@ -203,15 +203,21 @@
                                             <?php
                                             echo $this->Form->input('admin_status_id', array(
                                                 'type' => 'select',
+                                                'id' => 'adminstatusid',
                                                 'options' => $admin_status_options,
                                                 'label' => false,
                                                 'div' => false,
                                                 'value' => $orderdetails['Order']['admin_status_id'],
 //                         'empty' => ''
                                             ));
+                                            echo $this->Form->input('old_admin_status_id', array('type' => 'hidden', 'value' => $orderdetails['Order']['admin_status_id']));
                                             ?>
                                             <?php // $st=h($orderdetails['Order']['order_status']); if(!empty($st))echo $st; else '-';  ?>
                                         </p></td>
+                                </tr>
+                                <tr id="admin_status_remarks_tr" style="display: none">
+                                    <td width="150"><strong>Remarks</strong></td>
+                                <td><?php echo $this->Form->input('adminstatus_remarks', array('type' => 'textarea', 'div' => false, 'label' => false)); ?></td>
                                 </tr>
                                 <tr>
                                     <td width="150"><strong>Brokerage Status </strong></td>
@@ -224,13 +230,19 @@
                                             <?php
                                             echo $this->Form->input('brokerage_status_id', array(
                                                 'type' => 'select',
+                                                'id' => 'brokeragestatusid',
                                                 'options' => $brokerage_status_options,
                                                 'label' => false,
                                                 'div' => false,
                                                 'value' => $orderdetails['Order']['brokerage_status_id'],
                                             ));
+                                            echo $this->Form->input('old_brokerage_status_id', array('type' => 'hidden', 'value' => $orderdetails['Order']['brokerage_status_id']));
                                             ?>
                                         </p></td>
+                                </tr>
+                                <tr id="brokerage_status_remarks_tr" style="display: none">
+                                    <td width="150"><strong>Remarks</strong></td>
+                                <td><?php echo $this->Form->input('brokeragestatus_remarks', array('type' => 'textarea', 'div' => false, 'label' => false)); ?></td>
                                 </tr>
 
                                 <tr>
@@ -300,12 +312,28 @@
 <script type="text/javascript">
     $(document).ready(function(){
         var orderstatusid = <?php echo $orderdetails['Order']['order_status_id'] ?>;
+        var adminstatusid = <?php echo $orderdetails['Order']['admin_status_id'] ?>;
+        var brokeragestatusid = <?php echo $orderdetails['Order']['brokerage_status_id'] ?>;
         
         $("#orderstatusid").on('change', function(){
             if(orderstatusid != $(this).val()){
                 $("#remarks_tr").show();
             }else{
                 $("#remarks_tr").hide();
+            }
+        });
+        $("#adminstatusid").on('change', function(){
+            if(adminstatusid != $(this).val()){
+                $("#admin_status_remarks_tr").show();
+            }else{
+                $("#admin_status_remarks_tr").hide();
+            }
+        });
+        $("#brokeragestatusid").on('change', function(){
+            if(brokeragestatusid != $(this).val()){
+                $("#brokerage_status_remarks_tr").show();
+            }else{
+                $("#brokerage_status_remarks_tr").hide();
             }
         });
     });

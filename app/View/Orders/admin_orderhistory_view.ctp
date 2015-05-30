@@ -29,21 +29,33 @@
                                     <th width="15" align="left">Old Status</th>
                                     <th width="15" align="left">New Status</th>
                                     <th width="30" align="left">Remarks</th>
+                                    <th width="30" align="left">Changed By</th>
                                     </thead>
                                     <tbody>
                                         <?php if (!empty($orderhistory)) { ?>
-                                            <?php foreach ($orderhistory as $key => $history) { ?>
+                                            <?php foreach ($orderhistory as $key => $history) {
+                                                $old_sts = "Old{$history['Orderhistory']['status_type']}";
+                                                $new_sts = "New{$history['Orderhistory']['status_type']}";
+                                                
+                                                $colname = 'order_status';
+                                                if($history['Orderhistory']['status_type'] == 'adminstatus'){
+                                                    $colname = 'admin_status';
+                                                }elseif($history['Orderhistory']['status_type'] == 'brokeragestatus'){
+                                                    $colname = 'brokerage_status';
+                                                }
+                                                ?>
                                                 <tr>
                                                     <td><?php echo $key + 1 ?></td>
                                                     <td><?php echo ucfirst($history['Orderhistory']['status_type']) ?></td>
                                                     <td><?php echo $history['Orderhistory']['date'] ?></td>
-                                                    <td><?php echo $history['Oldorderstatus']['order_status']; ?></td>
-                                                    <td><?php echo $history['Neworderstatus']['order_status'] ?></td>
+                                                    <td><?php echo $history[$old_sts][$colname]; ?></td>
+                                                    <td><?php echo $history[$new_sts][$colname] ?></td>
                                                     <td><?php echo $history['Orderhistory']['remarks'] ?></td>
+                                                    <td><?php echo $history['Orderhistory']['changed_by'] ?></td>
                                                 </tr>
                                             <?php } ?>
                                         <?php }else{ ?>
-                                                <tr style="text-align: center">
+                                                <tr>
                                                     <td colspan="6">No Order History</td>
                                                 </tr>
                                         <?php } ?>

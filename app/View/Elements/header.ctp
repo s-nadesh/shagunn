@@ -384,7 +384,7 @@
                             </li>
                             <!--Offers-->
                         <?php } elseif ($menu['Menu']['menu_id'] == 8) { ?>
-                            <li class="baseitem" data-left="<?php echo $left ?>">
+                            <li class="baseitem" id="offer_header" data-left="<?php echo $left ?>">
                                 <a class="primary_link" href="#"><?php echo $menu['Menu']['menu_name'] ?></a>
                                 <div class="dropdown vertical_menu" id="<?php echo strtolower($menu['Menu']['menu_name']) ?>_navmenu">
                                     <div class="menutabs" id="tabs<?php echo $menu['Menu']['menu_id'] ?>">

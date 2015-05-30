@@ -23,5 +23,33 @@ class Orderhistory extends AppModel {
                 'Orderhistory.status_type' => 'orderstatus'
             )
         ),
+        'Oldadminstatus' => array(
+            'className' => 'Adminstatus',
+            'foreignKey' => 'old_status_id',
+            'conditions' => array(
+                'Orderhistory.status_type' => 'adminstatus'
+            )
+        ),
+        'Newadminstatus' => array(
+            'className' => 'Adminstatus',
+            'foreignKey' => 'new_status_id',
+            'conditions' => array(
+                'Orderhistory.status_type' => 'adminstatus'
+            )
+        ),
+        'Oldbrokeragestatus' => array(
+            'className' => 'Brokeragestatus',
+            'foreignKey' => 'old_status_id',
+            'conditions' => array(
+                'Orderhistory.status_type' => 'brokeragestatus'
+            )
+        ),
+        'Newbrokeragestatus' => array(
+            'className' => 'Brokeragestatus',
+            'foreignKey' => 'new_status_id',
+            'conditions' => array(
+                'Orderhistory.status_type' => 'brokeragestatus'
+            )
+        ),
     ); 
 }

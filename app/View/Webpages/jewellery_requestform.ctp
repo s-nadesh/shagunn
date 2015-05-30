@@ -111,7 +111,7 @@
                                                 <td>:</td>
                                                 <td id="puritytd">
                                                     <select style="width:80px;" name="mpurity">
-                                                        <option value="">&nbsp;</option>
+                                                        <option value="">Select</option>
                                                     </select>
                                                 </td>
                                                 <?php
@@ -121,7 +121,7 @@
                                                 <td>:</td>
                                                 <td>
                                                     <select style="width:100px;" name="mmetal" id="metalsdiv">
-                                                        <!--<option value="">&nbsp;</option>-->
+                                                        <option value="">Select</option>
                                                         <?php
                                                         foreach ($metals as $metal) {
                                                             echo "<option value='{$metal['Metal']['metal_name']}'>{$metal['Metal']['metal_name']}</option>";
@@ -133,7 +133,7 @@
                                                 <td>:</td>
                                                 <td id="colorstd">
                                                     <select style="width:100px;" name="mcolor">
-                                                        <option value="">&nbsp;</option>
+                                                        <option value="">Select</option>
                                                     </select>
                                                 </td>
                                                 <td>&nbsp;</td>
@@ -171,7 +171,7 @@
                                                         $type = ClassRegistry::init('Settingtype')->find('all', array('conditions' => array('status' => 'Active'), 'order' => 'settingtype_id ASC'));
                                                         ?>
                                                         <select style="width:100px;" name="dsettings[]" style="width:60px;">
-                                                            <option value="">&nbsp;</option>
+                                                            <option value="">Select</option>
                                                             <?php
                                                             foreach ($type as $new_type) {
                                                                 echo "<option value='{$new_type['Settingtype']['settingtype']}'>{$new_type['Settingtype']['settingtype']}</option>";
@@ -190,7 +190,7 @@
                                                         $shapes = ClassRegistry::init('Shape')->find('all', array('conditions' => array('status' => 'Active'), 'order' => 'shape_id ASC'));
                                                         ?>
                                                         <select style="width:100px;" name="dshape[]" style="width:60px;">
-                                                            <option value="">&nbsp;</option>
+                                                            <option value="">Select</option>
                                                             <?php
                                                             foreach ($shapes as $shape) {
                                                                 echo "<option value='{$shape['Shape']['shape']}'>{$shape['Shape']['shape']}</option>";
@@ -230,16 +230,52 @@
                                                 <tr>
                                                     <td>Stone Name</td>
                                                     <td>:</td>
-                                                    <td><input type="text" name="sname[]" style="width:60px;"></td>
+                                                    <td>
+                                                        <?php
+                                                        $gem = ClassRegistry::init('Gemstone')->find('all', array('conditions' => array('status' => 'Active'), 'order' => 'gemstone_id ASC'));
+                                                        ?>
+                                                        <select style="width:100px;" name="dshape[]" style="width:60px;">
+                                                            <option value="">Select</option>
+                                                            <?php
+                                                                foreach ($gem as $gem) {
+                                                                    echo '<option value="' . $gem['Gemstone']['stone'] . '">' . $gem['Gemstone']['stone'] . '</option>';
+                                                                }
+                                                            ?>
+                                                        </select>
+                                                    </td>
                                                     <td>Shape</td>
                                                     <td>:</td>
-                                                    <td><input type="text" name="sshape[]" style="width:60px;"></td>
+                                                    <td>
+                                                        <?php
+                                                        $shapes = ClassRegistry::init('Shape')->find('all', array('conditions' => array('status' => 'Active'), 'order' => 'shape_id ASC'));
+                                                        ?>
+                                                        <select style="width:100px;" name="dshape[]" style="width:60px;">
+                                                            <option value="">Select</option>
+                                                            <?php
+                                                            foreach ($shapes as $shape) {
+                                                                echo "<option value='{$shape['Shape']['shape']}'>{$shape['Shape']['shape']}</option>";
+                                                            }
+                                                            ?>
+                                                        </select>
+                                                    </td>
                                                     <td>Weight/Carat</td>
                                                     <td>:</td>
                                                     <td><input type="text" name="sweight[]" style="width:60px;"></td>
                                                     <td>Setting</td>
                                                     <td>:</td>
-                                                    <td><input type="text" name="ssetting[]" style="width:60px;"></td>
+                                                    <td>
+                                                        <?php
+                                                        $type = ClassRegistry::init('Settingtype')->find('all', array('conditions' => array('status' => 'Active'), 'order' => 'settingtype_id ASC'));
+                                                        ?>
+                                                        <select style="width:100px;" name="dsettings[]" style="width:60px;">
+                                                            <option value="">Select</option>
+                                                            <?php
+                                                            foreach ($type as $new_type) {
+                                                                echo "<option value='{$new_type['Settingtype']['settingtype']}'>{$new_type['Settingtype']['settingtype']}</option>";
+                                                            }
+                                                            ?>
+                                                        </select>
+                                                    </td>
                                                     <td>No.of Stone</td>
                                                     <td>:</td>
                                                     <td><input type="text" name="sstonecount[]" style="width:60px;"></td>

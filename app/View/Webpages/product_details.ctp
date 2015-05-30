@@ -302,7 +302,10 @@
                                 <td colspan="6" style="margin: 5px;">
                                     <form id="deliveryForm" name="myForm" method="post">
                                         <input placeholder="Enter pincode" name="pincode" type="text" class="validate[required,minSize[6],custom[integer]] pincode" onkeypress="return intnumbers(this, event)" maxlength="6">&nbsp;&nbsp;&nbsp;
-                                        <input type="submit" name="update" class="update" value="Update" id="update" /></form>&nbsp;&nbsp;&nbsp;<span class="delivery_date"></span> </td>
+                                        <input type="submit" name="update" class="update" value="Update" id="update" /></form>&nbsp;&nbsp;&nbsp; </td>
+                            </tr>
+                            <tr>
+                                <td colspan="10"><span class="delivery_date"></span></td>
                             </tr>
                             <input type="hidden" name="product_id" value="<?php echo $product['Product']['product_id']; ?>" class="product_id"/> 
                             <tr>

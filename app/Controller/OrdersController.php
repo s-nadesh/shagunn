@@ -1078,6 +1078,28 @@ class OrdersController extends AppController {
                         }
                     }
                 }
+                if ($this->request->data['Order']['old_admin_status_id'] != $this->request->data['Order']['admin_status_id']) {
+                    $orderhistory = array(
+                        'Orderhistory' => array(
+                            'order_id' => $this->data['Order']['order_id'],
+                            'status_type' => 'adminstatus',
+                            'old_status_id' => $this->data['Order']['old_admin_status_id'],
+                            'new_status_id' => $this->data['Order']['admin_status_id'],
+                            'remarks' => $this->data['Order']['adminstatus_remarks'],
+                    ));
+                    $this->Orderhistory->save($orderhistory);
+                }
+                if ($this->request->data['Order']['old_brokerage_status_id'] != $this->request->data['Order']['brokerage_status_id']) {
+                    $orderhistory = array(
+                        'Orderhistory' => array(
+                            'order_id' => $this->data['Order']['order_id'],
+                            'status_type' => 'brokeragestatus',
+                            'old_status_id' => $this->data['Order']['old_brokerage_status_id'],
+                            'new_status_id' => $this->data['Order']['brokerage_status_id'],
+                            'remarks' => $this->data['Order']['brokeragestatus_remarks'],
+                    ));
+                    $this->Orderhistory->save($orderhistory);
+                }
 
                 $this->Session->setFlash('<div class="success msg">Order details updated successfully</div>', '');
             } else {
@@ -1811,6 +1833,7 @@ class OrdersController extends AppController {
                             'old_status_id' => $this->data['Order']['old_order_status_id'],
                             'new_status_id' => $this->data['Order']['order_status_id'],
                             'remarks' => $this->data['Order']['orderstatus_remarks'],
+                            'changed_by' => $this->Session->read('User.first_name').' '.$this->Session->read('User.last_name'),
                     ));
                     $this->Orderhistory->save($orderhistory);
                     if ($this->Order->save($this->request->data)) {
@@ -1819,6 +1842,18 @@ class OrdersController extends AppController {
                     } else {
                         $this->Session->setFlash('<div class="error msg">Failed to update</div>', '');
                     }
+                }
+                if ($this->request->data['Order']['old_admin_status_id'] != $this->request->data['Order']['admin_status_id']) {
+                    $orderhistory = array(
+                        'Orderhistory' => array(
+                            'order_id' => $this->data['Order']['order_id'],
+                            'status_type' => 'adminstatus',
+                            'old_status_id' => $this->data['Order']['old_admin_status_id'],
+                            'new_status_id' => $this->data['Order']['admin_status_id'],
+                            'remarks' => $this->data['Order']['adminstatus_remarks'],
+                            'changed_by' => $this->Session->read('User.first_name').' '.$this->Session->read('User.last_name'),
+                    ));
+                    $this->Orderhistory->save($orderhistory);
                 }
                 $this->redirect(array('action' => 'order_view', $this->data['Order']['order_id'], 'controller' => 'orders'));
             }

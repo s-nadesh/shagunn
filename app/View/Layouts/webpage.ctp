@@ -125,6 +125,12 @@
 
                 $(".menutabs").tabs({event: "mouseover"}).addClass("ui-tabs-vertical ui-helper-clearfix");
                 $(".menutabs li").removeClass("ui-corner-top").addClass("ui-corner-left");
+                
+                $('#nav > #offer_header').hover(function () {
+//                    console.log($(this).find('#offers_navmenu  ul'));
+                    $(this).find('#tabs8').addClass('offer_top');
+                }, function () {
+                });
             });
 
 
