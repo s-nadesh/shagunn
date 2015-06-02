@@ -67,5 +67,15 @@
             </div>
         </div>
         <?php echo $this->Form->end(); ?>
+        
+        <div class="left">
+            <h6>SMS Activities</h6>
+            <ul>
+                <li>Order Confirmation: When Order is placed via PayU, COD, CHQ/DD</li>
+                <li>Courier Detail: When Importing Files in Order Tracking</li>
+                <li>Order Cancellation: When Order status is changed to Canceled. (Note: Order status Name must be like this Cancelled / cancelled)</li>
+                <li>Order Delivered: When Order status is changed to Completed. (Note: Order status Name must be like this Completed / completed / Finished / finished / Delivered / delivered)</li>
+            </ul>
+        </div>
     </div>
 </div>

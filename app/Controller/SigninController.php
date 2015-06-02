@@ -344,8 +344,7 @@ class SigninController extends AppController {
         }
     }
 
-   public function admin_user_export() {
-
+   public function admin_user_export($user_id = NULL) {
         $this->layout = '';
         $this->render(false);
         ini_set('max_execution_time', 600);
@@ -355,7 +354,20 @@ class SigninController extends AppController {
 
         header('Content-type: application/csv');
         header('Content-Disposition: attachment; filename="' . $filename . '"');
-        $results = $this->User->find('all',array('conditions'=>array('status !='=>'Trash','user_type'=>'0'))); //,array('conditions'=>array('status'=>'Active'))
+        if($user_id == NULL){
+        $results = $this->User->find('all',array('conditions'=>array(
+            'status !='=>'Trash',
+            'user_type'=>'0'
+            ))); //,array('conditions'=>array('status'=>'Active'))
+        }else{
+            $exp_user = explode(',', $user_id);
+            $results = $this->User->find('all',array('conditions'=>array(
+                'status !='=>'Trash',
+                'user_type'=>'0',
+                'user_id' => $exp_user
+                ))); //,array('conditions'=>array('status'=>'Active'))
+            
+        }
         $header_row = array("S.No", "Email", "Frist Name", "Last Name", "Phone No", "Address", "Birth day", "Anniversary", "status", "Shipping Address", "Shipping Landmark","Shipping Pincode","Shipping City","Shipping State", "Billing Address", "Billing Landmark", "Pincode", "City", "State");
         fputcsv($csv_file, $header_row, ',', '"');
         $i = 1;
@@ -364,9 +376,9 @@ class SigninController extends AppController {
             if (!empty($shipping)) {
                 $address1 = $shipping['Shipping']['shipping_address'];
                 $land1 = $shipping['Shipping']['shipping_landmark'];
-				$shipping_pincode=$shipping['Shipping']['shipping_pincode'];
-				$shipping_city=$shipping['Shipping']['shipping_city'];
-				$shipping_state=$shipping['Shipping']['shipping_state'];
+                    $shipping_pincode=$shipping['Shipping']['shipping_pincode'];
+                    $shipping_city=$shipping['Shipping']['shipping_city'];
+                    $shipping_state=$shipping['Shipping']['shipping_state'];
                 $address2 = $shipping['Shipping']['billing_address'];
                 $land2 = $shipping['Shipping']['billing_landmark'];
 				
@@ -374,7 +386,7 @@ class SigninController extends AppController {
                 $city = $shipping['Shipping']['city'];
                 $state = $shipping['Shipping']['state'];
             } else {
-                $address1 = $land1 = $address2 = $land2 = $pincode = $city = $state = '';
+                $address1 = $land1 = $address2 = $land2 = $pincode = $city = $state = $shipping_pincode = $shipping_city = $shipping_state = '';
             }
             $row = array(
                 $i,
@@ -388,9 +400,9 @@ class SigninController extends AppController {
                 $results['User']['status'],
                 $address1,
                 $land1,
-				$shipping_pincode,
-				$shipping_city,
-				$shipping_state,
+                $shipping_pincode,
+                $shipping_city,
+                $shipping_state,
                 $address2,
                 $land2,
                 $pincode,

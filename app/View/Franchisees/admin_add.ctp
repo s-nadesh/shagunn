@@ -1,3 +1,19 @@
+<script>
+function validate(evt) {
+  var theEvent = evt || window.event;
+  var key = theEvent.keyCode || theEvent.which;
+  key = String.fromCharCode( key );
+ if(key != ','){
+  var regex = /[0-9]|\./;
+  if( !regex.test(key) ) {
+    theEvent.returnValue = false;
+    if(theEvent.preventDefault) theEvent.preventDefault();
+  }else{
+	return true;
+  }
+  }
+}
+</script>
 <?php echo $this->Html->script(array('ui/jquery.ui.datepicker')); ?>
 <div id="content"  class="clearfix">			
     <div class="container">
@@ -120,14 +136,9 @@
                                     }
                                     ?>
                                 </select></dd>
-
+							
                             <dt><label for="name">Pincode<span class="required">*</span></label></dt>
-                            <dd><input type="text" name="data[User][pincode]" id="regpincode" onkeypress="return intnumbers(this, event)" maxlength="6"  
-                                       class="validate[required,custom[integer],minSize[6]]" size="50"   value="<?php
-                                       if (isset($this->request->data['User']['pincode'])) {
-                                           echo $this->request->data['User']['pincode'];
-                                       }
-                                       ?>" />
+                            <dd><textarea name="data[User][pincode]" id="regpincode"                               class="validate[required]" onkeypress="return validate(event)"><?php if (isset($this->request->data['User']['pincode'])) {   echo $this->request->data['User']['pincode']; }?></textarea>
                             </dd>
                             
                             

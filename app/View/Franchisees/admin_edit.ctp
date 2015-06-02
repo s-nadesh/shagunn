@@ -1,3 +1,19 @@
+<script>
+function validate(evt) {
+  var theEvent = evt || window.event;
+  var key = theEvent.keyCode || theEvent.which;
+  key = String.fromCharCode( key );
+ if(key != ','){
+  var regex = /[0-9]|\./;
+  if( !regex.test(key) ) {
+    theEvent.returnValue = false;
+    if(theEvent.preventDefault) theEvent.preventDefault();
+  }else{
+	return true;
+  }
+  }
+}
+</script>
 <?php echo $this->Html->script(array('ui/jquery.ui.datepicker')); ?>
 <div id="content"  class="clearfix">			
     <div class="container">
@@ -99,21 +115,22 @@
                                 </select></dd>
 
                             <dt><label for="name">Pincode<span class="required">*</span></label></dt>
-                            <dd><input type="text" name="data[User][pincode]" id="regpincode" onkeypress="return intnumbers(this, event)" maxlength="6"  class="validate[required,custom[integer],minSize[6]]" size="50" value="<?php echo $user['User']['pincode']; ?>"  /></dd>
+                            <dd><textarea name="data[User][pincode]" id="regpincode"  onkeypress="return validate(event)" class="validate[required]" size="50"><?php echo $user['User']['pincode']; ?></textarea></dd>
+							<!--<dd><input type="text" name="data[User][pincode]" id="regpincode" onkeypress="return intnumbers(this, event)" maxlength="6"  class="validate[required,custom[integer],minSize[6]]" size="50" value="<?php echo $user['User']['pincode']; ?>"  /></dd>-->
                             
                             
                             <dt><label for="name">Brokerage Charges Calculation<span class="required">*</span></label></dt>                                               
                             <dd>
                                 <input type="hidden" name="data[Franchiseebrokerage][brkge_calc]" value="PER" id="brkge_calc" />
-                                <input type="radio" name="brkge_calc" class="brkge_calc validate[required]" value="PER" <?php echo $brokerage['Franchiseebrokerage']['brkge_calc'] == 'PER' ? 'checked' : '' ?>/>&nbsp; % &nbsp; 
-                                <input type="radio" name="brkge_calc" class="brkge_calc validate[required]" value="INR" <?php echo $brokerage['Franchiseebrokerage']['brkge_calc'] == 'INR' ? 'checked' : '' ?>/>&nbsp; INR
+                                <input type="radio" name="brkge_calc" class="brkge_calc validate[required]" value="PER" <?php echo !empty($brokerage) && $brokerage['Franchiseebrokerage']['brkge_calc'] == 'PER' ? 'checked' : '' ?>/>&nbsp; % &nbsp; 
+                                <input type="radio" name="brkge_calc" class="brkge_calc validate[required]" value="INR" <?php echo !empty($brokerage) && $brokerage['Franchiseebrokerage']['brkge_calc'] == 'INR' ? 'checked' : '' ?>/>&nbsp; INR
                             </dd>
                             
                             <dt><label for="name">Pincode wise<span class="required">*</span></label></dt>                                               
-                            <dd><input type="text" name="data[Franchiseebrokerage][pincodewise_brkge_value]" class="validate[required,custom[number]]" id="pincodewise_brkge_value" size="50"  value="<?php echo $brokerage['Franchiseebrokerage']['pincodewise_brkge_value'] ?>" />&nbsp; <span class="brkge_calc_indicator"></span></dd>
+                            <dd><input type="text" name="data[Franchiseebrokerage][pincodewise_brkge_value]" class="validate[required,custom[number]]" id="pincodewise_brkge_value" size="50"  value="<?php echo !empty($brokerage) ? $brokerage['Franchiseebrokerage']['pincodewise_brkge_value'] : ''  ?>" />&nbsp; <span class="brkge_calc_indicator"></span></dd>
                             
                             <dt><label for="name">General<span class="required">*</span></label></dt>                                               
-                            <dd><input type="text" name="data[Franchiseebrokerage][general_brkge_value]" class="validate[required,custom[number]]" id="general_brkge_value" size="50"  value="<?php echo $brokerage['Franchiseebrokerage']['general_brkge_value'] ?>" />&nbsp; <span class="brkge_calc_indicator"></span></dd>
+                            <dd><input type="text" name="data[Franchiseebrokerage][general_brkge_value]" class="validate[required,custom[number]]" id="general_brkge_value" size="50"  value="<?php echo !empty($brokerage) ? $brokerage['Franchiseebrokerage']['general_brkge_value'] : '' ?>" />&nbsp; <span class="brkge_calc_indicator"></span></dd>
                         
 
                             <dt><label for="name">Phone No.(1)<span class="required">*</span></label></dt>
@@ -577,21 +594,22 @@
                                 ?>   />No&nbsp;&nbsp;&nbsp;
 
                             </dd>
-
                             <dt><label for="name">Loan Franchisee </label></dt>
                             <dd><input type="radio" id="loan"  name="data[Franchiseeproof][loan]" value="Yes" class="validate[required] radio" <?php
-                                if ($franchisee['Franchiseeproof']['loan'] == 'Yes') {
-                                    echo 'checked="checked"';
-                                } else {
-                                    
-                                }
+                                if (isset($franchisee['Franchiseeproof']['loan'])) {
+									if ($franchisee['Franchiseeproof']['loan'] == 'Yes') {
+										echo 'checked="checked"';
+									}
+								}
                                 ?>    />Yes&nbsp;&nbsp;&nbsp;
                                 <input type="radio" id="loan"  name="data[Franchiseeproof][loan]" value="No"  class="validate[required] radio" <?php
-                                       if ($franchisee['Franchiseeproof']['loan'] == 'No') {
-                                           echo 'checked="checked"';
-                                       } else {
-                                           
-                                       }
+								if (!isset($franchisee['Franchiseeproof']['loan'])) {
+									echo 'checked="checked"';
+								}else{
+									if ($franchisee['Franchiseeproof']['loan'] == 'No') {
+										echo 'checked="checked"';
+									}
+								}
                                        ?>   />No&nbsp;&nbsp;&nbsp;
 
                             </dd>

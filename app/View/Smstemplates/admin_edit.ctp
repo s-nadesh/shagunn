@@ -6,8 +6,9 @@
         <fieldset>
             <legend><?php echo __('Edit Sms template'); ?></legend>
             <dl class="inline">
+                <dt><label>Title</label></dt>
+                <dd><?php echo $this->data['Smstemplate']['title']?></dd>
                 <?php
-                echo $this->Form->input('title', array('div' => false, 'error' => false, 'label' => array('text' => 'Title' . '<span class="required">*</span>'), 'before' => '<dt>', 'after' => '</dd>', 'between' => '</dt><dd>', 'class' => 'validate[required]', 'size' => '50'));
                 echo $this->Form->input('content', array('div' => false, 'error' => false, 'label' => array('text' => __('Content') . '<span class="required">*</span>'), 'type' => 'textarea', 'before' => '<dt>', 'after' => '</dd>', 'between' => '</dt><dd>', 'class' => 'validate[required] text-input', 'rows' => '5', 'cols' => '50'));
                 echo $this->Form->submit(__('Submit'), array('div' => false, 'before' => ' <div class="buttons" >', 'after' => '</div>', 'class' => 'button', 'value' => __('Submit')));
                 ?>

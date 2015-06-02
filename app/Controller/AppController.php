@@ -40,7 +40,7 @@ class AppController extends Controller {
      *
      * @var array
      */
-    public $uses = array('Adminuser', 'Emaillist', 'Emailcontent', 'Shoppingcart');
+    public $uses = array('Adminuser', 'Emaillist', 'Emailcontent', 'Shoppingcart', 'Smstemplate');
 
     public function beforeFilter() {
         parent::beforeFilter();
@@ -230,6 +230,15 @@ class AppController extends Controller {
             $sendsms = new sendsms(SMS_SITE, SMS_METHOD, SMS_API_KEY, SMS_SENDER_ID);
             $sendsms->send_sms($phone, $message, '', 'xml');
         }
+    }
+
+    public function get_sms_message($id) {
+        $message = '';
+        $sms_template = $this->Smstemplate->findBySmsId($id);
+        if(!empty($sms_template)){
+            $message = $sms_template['Smstemplate']['content'];
+        }
+        return $message;
     }
 
 }

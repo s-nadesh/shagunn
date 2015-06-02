@@ -147,7 +147,7 @@ $( "#tabs2" ).tabs({
                                                 </tr>
                                                 <tr><td colspan="2" height="10"></td></tr>
                                                 <tr>
-                                                    <td colspan="2"><input name="data[User][email]" type="text" class="vvalidate[required,custom[email]]"></td>
+                                                    <td colspan="2"><input name="data[User][email]" type="text" class="validate[required,custom[email]]"></td>
                                                 </tr>
                                                  <tr><td colspan="2" height="10"></td></tr>
                         	<tr>
@@ -189,6 +189,7 @@ $( "#tabs2" ).tabs({
             $("#formSubmit").validationEngine();
             $("#shipping_details").validationEngine();
             $("#loginpage").validationEngine();
+            $("#formForgot").validationEngine();
         });
     </script>
     <script>

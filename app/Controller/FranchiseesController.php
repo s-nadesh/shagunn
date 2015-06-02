@@ -17,7 +17,7 @@ class FranchiseesController extends AppController {
      * @var array
      */
     public $components = array('Paginator', 'Session');
-    public $uses = array('User', 'Adminuser', 'State', 'Accounttype', 'Proof', 'Nomination', 'Bankdetail', 'Payment', 'Outlet', 'Franchiseeproof', 'Officeuse', 'Otherdetail', 'Franchiseebrokerage');
+    public $uses = array('User', 'Adminuser', 'State', 'Accounttype', 'Proof', 'Nomination', 'Bankdetail', 'Payment', 'Outlet', 'Franchiseeproof', 'Officeuse', 'Otherdetail', 'Franchiseebrokerage', 'Cities', 'States');
     public $layout = 'admin';
 
     /**
@@ -58,8 +58,8 @@ class FranchiseesController extends AppController {
             }
         }
 
-            $search = array();
-            $search = array('user_type' => '1', 'status !=' => 'Trash');
+        $search = array();
+        $search = array('user_type' => '1', 'status !=' => 'Trash');
         if ($this->request->query('search') != '') {
             if (($this->request->query('cdate') != '') && ($this->request->query('edate') != '')) {
                 $search = array('created_date BETWEEN \'' . $this->request->query('cdate') . '\' AND \'' . $this->request->query('edate') . '\'');
@@ -83,7 +83,7 @@ class FranchiseesController extends AppController {
             $this->paginate = array('conditions' => $search, 'order' => 'User.user_id DESC');
             $this->set('user', $this->paginate('User'));
         } else {
-			 $this->paginate = array('conditions' =>$search,'order'=>'User.user_id DESC');
+            $this->paginate = array('conditions' => $search, 'order' => 'User.user_id DESC');
             $this->set('user', $this->Paginator->paginate('User'));
         }
     }
@@ -107,7 +107,43 @@ class FranchiseesController extends AppController {
 
             $check = $this->User->find('first', array('conditions' => array('email' => $this->request->data['User']['email'], 'status !=' => 'Trash')));
             if (empty($check)) {
-
+                $errors = array();
+                $i = 0;
+                $error1 = 0;
+                $error2 = 0;
+                $pincode = $this->request->data['User']['pincode'];
+                if ($pincode) {
+                    $pins = explode(",", $pincode);
+                    foreach ($pins as $pin) {
+                        if ($pin) {
+                            if (is_numeric($pin)) {
+                                $len = strlen($pin);
+                                if ($len == 6) {
+                                    $errors['len'][$i] = 0;
+                                } else {
+                                    $errors['len'][$i] = 1;
+                                }
+                                $errors['num'][$i] = 0;
+                            } else {
+                                $errors['num'][$i] = 1;
+                                $errors['len'][$i] = 1;
+                            }
+                        }
+                        $i++;
+                    }
+                    if (in_array(1, $errors['num'])) {
+                        $error1 = 1;
+                    }
+                    if (in_array(1, $errors['len'])) {
+                        $error2 = 1;
+                    }
+                    if ($error1 == 0 && $error2 == 0) {
+                        
+                    } else {
+                        $this->Session->setFlash('<div class="error msg">Pincode Not Valid.</div>', '');
+                        return true;
+                    }
+                }
                 $this->request->data['User']['status'] = 'Active';
                 $this->request->data['User']['user_type'] = 1;
                 $this->request->data['User']['created_date'] = date('Y-m-d H:i:s');
@@ -234,6 +270,9 @@ class FranchiseesController extends AppController {
         $nomination = $this->Nomination->find('first', array('conditions' => array('user_id' => $this->params['pass']['0'])));
         $this->set('nomination', $nomination);
 
+        $state_city = $this->States->find('list', array('conditions' => array('status' => 'Active'), 'fields' => array('state_id', 'state')));
+        $this->set('state_city', $state_city);
+
         $bank = $this->Bankdetail->find('first', array('conditions' => array('user_id' => $this->params['pass']['0'])));
         $this->set('bank', $bank);
 
@@ -262,15 +301,50 @@ class FranchiseesController extends AppController {
         $this->set('proof', $proof);
 
         $user_id = $user['User']['user_id'];
-        
+
         //added by prakash
         $brokerage = $this->Franchiseebrokerage->find('first', array('conditions' => array('franchisee_brkge_user_id' => $this->params['pass']['0'])));
         $this->set('brokerage', $brokerage);
-
         if ($this->request->is('post')) {
             $check = $this->User->find('first', array('conditions' => array('email' => $this->request->data['User']['email'], 'status !=' => 'Trash', 'user_id !=' => $this->params['pass']['0'])));
             if (empty($check)) {
-
+                $errors = array();
+                $i = 0;
+                $error1 = 0;
+                $error2 = 0;
+                $pincode = $this->request->data['User']['pincode'];
+                if ($pincode) {
+                    $pins = explode(",", $pincode);
+                    foreach ($pins as $pin) {
+                        if ($pin) {
+                            if (is_numeric($pin)) {
+                                $len = strlen($pin);
+                                if ($len == 6) {
+                                    $errors['len'][$i] = 0;
+                                } else {
+                                    $errors['len'][$i] = 1;
+                                }
+                                $errors['num'][$i] = 0;
+                            } else {
+                                $errors['num'][$i] = 1;
+                                $errors['len'][$i] = 1;
+                            }
+                        }
+                        $i++;
+                    }
+                    if (in_array(1, $errors['num'])) {
+                        $error1 = 1;
+                    }
+                    if (in_array(1, $errors['len'])) {
+                        $error2 = 1;
+                    }
+                    if ($error1 == 0 && $error2 == 0) {
+                        
+                    } else {
+                        $this->Session->setFlash('<div class="error msg">Pincode Not Valid.</div>', '');
+                        return true;
+                    }
+                }
                 $this->request->data['User']['user_id'] = $user['User']['user_id'];
 
                 $password = $this->str_rand();
@@ -331,7 +405,7 @@ class FranchiseesController extends AppController {
                 //addded by prakash
                 if (!empty($brokerage)) {
                     $this->request->data['Franchiseebrokerage']['franchisee_brkge_id'] = $brokerage['Franchiseebrokerage']['franchisee_brkge_id'];
-                }else{
+                } else {
                     $this->request->data['Franchiseebrokerage']['franchisee_brkge_user_id'] = $user_id;
                 }
                 $this->Franchiseebrokerage->save($this->request->data);
@@ -345,12 +419,13 @@ class FranchiseesController extends AppController {
         }
     }
 
-    public function admin_fexport() {
+    public function admin_fexport($cdate, $edate) {
         $this->checkadmin();
         $this->layout = '';
         $this->render(false);
 
-        ini_set('max_execution_time', 600); //increase max_execution_time to 10 min if data set is very large	
+        ini_set('max_execution_time', 600);
+        //increase max_execution_time to 10 min if data set is very large	
         //create a file
         $filename = "franchisee.csv";
         $csv_file = fopen('php://output', 'w');
@@ -358,7 +433,49 @@ class FranchiseesController extends AppController {
         header('Content-type: application/csv');
         header('Content-Disposition: attachment; filename="' . $filename . '"');
 
-        $results = $this->User->find('all', array('conditions' => array('user_type' => 1, "status !=" => "Trash")));
+        $u_email = $this->request->params['pass'][3];
+        $u_name = $this->request->params['pass'][2];
+        $u_fra = $this->request->params['pass'][4];
+        $search = array();
+        $search = array('user_type' => '1', 'status !=' => 'Trash');
+
+        $this->paginate = array('conditions' => $search, 'order' => 'User.user_id DESC');
+        $this->set('user', $this->paginate('User'));
+        /* if($cdate == 0 && $edate == 0){	
+          $results = $this->User->find('all', array('conditions' => array('user_type' => 1,'status !=' => 'Trash')));
+          }else if($cdate==''){
+          $results = $this->User->find('all', array('conditions' => array('user_type' => 1,'status !=' => 'Trash','created_date <='=>$edate)));
+          }else if($edate==''){
+          $results = $this->User->find('all', array('conditions' => array('user_type' => 1,'status !=' => 'Trash','created_date >='=>$cdate)));
+          }else{
+          $results = $this->User->find('all', array('conditions' => array('user_type' => 1,'status !=' => 'Trash','created_date >='=>$cdate,'created_date <='=>$edate)));
+          } */
+        if (($cdate != 0) && ($edate != 0)) {
+            $search = array('created_date BETWEEN \'' . $cdate . '\' AND \'' . $edate . '\'');
+        } elseif ($cdate != 0) {
+            $search['created_date >='] = $cdate;
+        } elseif ($edate != 0) {
+            $search['created_date <='] = $edate;
+        }
+        if ($u_name != '0') {
+
+            $search = array_merge($search, array('OR' => array('CONCAT(User.first_name, \' \', User.last_name) LIKE ' => '%' . $u_name . '%', 'CONCAT(User.first_name, \'\', User.last_name) LIKE ' => '%' . $u_name . '%', 'User.first_name LIKE ' => '%' . $u_name . '%', 'User.last_name LIKE ' => '%' . $u_name . '%')));
+        }
+        if ($u_fra != '0') {
+            $search['franchisee_code LIKE '] = $u_fra;
+        }
+
+        if ($u_email != '0') {
+            $search['email LIKE'] = '%' . $u_email . '%';
+        }
+
+        $results = $this->User->find('all', array('conditions' => $search));
+        /* echo "<pre>";
+          print_r($search);
+          echo "</pre>"; */
+        /* 	echo "<pre>";
+          print_r($results);
+          echo "</pre>"; */
         $header_row = array("S.No", "Email", "Title", "Frist Name", "Last Name", "Phone No", "Address", "Birth day", "Martial Status", "PAN", "Pincode", "City", "State", "Mobile No", "Phone No 2", "Fax No", "Franchisee Code", "Status", "Payment", "Amount", "Cheque No", "Bank Name", "Account No", "Branch Name", "Payment", "Amount", "Cheque No", "Bank Name", "Account No", "Branch Name", "Payment", "Amount", "Cheque No", "Bank Name", "Account No", "Branch Name", "Outlet Name", "Address", "City", "State", "Pincode", "Mobile No", "Phone No1", "Phone No 2", "Fax", "Email", "N.title", "N.name", "Guardian_name", "Address", "City", "State", "Pincode", "Mobile No", "Phone No 1", "Phone No 2", "DOB", "Email", "Bank Name", "Account No", "Branch Name", "Type", "IFSC Code", "PAN Proof", "Document Proof", "Bank Proof", "Sign Proof", "Source By", "Accepted By", "Person Name");
         fputcsv($csv_file, $header_row, ',', '"');
         $i = 1;
@@ -428,6 +545,34 @@ class FranchiseesController extends AppController {
             fputcsv($csv_file, $row, ',', '"');
         }
         fclose($csv_file);
+    }
+
+    public function register_state() {
+        if ($this->request->is('ajax')) {
+            $this->layout = '';
+            $this->render(false);
+            $id = $this->request->data;
+            $city = $this->Cities->find('all', array('conditions' => array('state_id' => $id)));
+            if (!empty($city)) {
+                echo json_encode($city);
+            } else {
+                echo '[]';
+            }
+        }
+    }
+
+    public function select_city() {
+        if ($this->request->is('ajax')) {
+            $this->layout = '';
+            $this->render(false);
+            $id = $this->request->data;
+            $city = $this->City->find('all', array('conditions' => array('state_id' => $id)));
+            if (!empty($city)) {
+                echo json_encode($city);
+            } else {
+                echo '[]';
+            }
+        }
     }
 
 }

@@ -2,7 +2,10 @@
 	<div class="container">
     <div class="mainheading">   
     <div class="btnlink"><?php // echo $this->Html->link(__('Add  Content page'), array('action' => 'add'),array('class'=>'button')); ?></div> 	
-       <div class="btnlink"><?php echo $this->Html->link(__('+Export'), array('action' => 'admin_user_export'),array('class'=>'button')); ?></div>
+       <div class="btnlink">
+           <a href="javascript:void(0)" class="button" onclick="export_file()">+Export</a>
+           <?php // echo $this->Html->link(__('+Export'), array(/*'action' => 'admin_user_export'*/'javascript:void(0)'),array('class'=>'button', 'onclick' => 'javascript:export_file()')); ?>
+       </div>
         <div class="titletag"><h1><?php echo __('User Pages'); ?></h1></div>
     </div>
  <div class="tablefooter clearfix">
@@ -83,3 +86,21 @@
  </form>
   </div>
 </div>
+
+<script type="text/javascript">
+    function export_file(){
+        var _chk = $('input[name="action[]"]:checked');
+        if(_chk.length > 0){
+            var userid = '';
+            $(_chk).each(function(){
+                userid += $(this).val() != '0' ? $(this).val()+',' : '';
+            });
+            userid = userid.slice(0, -1);
+            url = '<?php echo BASE_URL ?>/admin/signin/user_export/'+userid;
+        }else{
+            url = '<?php echo BASE_URL ?>/admin/signin/user_export';
+        }
+        location.href = url;
+        return false;
+    }
+</script>
