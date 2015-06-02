@@ -232,12 +232,12 @@
                                                     <td>:</td>
                                                     <td>
                                                         <?php
-                                                        $gem = ClassRegistry::init('Gemstone')->find('all', array('conditions' => array('status' => 'Active'), 'order' => 'gemstone_id ASC'));
+                                                        $gems = ClassRegistry::init('Gemstone')->find('all', array('conditions' => array('status' => 'Active'), 'order' => 'gemstone_id ASC'));
                                                         ?>
-                                                        <select style="width:100px;" name="dshape[]" style="width:60px;">
+                                                        <select style="width:100px;" name="sname[]" style="width:60px;">
                                                             <option value="">Select</option>
                                                             <?php
-                                                                foreach ($gem as $gem) {
+                                                                foreach ($gems as $gem) {
                                                                     echo '<option value="' . $gem['Gemstone']['stone'] . '">' . $gem['Gemstone']['stone'] . '</option>';
                                                                 }
                                                             ?>
@@ -249,7 +249,7 @@
                                                         <?php
                                                         $shapes = ClassRegistry::init('Shape')->find('all', array('conditions' => array('status' => 'Active'), 'order' => 'shape_id ASC'));
                                                         ?>
-                                                        <select style="width:100px;" name="dshape[]" style="width:60px;">
+                                                        <select style="width:100px;" name="sshape[]" style="width:60px;">
                                                             <option value="">Select</option>
                                                             <?php
                                                             foreach ($shapes as $shape) {
@@ -265,9 +265,9 @@
                                                     <td>:</td>
                                                     <td>
                                                         <?php
-                                                        $type = ClassRegistry::init('Settingtype')->find('all', array('conditions' => array('status' => 'Active'), 'order' => 'settingtype_id ASC'));
+//                                                        $type = ClassRegistry::init('Settingtype')->find('all', array('conditions' => array('status' => 'Active'), 'order' => 'settingtype_id ASC'));
                                                         ?>
-                                                        <select style="width:100px;" name="dsettings[]" style="width:60px;">
+                                                        <select style="width:100px;" name="ssetting[]" style="width:60px;">
                                                             <option value="">Select</option>
                                                             <?php
                                                             foreach ($type as $new_type) {
@@ -378,7 +378,22 @@ style=" background-color: #dba715;border: 0 none;color: #fff;cursor: pointer;pad
         $("#add_diamond").click(function () {
             var diamond_count = $('#diamond_count').val();
             var diamond_count_new = parseInt(diamond_count) + 1;
-            var append_data = '<table id="diamond_table' + diamond_count + '"><tr><td>SI-IJ</td><td>:</td><td><input type="text" name="dsiij[]" style="width:60px;"></td><td>SI-GH</td><td>:</td><td><input type="text" name="dsigh[]" style="width:60px;"></td><td>VS-GH</td><td>:</td><td><input type="text" name="dvsgh[]" style="width:60px;"></td><td>VVS-EF</td><td>:</td><td><input type="text" name="dvvsef[]" style="width:60px;"></td><td>Setting</td><td>:</td><td><input type="text" name="dsettings[]" style="width:60px;"></td></tr><tr><td colspan="15" height="10"></td></tr><tr><td>Shape</td><td>:</td><td><input type="text" name="dshape[]" style="width:60px;"></td><td>No.of Stone</td><td>:</td><td><input type="text" name="dstonecount[]" style="width:60px;"></td><td>Weight/Carat</td><td>:</td><td><input type="text" name="dweight[]" style="width:60px;"></td><td><button type="button" style="padding:3px 10px; font-size:11px;display:block;" id="remove_diamond" rel="diamond_table' + diamond_count + '">remove</button></td></tr></table>';
+            var append_data = '<table id="diamond_table' + diamond_count + '"><tr>';
+            append_data += '<td>SI-IJ</td><td>:</td><td><input type="text" name="dsiij[]" style="width:60px;"></td><td>SI-GH</td><td>:</td><td><input type="text" name="dsigh[]" style="width:60px;"></td><td>VS-GH</td><td>:</td><td><input type="text" name="dvsgh[]" style="width:60px;"></td><td>VVS-EF</td><td>:</td><td><input type="text" name="dvvsef[]" style="width:60px;"></td>';
+            append_data += '<td>Setting</td><td>:</td><td>';
+            append_data += '<select style="width:100px;" name="dsettings[]" style="width:60px;"><option value="">Select</option>';
+            <?php 
+            foreach ($type as $new_type) {?>
+                 append_data += "<option value='<?php echo $new_type['Settingtype']['settingtype'] ?>'><?php echo $new_type['Settingtype']['settingtype'] ?></option>";
+            <?php }?>
+            append_data += '</td></tr>';            
+            append_data += '<tr><td colspan="15" height="10"></td></tr><tr><td>Shape</td><td>:</td><td>';
+            append_data += '<select style="width:100px;" name="dshape[]" style="width:60px;"><option value="">Select</option>';
+            <?php 
+            foreach ($shapes as $shape) {?>
+                 append_data += "<option value='<?php echo $shape['Shape']['shape'] ?>'><?php echo $shape['Shape']['shape'] ?></option>";
+            <?php }?>
+            append_data += '</td><td>No.of Stone</td><td>:</td><td><input type="text" name="dstonecount[]" style="width:60px;"></td><td>Weight/Carat</td><td>:</td><td><input type="text" name="dweight[]" style="width:60px;"></td><td><button type="button" style="padding:3px 10px; font-size:11px;display:block;" id="remove_diamond" rel="diamond_table' + diamond_count + '">remove</button></td></tr></table>';
             $('#diamond_details').append(append_data);
             $('#diamond_count').val(diamond_count_new);
 
@@ -389,7 +404,25 @@ style=" background-color: #dba715;border: 0 none;color: #fff;cursor: pointer;pad
         $("#add_stone").click(function () {
             var stone_count = $('#stone_count').val();
             var stone_count_new = parseInt(stone_count) + 1;
-            var append_data = ' <table id="stone_table' + stone_count + '"><tr><td>Stone Name</td><td>:</td><td><input type="text" name="sname[]" style="width:60px;"></td><td>Shape</td><td>:</td><td><input type="text" name="sshape[]" style="width:60px;"></td><td>Weight/Carat</td><td>:</td> <td><input type="text" name="sweight[]" style="width:60px;"></td><td>Setting</td><td>:</td><td><input type="text" name="ssetting[]" style="width:60px;"></td><td>No.of Stone</td><td>:</td><td><input type="text" name="sstonecount[]" style="width:60px;"></td><td><button type="button" style="padding:3px 10px; font-size:11px;display:block" id="remove_stone" rel="stone_table' + stone_count + '">remove</button></td></tr></table>';
+            var append_data = ' <table id="stone_table' + stone_count + '"><tr><td>Stone Name</td><td>:</td>';
+            append_data += '<td><select style="width:100px;" name="sname[]" style="width:60px;"><option value="">Select</option>';
+            <?php 
+            foreach ($gems as $gem) {?>
+                 append_data += "<option value='<?php echo $gem['Gemstone']['stone'] ?>'><?php echo $gem['Gemstone']['stone'] ?></option>";
+            <?php }?>
+            append_data += '</td><td>Shape</td><td>:</td>';
+            append_data += '<td><select style="width:100px;" name="sshape[]" style="width:60px;"><option value="">Select</option>';
+            <?php 
+            foreach ($shapes as $shape) {?>
+                 append_data += "<option value='<?php echo $shape['Shape']['shape'] ?>'><?php echo $shape['Shape']['shape'] ?></option>";
+            <?php }?>
+            append_data += '</td><td>Weight/Carat</td><td>:</td> <td><input type="text" name="sweight[]" style="width:60px;"></td><td>Setting</td><td>:</td>';
+            append_data += '<td><select style="width:100px;" name="ssetting[]" style="width:60px;"><option value="">Select</option>';
+            <?php 
+            foreach ($type as $new_type) {?>
+                 append_data += "<option value='<?php echo $new_type['Settingtype']['settingtype'] ?>'><?php echo $new_type['Settingtype']['settingtype'] ?></option>";
+            <?php }?>
+            append_data += '</td><td>No.of Stone</td><td>:</td><td><input type="text" name="sstonecount[]" style="width:60px;"></td><td><button type="button" style="padding:3px 10px; font-size:11px;display:block" id="remove_stone" rel="stone_table' + stone_count + '">remove</button></td></tr></table>';
             $('#stone_details').append(append_data);
             $('#stone_count').val(stone_count_new);
 

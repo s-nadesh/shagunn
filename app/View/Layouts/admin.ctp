@@ -93,10 +93,11 @@
                          <li id="changeinfo"><?php echo $this->Html->link('Testimonial ',array('controller'=>'testimonials','action'=>'index','testimonial'));?></li>
                         <li id="changeinfo"><?php echo $this->Html->link('Customer say',array('controller'=>'testimonials','action'=>'index','customer_says'));?></li>
                          <li id="changeinfo"><?php echo $this->Html->link('Locate us',array('controller'=>'locateus','action'=>'index'));?></li>
-                         <li id="changeinfo"><?php echo $this->Html->link('Collection Type',array('controller'=>'collectiontypes','action'=>'admin_index'));?>
-                                    <li id="changeinfo"><?php echo $this->Html->link('Order Status', array('controller' => 'orderstatus', 'action' => 'admin_index')); ?>
-                                    <li id="changeinfo"><?php echo $this->Html->link('Admin Status', array('controller' => 'adminstatus', 'action' => 'admin_index')); ?>
-                                    <li id="changeinfo"><?php echo $this->Html->link('Brokerage Status', array('controller' => 'brokeragestatus', 'action' => 'admin_index')); ?>
+                         <li id="changeinfo"><?php echo $this->Html->link('Collection Type',array('controller'=>'collectiontypes','action'=>'admin_index'));?></li>
+                        <li id="changeinfo"><?php echo $this->Html->link('Order Status', array('controller' => 'orderstatus', 'action' => 'admin_index')); ?></li>
+                        <li id="changeinfo"><?php echo $this->Html->link('Admin Status', array('controller' => 'adminstatus', 'action' => 'admin_index')); ?></li>
+                        <li id="changeinfo"><?php echo $this->Html->link('Brokerage Status', array('controller' => 'brokeragestatus', 'action' => 'admin_index')); ?></li>
+                        <li id="changeinfo"><?php echo $this->Html->link('SMS Template', array('controller' => 'smstemplates', 'action' => 'admin_index')); ?></li>
                        </ul>
                     </li>
 
