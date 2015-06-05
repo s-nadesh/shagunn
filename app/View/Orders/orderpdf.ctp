@@ -4,295 +4,254 @@ $ordercartamount = ClassRegistry::init('Shoppingcart')->find('first', array('con
 $paymentdetail = ClassRegistry::init('Paymentdetails')->find('first', array('conditions' => array('order_id' => $orderdetails['Order']['order_id'])));
 $user = ClassRegistry::init('User')->find('first', array('conditions' => array('user_id' => $orderdetails['Order']['user_id'])));
 ?>
-<table width="100%" cellpadding="0" style="font-size:12px;font-family:Arial,Helvetica,sans-serif">
-    <tbody>
-        <tr align="left" style="float: left">
-            <td colspan="2">
-                <?php echo $this->Html->image("icons/logo.png", array('style' => 'float: left; height: 100px; background-repeat: no-repeat'))?>
-</td>
-</tr>
-        <tr align="center">
-            <th colspan="2">
-    <h2 style="text-decoration:underline">ACKNOWLEDGMENT</h2>
-    <br />
-    <br />
-</th>
-</tr>
-<tr bgcolor="#016887">
-    <th style="text-align:left;padding:10px; color: #D86957">
-        <b>Your Order Number: </b><?php echo $in . $orderinvoice['Order']['invoice']; ?></th>
-    <th style="padding:10px;text-align:right; color: #D86957">
-        Order Placed on:<?php
-        $dtt = h($orderdetails['Order']['created_date']);
-        $ndtt = date("d-m-Y", strtotime($dtt));
-        if (!empty($ndtt))
-            echo $ndtt;
-        else
-            '-';
-        ?>
-    </th>
-</tr>
-<tr>
-    <td colspan="2">
-        <br />
-        <p><b>Dear <?php echo $user['User']['first_name'] . ' ' . $user['User']['last_name']; ?>,</b></p>
-        <p>Thank You for placing your order with Shagunn</p>
-        <p>Your order has been confirmed and is being processed. Here is the summary of product details:</p>
-        <br />
-        <br />
-    </td>
-</tr>
-<tr>
-    <td colspan="2">
-        <b>Order Details:</b></td>
-</tr>
-<tr>
-    <td colspan="2">
-        <table border="1" cellspacing="0" cellpadding="10" style="border-collapse: collapse">
-
-            <tr>
-                <th height="27">S.No</th>
-                <th>Product Code</th>
-                <th>Product Description</th>
-                <th>Quantity</th>
-                <th>Price</th>
-            </tr>
+<style type="text/css">
+    .invoice_table {
+        border:#ccc solid 1px;
+        border-collapse:collapse;
+        font-family:Arial, Helvetica, sans-serif;
+        font-size:13px;
+    }
+    .invoice_table td {
+        border:#ccc solid 1px;
+        border-collapse:collapse;
+        padding:5px;
+    }
+</style>
+<table cellspacing="0" cellpadding="0" class="invoice_table" width="500">
+    <tr>
+        <td colspan="7" align="left" valign="top">
+            <?php echo $this->Html->image("icons/logo.png", array('style' => 'float: left; height: 100px; background-repeat: no-repeat')) ?>
+        </td>
+        <td colspan="3" rowspan="3">
+            <p><strong>Birla Gold and Precious Metals Pvt Ltd</strong></p>
+            <p><strong>Morya Landmark II, 2nd Floor 202,</strong></p>
+            <p><strong>New Link Road, Andheri (West)</strong></p>
+            <p><strong>Mumbai 400053</strong></p>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="7" align="center"><h2><strong>TAX INVOICE</strong></h2></td>
+    </tr>
+    <tr>
+        <td colspan="7" align="center" valign="top"><strong>Inoive No: #<?php echo $in . $orderinvoice['Order']['invoice']; ?></strong></td>
+    </tr>
+    <tr>
+        <td colspan="4">&nbsp;</td>
+        <td colspan="3"><strong>Billing Address</strong></td>
+        <td colspan="3"><strong>Shipping Address</strong></td>
+    </tr>
+    <tr>
+        <td colspan="4">
+            <p>Order No.:<?php echo $in . $orderinvoice['Order']['invoice']; ?></p>
             <?php
-            $k = 1;
-            $ordercart = ClassRegistry::init('Shoppingcart')->find('all', array('conditions' => array('order_id' => $orderdetails['Order']['order_id'])));
-            $ordercartamount = ClassRegistry::init('Shoppingcart')->find('first', array('conditions' => array('order_id' => $orderdetails['Order']['order_id']), 'fields' => array('SUM(total) AS totamount')));
-            foreach ($ordercart as $ordercarts) {
-                $productdetails = ClassRegistry::init('Product')->find('first', array('conditions' => array('product_id' => $ordercarts['Shoppingcart']['product_id'])));
-                $category = ClassRegistry::init('Category')->find('first', array('conditions' => array('category_id' => $productdetails['Product']['category_id'])));
-                $vendor = ClassRegistry::init('Vendor')->find('first', array('conditions' => array('vendor_id' => $productdetails['Product']['vendor_id'])));
-                ?>
-                <tr align="center">
-                    <td valign="top" style="border:1px solid rgb(0,0,0);border-right:1px solid rgb(0,0,0);border-left:1px solid rgb(0,0,0)"><?php echo $k++ ?></td>
-                    <td valign="top" style="border-bottom:1px solid rgb(0,0,0);border-right:1px solid rgb(0,0,0)"><?php echo $category['Category']['category_code'] . ' ' . $productdetails['Product']['product_code'] . "-" . $ordercarts['Shoppingcart']['purity'] . "K" . $ordercarts['Shoppingcart']['clarity'] . $ordercarts['Shoppingcart']['color']; ?></td>
-                    <td valign="middle" style="border-bottom:1px solid rgb(0,0,0);border-right:1px solid rgb(0,0,0)">
-                        <table width="600" cellspacing="0" cellpadding="4" align="center" style="font-size:13px;border:1px solid rgb(0,0,0)">
-                            <tbody>
-                                <tr>
-                                    <td colspan="4" style="border-bottom:1px solid rgb(0,0,0)"><?php echo $productdetails['Product']['product_name'] ?></td>
-                                </tr>
-                                <tr>
-                                    <td colspan="4" style="border-bottom:1px solid rgb(0,0,0)">
-                                        <table  border="0" style="font-size:13px;border-style:solid solid none;border-color:rgb(0,0,0) rgb(0,0,0) -moz-use-text-color">
-                                            <tr>
-                                                <td><strong>Size:</strong></td>
-                                                <td><?php echo $ordercarts['Shoppingcart']['size'] ?></td>
-                                            </tr>
-                                            <tr>
-                                                <td><strong>Metals:</strong></td>
-                                                <td><?php echo $ordercarts['Shoppingcart']['purity'] ?>K <?php echo $ordercarts['Shoppingcart']['metalcolor'] ?> <?php echo $ordercarts['Shoppingcart']['metal'] ?></td>
-                                            </tr>
-                                            <tr>
-                                                <td><strong>Metal Weight:</strong></td>
-                                                <td><?php echo $ordercarts['Shoppingcart']['weight'] . ' gm'; ?></td>
-                                            </tr>
-                                        </table>
-                                    </td>
-                                </tr>
-                                <?php
-                                $msg = '';
-                                $productdiamond = ClassRegistry::init('Productdiamond')->find('first', array('conditions' => array('product_id' => $ordercarts['Shoppingcart']['product_id'], 'clarity' => $ordercarts['Shoppingcart']['clarity'], 'color' => $ordercarts['Shoppingcart']['color']), 'fields' => array('SUM(noofdiamonds) AS no_diamond', 'SUM(stone_weight) AS sweight')));
-                                $productgemstone = ClassRegistry::init('Productgemstone')->find('all', array('conditions' => array('product_id' => $ordercarts['Shoppingcart']['product_id'])));
-
-                                if ($ordercarts['Shoppingcart']['stoneamount'] > 0) {
-                                    ?>
-                                    <tr>
-                                        <td colspan="4" style="border-bottom:1px solid rgb(0,0,0)">
-                                            <table  border="0" style="font-size:13px;border-style:solid solid none;border-color:rgb(0,0,0) rgb(0,0,0) -moz-use-text-color">
-                                                <tr>
-                                                    <td><strong>Stone:</strong></td>
-                                                    <td>Diamond</td>
-                                                </tr>
-                                                <tr>
-                                                    <td><strong>Stone Wt:</strong></td>
-                                                    <td><?php echo $productdiamond[0]['sweight'] . ' carat'; ?></td>
-                                                </tr>
-                                                <tr>
-                                                    <td><strong>Quality:</strong></td>
-                                                    <td><?php echo $ordercarts['Shoppingcart']['clarity'] . '-' . $ordercarts['Shoppingcart']['color']; ?></td>
-                                                </tr>
-                                                <tr>
-                                                    <td><strong>Number of Stone:</strong></td>
-                                                    <td><?php echo $productdiamond[0]['no_diamond']; ?></td>
-                                                </tr>
-                                            </table>
-                                        </td>
-                                    </tr>
-                                <?php } ?>
-
-                                <?php
-                                if ($ordercarts['Shoppingcart']['gemstoneamount'] > 0) {
-                                    foreach ($productgemstone as $productgemstone) {
-                                        ?>
-                                        <tr>
-                                            <td colspan="4" style="border-bottom:1px solid rgb(0,0,0)">
-                                                <table  border="0" style="font-size:13px;border-style:solid solid none;border-color:rgb(0,0,0) rgb(0,0,0) -moz-use-text-color">
-                                                    <tr>
-                                                        <td><strong>Stone:</strong></td>
-                                                        <td><?php echo $productgemstone['Productgemstone']['gemstone'] ?></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td><strong>Stone Wt:</strong></td>
-                                                        <td><?php echo $productgemstone['Productgemstone']['stone_weight'] . ' carat'; ?></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td><strong>Number of Stone:</strong></td>
-                                                        <td><?php echo $productgemstone['Productgemstone']['no_of_stone']; ?></td>
-                                                    </tr>
-                                                </table>
-                                            </td>
-                                        </tr>
-                                        <?php
-                                    }
-                                }
-                                ?>
-                            </tbody>
-                        </table>
-                    </td>
-                    <td valign="top" style="border-bottom:1px solid rgb(0,0,0);border-right:1px solid rgb(0,0,0)"><?php echo $ordercarts['Shoppingcart']['quantity'] ?></td>
-                    <td valign="top" style="border-bottom:1px solid rgb(0,0,0);border-right:1px solid rgb(0,0,0)"><?php echo indian_number_format($ordercarts['Shoppingcart']['total'] * $ordercarts['Shoppingcart']['quantity']) ?></td>
-                </tr>
-<?php } ?>
-
-        </table>
-    </td>
-</tr>
-<tr>
-    <td style="padding:10px;border-left:1px solid rgb(0,0,0);border-right:1px solid rgb(0,0,0);border-bottom:1px solid rgb(0,0,0)"><span>
-            <?php
-            $shippingdetails = ClassRegistry::init('Order')->find('first', array('conditions' => array('order_id' => $this->params['pass']['0'])));
-            ?>            
+            $dtt = h($orderdetails['Order']['created_date']);
+            $ndtt = date("d-M-Y", strtotime($dtt));
+            if (empty($ndtt))
+                $ndtt = '-';
+            ?>
+            <p>Order Date: <?php echo $ndtt; ?></p>
+            <p>Invoice Date: <?php echo $ndtt; ?></p>
+            <p>VAT/TIN: 123456789011</p>
+            <p>Service Tax:    ABCDE1123FSD001</p></td>
+        <td colspan="3">
+            <?php $shippingdetails = ClassRegistry::init('Order')->find('first', array('conditions' => array('order_id' => $this->params['pass']['0']))); ?>
             <p>
-                <b>Shipping Address :</b></p>
-            <p><b><?php echo $user['User']['first_name'] . ' ' . $user['User']['last_name']; ?></b></p>
-            <p><?php
-                $sbill = h($shippingdetails['Order']['shipping_add']);
+                <?php
+                $sbill = h($shippingdetails['Order']['billing_add']);
                 if (!empty($sbill))
-                    echo $sbill;
+                    echo "<strong>$sbill</strong>";
                 else
                     '-';
-                ?><br />
+                ?>
+            </p>
+            <p>
+                <?php
+                $sbillland = h($shippingdetails['Order']['blandmark']);
+                if (!empty($sbillland))
+                    echo $sbillland;
+                else
+                    '-';
+                ?>
+            </p>
+            <p>
+                <?php
+                $sbillcity = h($shippingdetails['Order']['city']);
+                if (!empty($sbillcity))
+                    echo $sbillcity . ' - ';
+                else
+                    '-';
+                $sbillpin = h($shippingdetails['Order']['pincode']);
+                if (!empty($sbillpin))
+                    echo $sbillpin;
+                ?>
+            </p>
+            <p>
+                <?php
+                $sbillstate = h($shippingdetails['Order']['state']);
+                if (!empty($sbillstate))
+                    echo $sbillstate;
+                else
+                    '-';
+                ?>
+            </p>
+        </td>
+        <td colspan="3">
+            <p>
+                <?php
+                $sbill = h($shippingdetails['Order']['shipping_add']);
+                if (!empty($sbill))
+                    echo "<strong>$sbill</strong>";
+                else
+                    '-';
+                ?>
+            </p>
+            <p>
                 <?php
                 $sbillland = h($shippingdetails['Order']['slandmark']);
                 if (!empty($sbillland))
                     echo $sbillland;
                 else
                     '-';
-                ?><br />
+                ?>
+            </p>
+            <p>
                 <?php
                 $sbillcity = h($shippingdetails['Order']['scity']);
                 if (!empty($sbillcity))
-                    echo $sbillcity;
+                    echo $sbillcity . ' - ';
                 else
                     '-';
-                ?>
-                <?php
                 $sbillpin = h($shippingdetails['Order']['spincode']);
                 if (!empty($sbillpin))
-                    echo '-' . $sbillpin;
-                ?><br />
+                    echo $sbillpin;
+                ?>
+            </p>
+            <p>
                 <?php
                 $sbillstate = h($shippingdetails['Order']['sstate']);
                 if (!empty($sbillstate))
                     echo $sbillstate;
                 else
                     '-';
-                ?><br />
+                ?>
             </p>
-    </td>
-    <td style="padding:10px;border-right:1px solid rgb(0,0,0);border-bottom:1px solid rgb(0,0,0)">
-        <table cellpadding="5" border="1" align="center" style="font-size:13px;">
-            <tbody>
-                <?php
-                $cart_amount = ClassRegistry::init('Shoppingcart')->find('first', array('conditions' => array('order_id' => $orderdetails['Order']['order_id']), 'fields' => 'SUM(quantity*total) AS subtotal'));
-                $Discounthistory = ClassRegistry::init('Discounthistory')->find('first', array('conditions' => array('order_id' => $orderdetails['Order']['order_id'])));
-                if (!empty($Discounthistory)) {
-                    $Discount = ClassRegistry::init('Discount')->find('first', array('conditions' => array('discount_id' => $Discounthistory['Discounthistory']['coupon_id'])));
-                }
-                $netamount = $cart_amount[0]['subtotal'];
-                ?>
-                <tr>
-                    <th>Sub Total Amount</th>
-                    <th>Rs. <?php echo indian_number_format($netamount = $cart_amount[0]['subtotal']); ?></th>
-                </tr> 
-<?php if ($orderdetails['Order']['discount_amount'] > 0) { ?>
-                    <tr>
-                        <th>Discount Amount</th>
-                        <th><?php echo $orderdetails['Order']['discount_amount']; ?></th>
-                    </tr> 
-                    <?php
-                    $netamount-=$orderdetails['Order']['discount_amount'];
-                }
-                ?>
-                <tr>
-                    <th>Shipping Charges</th>
-                    <th>Rs. <?php echo indian_number_format($orderdetails['Order']['shipping_amt']); ?></th>
-                </tr>
-<?php $netamount+=$orderdetails['Order']['shipping_amt']; ?>
-                <tr>
-                    <th>Total Amount</th>
-                    <th>Rs. <?php echo indian_number_format($netamount); ?></th>
-                </tr>
-                <?php
-                if (($orderdetails['Order']['cod_status'] == 'PayU') && ($orderdetails['Orderstatus']['order_status'] != 'Pending')) {
-                    $paid = isset($paymentdetail['Paymentdetails']) ? $paymentdetail['Paymentdetails']['amount'] : 0;
-                } elseif (($orderdetails['Order']['cod_status'] == 'COD') && ($orderdetails['Orderstatus']['order_status'] != 'Pending')) {
-                    $paid = $paymentdetail['Paymentdetails']['amount'];
-                    $balance = $netamount - $orderdetails['Order']['cod_amount'];
-                } elseif (($orderdetails['Order']['cod_status'] == 'CHQ/DD') && ($orderdetails['Orderstatus']['order_status'] != 'Pending')) {
-                    $paid = $paymentdetail['Paymentdetails']['amount'];
-                }
-                ?>
-                <tr>
-                    <th>Amount Paid</th>
-                    <td>
-                        <?php
-                        if (!empty($paid)) {
-                            echo 'Rs. ' . $paid;
-                        } else
-                            echo 'Nil';
-                        ?>
-                    </td>
-                </tr>
-                <tr>
-                    <th>Balance Payable Amount</th>
-                    <th><?php
-                        $total_paid_amount = isset($paymentdetail['Paymentdetails']['amount']) ? h($paymentdetail['Paymentdetails']['amount']) : 0;
-                        $pending_amount = $netamount - $total_paid_amount;
-                        if (!empty($pending_amount)) {
-                            echo 'Rs. ' . indian_number_format($pending_amount);
-                        } else {
-                            echo '-';
-                        }
-                        ?></th>
-                </tr>
-            </tbody>
-        </table>
-    </td>
-</tr>
-<tr>
-    <td colspan="2">
-        <br />
-        <p>
-            <b>We will send you an Email and SMS the moment your order items are dispatched to your address.</b></p>
-        <p>
-            You can visit <a target="_blank" href="http://shagunn.in/">share order status link</a> to view your order status and to contact us regarding this order.</p>
-        <p>
-            Should you find the details of the order incorrect, please feel free to call us at 1800 102 2066 or email us at <a target="_blank" href="http://shagunn.in/">customer.service@shagunn.in</a></p>
-        <p style="color:rgb(1,104,135)">
-            <b>Note: Post shipment, the delivery of your item(s) will take anywhere between 4 to 7 days depending on the location being served.</b></p>
-    </td>
-</tr>
-<tr>
-    <td style="line-height:0.5" colspan="2">
-        <br />
-        <p>Regarts</p>
-        <p>Team Shagunn</p>
-    </td>
-</tr>
-</tbody>
+        </td>
+    </tr>
+    <tr>
+        <td rowspan="2" colspan="2" width="150"><strong>Product Description</strong></td>
+        <td colspan="2" align="center"><strong>Metals Details</strong></td>
+        <td colspan="2" align="center"><strong>Dimoand Details</strong></td>
+        <td colspan="2" align="center"><strong>Stone Details</strong></td>
+        <td align="center"><strong>Quantity</strong></td>
+        <td align="center"><strong>Product Price</strong></td>
+    </tr>
+    <tr>
+        <td ><strong>Weight</strong></td>
+        <td ><strong>Amount</strong></td>
+        <td ><strong>Weight</strong></td>
+        <td ><strong>Amount</strong></td>
+        <td ><strong>Weight</strong></td>
+        <td ><strong>Amount</strong></td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+    </tr>
+    <?php
+    $k = 1;
+    $ordercart = ClassRegistry::init('Shoppingcart')->find('all', array('conditions' => array('order_id' => $orderdetails['Order']['order_id'])));
+    $ordercartamount = ClassRegistry::init('Shoppingcart')->find('first', array('conditions' => array('order_id' => $orderdetails['Order']['order_id']), 'fields' => array('SUM(total) AS totamount')));
+    $net_product_amount = 0;
+    foreach ($ordercart as $ordercarts) {
+        $productdetails = ClassRegistry::init('Product')->find('first', array('conditions' => array('product_id' => $ordercarts['Shoppingcart']['product_id'])));
+        $category = ClassRegistry::init('Category')->find('first', array('conditions' => array('category_id' => $productdetails['Product']['category_id'])));
+        $vendor = ClassRegistry::init('Vendor')->find('first', array('conditions' => array('vendor_id' => $productdetails['Product']['vendor_id'])));
+
+        $stone_wght = $gem_wght = 0;
+        $gem_names = '';
+        $stone_details = ClassRegistry::init('Productdiamond')->find('all', array('conditions' => array('clarity' => $ordercarts['Shoppingcart']['clarity'], 'color' => $ordercarts['Shoppingcart']['color'], 'product_id' => $productdetails['Product']['product_id'])));
+        $gemstone_details = ClassRegistry::init('Productgemstone')->find('all', array('conditions' => array('product_id' => $productdetails['Product']['product_id'])));
+
+        foreach ($stone_details as $stone_detail) {
+            $stone_wght += $stone_detail['Productdiamond']['stone_weight'];
+        }
+
+        foreach ($gemstone_details as $key => $gemstone_details) {
+            $gem_wght += $gemstone_details['Productgemstone']['stone_weight'];
+            $gem_names = $key == 0 ? "{$gemstone_details['Productgemstone']['gemstone']}" : ", {$gemstone_details['Productgemstone']['gemstone']}";
+        }
+        ?>
+
+        <tr>
+            <?php
+            $product_name = $productdetails['Product']['product_name'];
+            $product_name .= " {$ordercarts['Shoppingcart']['purity']}K Gold";
+            $product_name .= $stone_wght > 0 ? " With Diamond" : "";
+            $product_name .= " {$ordercarts['Shoppingcart']['clarity']}-{$ordercarts['Shoppingcart']['color']}";
+            $product_name .= $gem_names != '' ? " & {$gem_names}" : "";
+            ?>
+            <td colspan="2" rowspan="7"><strong><?php echo $product_name ?></strong></td>
+            <td align="center"><?php echo $ordercarts['Shoppingcart']['weight']; ?></td>
+            <td align="center"><?php echo $ordercarts['Shoppingcart']['goldamount'] ?></td>
+            <td align="center"><?php echo $stone_wght ?></td>
+            <td align="center"><?php echo $ordercarts['Shoppingcart']['stoneamount']; ?></td>
+            <td align="center"><?php echo $gem_wght; ?></td>
+            <td align="center"><?php echo $ordercarts['Shoppingcart']['gemstoneamount']; ?></td>
+            <td align="center"><?php echo $ordercarts['Shoppingcart']['quantity'] ?></td>
+            <td align="center"><?php echo $gold_amt = $ordercarts['Shoppingcart']['goldamount'] + $ordercarts['Shoppingcart']['stoneamount'] + $ordercarts['Shoppingcart']['gemstoneamount'] ?></td>
+        </tr>
+        <tr>
+            <td colspan="7"></td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td colspan="7" align="right"><strong>Discount Amount</strong></td>
+            <td align="center"><?php echo $discount_amount = $ordercarts['Shoppingcart']['detected_amount'] == '' ? 0 : $ordercarts['Shoppingcart']['detected_amount']; ?></td>
+        </tr>
+        <tr>
+            <td colspan="7" align="right"><strong>Making Charge</strong></td>
+            <td align="center"><?php echo $making_charge = $ordercarts['Shoppingcart']['making_charge']; ?></td>
+        </tr>
+        <tr>
+            <td colspan="7" align="right"><strong>VAT</strong></td>
+            <td align="center"><?php echo $vat = $ordercarts['Shoppingcart']['vat']; ?></td>
+        </tr>
+        <tr>
+            <td colspan="7" align="right"><strong> Total Price (A)</strong></td>
+            <td align="center"><strong><?php echo $net_product_amount += ($gold_amt + $making_charge + $vat) - $discount_amount ?></strong></td>
+        </tr>
+    <?php } ?>
+
+    <tr>
+        <td colspan="8">&nbsp;</td>
+    </tr>
+    <tr>
+        <td colspan="9" align="right"><h2><strong>Total Price (Rs.)</strong></h2></td>
+        <td align="center"><strong><?php echo $net_product_amount; ?></strong></td>
+    </tr>
+    <tr>
+        <td colspan="10" align="center">This is computer generated invoice.No Signature required.</td>
+    </tr>
+    <tr style="height: 100px;">
+        <td colspan="10">&nbsp;</td>
+    </tr>
+    <tr>
+        <td colspan="5">
+            <em style="text-align: left">Contact us : 1800 102 2066</em>
+        </td>
+        <td colspan="5" align="right">
+            <a href="mailto:customer.service@shagunn.in">customer.service@shagunn.in</a>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="10"><strong><em>Returns Policy :</em></strong><em> At Shagunn we try to deliver perfectly each time.But in the off-chance that    you need to return the item, please do so with the original Brand box/price    tag, original packing and invoice without which it will be really difficult    for us to act on your request.Please help us to helping you. Terms and    condition apply.</em></td>
+    </tr>
+    <tr>
+        <td colspan="10">&nbsp;</td>
+    </tr>
+    <tr>
+        <td colspan="10" align="center"><em>The goods sold as part of this shipment are intended for end    user consumption/retail sale and not for re-sale.</em></td>
+    </tr>
+    <tr>
+        <td colspan="10"><strong><em>Regd. Office : </em></strong><em>Birla Gold and Precious Metals Pvt. Ltd. Morya Landmark II, 2nd Floor,202,    New Link Road, Andheri (W), Mumbai - 400053,Maharashtra,India</em></td>
+    </tr>
+
 </table>
