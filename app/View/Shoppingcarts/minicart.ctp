@@ -1,8 +1,8 @@
 <form name="cartform" id="cartform" action="" method="post">
     <table cellpadding="0" border="0" cellspacing="0" width="100%" class="table">
         <tr>
-            <th colspan="2" align="left">PRODUCTS DETAILS</th>
-            <th>QUANTITY</th>
+            <th colspan="2" align="center">PRODUCTS DETAILS</th>
+            <th align="center">QUANTITY</th>
             <th align="center">PRICE</th>
             <th align="center">&nbsp;</th>
         </tr>
@@ -30,16 +30,14 @@
             <tr>
                 <td valign="top"><a href="<?php echo BASE_URL ?><?php echo $category['Category']['category'] . "/" . $subcategory['Subcategory']['subcategory'] . "/" . $product['Product']['product_id'] . "/" . str_replace(' ', '_', $product['Product']['product_name']); ?>"><?php echo $this->Html->image('product/small/' . $image['Productimage']['imagename'], array("alt" => "index", 'height' => '60')); ?></a></td>
                 <td valign="top" ><a style="color:#979797;font-weight:bold;" href="<?php echo BASE_URL ?><?php echo $category['Category']['category'] . "/" . $subcategory['Subcategory']['subcategory_id'] . "/" . $product['Product']['product_id'] . "/" . $product['Product']['product_name'] ?>"><?php echo $product['Product']['product_name']; ?></a></td>
-                <td valign="top" class="minicart_qty" data-qty="<?php echo $carts['Shoppingcart']['quantity'] ?>"><?php echo $carts['Shoppingcart']['quantity'] ?>
+                <td valign="top" align="center" class="minicart_qty" data-qty="<?php echo $carts['Shoppingcart']['quantity'] ?>"><?php echo $carts['Shoppingcart']['quantity'] ?>
                     <input type="hidden" name="cartid[<?php echo $j ?>]" class="cartid" value="<?php echo $carts['Shoppingcart']['cart_id']; ?>" />
                     <input type="hidden" name="productid[<?php echo $j ?>]" class="productid" value="<?php echo $carts['Shoppingcart']['product_id']; ?>" /></td>
-                <td valign="top">
-                    <span >Rs. <?php
+                <td valign="top" align="center">Rs. <?php
                             $total_amt = str_replace(',', '', $carts['Shoppingcart']['total']) * $carts['Shoppingcart']['quantity'];
                             $total+=$total_amt;
                             echo indian_number_format($total_amt);
-                            ?></span>/-
-                </td>
+                            ?>/-</td>
                 <td valign="top">
                     <a style="color:#8d3446;" href="<?php echo BASE_URL ?>shoppingcarts/remove/<?php echo $carts['Shoppingcart']['cart_id'] ?>">Remove</a>
                 </td>
