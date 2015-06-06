@@ -453,7 +453,7 @@
                         ?>
                         <!--</div>-->
                         <div class="gridproduct">
-                            <div class="productDiv" style="position:relative;">
+                            <div class="productDiv item" style="position:relative;">
                                 <div style="position:absolute; right:-9px;">
                                     <div style="position:relative;"><?php
                                         if (in_array('1', explode(",", $products['Product']['product_view_type']))) {
@@ -505,12 +505,13 @@
                                     <p align="center">
 
 
-                                        <a href="<?php echo BASE_URL; ?><?php echo str_replace(' ', '_', strtolower(trim($category['Category']['category']))) . "/" . $subcat . "/" . $products['Product']['product_id'] . "/" . $Product_product_name; ?><?php
+                                        <input name="" type="submit" value="" class="addBtn add-to-cart">
+<!--                                        <a href="<?php echo BASE_URL; ?><?php echo str_replace(' ', '_', strtolower(trim($category['Category']['category']))) . "/" . $subcat . "/" . $products['Product']['product_id'] . "/" . $Product_product_name; ?><?php
                                         if (isset($_REQUEST['goldpurity'])) {
                                             echo '?purity=' . $_REQUEST['goldpurity'];
                                         }
                                         ?>">
-                                            <input name="" type="submit" value="" class="addBtn" ></a>
+                                            <input name="" type="submit" value="" class="addBtn" ></a>-->
                                         <a href="<?php echo BASE_URL; ?>webpages/whislist/<?php
                                         if (!empty($this->params['pass']['0'])) {
                                             echo $this->params['pass']['0'];

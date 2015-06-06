@@ -2344,6 +2344,12 @@ width:205px;
     display: inline-table;
 }
 
-.offer_top{
-    border-top: 3px solid #e7c765 !important;
+#offers_navmenu{
+    background: url(../../img/menu-top-border.png) top right no-repeat;
+}
+
+#nav #offers_navmenu.dropdown ul {
+  background: rgba(0, 0, 0, 0) url("../../img/menu-top-border.png") no-repeat scroll -4px -1px !important;
+  margin-top: -4px;
+  background-color: #fff !important;
 }

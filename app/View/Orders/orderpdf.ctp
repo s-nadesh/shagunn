@@ -158,7 +158,7 @@ $user = ClassRegistry::init('User')->find('first', array('conditions' => array('
     <?php
     $k = 1;
     $ordercart = ClassRegistry::init('Shoppingcart')->find('all', array('conditions' => array('order_id' => $orderdetails['Order']['order_id'])));
-    $ordercartamount = ClassRegistry::init('Shoppingcart')->find('first', array('conditions' => array('order_id' => $orderdetails['Order']['order_id']), 'fields' => array('SUM(total) AS totamount')));
+
     $net_product_amount = 0;
     foreach ($ordercart as $ordercarts) {
         $productdetails = ClassRegistry::init('Product')->find('first', array('conditions' => array('product_id' => $ordercarts['Shoppingcart']['product_id'])));
@@ -215,20 +215,47 @@ $user = ClassRegistry::init('User')->find('first', array('conditions' => array('
             <td align="center"><?php echo $vat = $ordercarts['Shoppingcart']['vat']; ?></td>
         </tr>
         <tr>
-            <td colspan="7" align="right"><strong> Total Price (A)</strong></td>
-            <td align="center"><strong><?php echo $net_product_amount += ($gold_amt + $making_charge + $vat) - $discount_amount ?></strong></td>
+            <td colspan="7" align="right"><strong> Total Price</strong></td>
+            <td align="center"><strong><?php echo $net_amount = ($gold_amt + $making_charge + $vat) - $discount_amount ?></strong></td>
         </tr>
-    <?php } ?>
+        <tr>
+            <td colspan="8">&nbsp;</td>
+        </tr>
+        <?php
+        $net_product_amount += $net_amount;
+    }
+    ?>
 
     <tr>
-        <td colspan="8">&nbsp;</td>
-    </tr>
-    <tr>
         <td colspan="9" align="right"><h2><strong>Total Price (Rs.)</strong></h2></td>
-        <td align="center"><strong><?php echo $net_product_amount; ?></strong></td>
+        <td align="center"><h2><strong><?php echo $net_product_amount; ?></strong></h2></td>
     </tr>
+    <?php
+    if (($orderdetails['Order']['cod_status'] == 'PayU') && ($orderdetails['Orderstatus']['order_status'] != 'Pending')) {
+        $paid = isset($paymentdetail['Paymentdetails']) ? $paymentdetail['Paymentdetails']['amount'] : 0;
+    } elseif (($orderdetails['Order']['cod_status'] == 'COD') && ($orderdetails['Orderstatus']['order_status'] != 'Pending')) {
+        $paid = isset($paymentdetail['Paymentdetails']['amount']) ? $paymentdetail['Paymentdetails']['amount'] : 0;
+        $balance = $netamount - $orderdetails['Order']['cod_amount'];
+    } elseif (($orderdetails['Order']['cod_status'] == 'CHQ/DD') && ($orderdetails['Orderstatus']['order_status'] != 'Pending')) {
+        $paid = isset($paymentdetail['Paymentdetails']['amount']) ? $paymentdetail['Paymentdetails']['amount'] : 0;
+    }
+    if (!empty($paid)) {
+        ?>
+        <tr>
+            <td colspan="9" align="right"><h2><strong>Amount Paid by Customer (Rs.)</strong></h2></td>
+            <td align="center"><h2><strong><?php echo $paid; ?></strong></h2></td>
+        </tr>
+    <?php }
+    if (($orderdetails['Order']['cod_status'] == 'COD') && ($orderdetails['Orderstatus']['order_status'] != 'Pending') && ($orderdetails['Order']['status'] == 'PartialPaid')) {
+        ?>
+        <tr>
+            <td colspan="9" align="right"><h2><strong>Balance Amount to be collected</strong></h2></td>
+            <td align="center"><h2><strong><?php echo $balance; ?></strong></h2></td>
+        </tr>
+<?php } ?>
+
     <tr>
-        <td colspan="10" align="center">This is computer generated invoice.No Signature required.</td>
+        <td colspan="10" align="center">This is computer generated invoice. No Signature required.</td>
     </tr>
     <tr style="height: 100px;">
         <td colspan="10">&nbsp;</td>

@@ -163,7 +163,7 @@
                                         <div id="productcode"> <span class="gemstoneprice">N/A</span>/- </div></td>
                                     <td width="20" align="center"><?php echo $this->Html->image("icons/plus_icn.png", array("alt" => "index")); ?></td>
                                 <?php } ?>
-                                <td align="center"> MAKING CHARGES <br />
+                                    <td align="center"> <div style="margin-top: -15px;">MAKING CHARGES </div>
                                     <hr />
                                     <div id="productcode">   <span class="makingcharge">N/A</span>/- </div></td>
                                 <td width="20" align="center"><?php echo $this->Html->image("icons/plus_icn.png", array("alt" => "index")); ?></td>
@@ -296,7 +296,8 @@
                                     </td></tr>
                             <?php } ?>
                             <tr class="show_non_gold">      
-                                <td colspan="9">&nbsp;</td></tr>
+                                <td colspan="10">&nbsp;</td>
+                            </tr>
                             <tr>
                                 <td colspan="4"><strong>Expected Date of Delivery and COD Availability Update :</strong></td>
                                 <td colspan="6" style="margin: 5px;">
