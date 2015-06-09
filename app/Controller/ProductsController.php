@@ -728,7 +728,7 @@ class ProductsController extends AppController {
         $header_row = array("S.No", "Product Nmae", "Product Code", "Link", "Category", "Sub Category", "Vendor", "vendor product code",
             "Metal", "Metal Color", "Product weight", "Stone", "Special Work", "Gemstone", "Special Work Description",
             "Special work charge", "vendor_making_charge", "vat_cst", "vendor_delivery_tat", "product_delivery_tat", "status",
-            "Diamond", "Stone Clarity", "Stone Color", "Stone Carat", "no_of_diamonds", "stone_shape", "stone weight",
+            "Diamond", "Stone Clarity & Color","Stone Carat", "no_of_diamonds", "stone_shape", "stone weight",
             "setting_type", "Gemstone ", "size ", "Shape ", "Stone weight ", "no of Stone ", "Setting type ", "Size ", "Purity",
             "Product Type", "Collection Type");
 
@@ -773,8 +773,8 @@ class ProductsController extends AppController {
                     if ($p_stone_name != '') {
                         $p_stone .= $key == 0 ? $p_stone_name : ', ' . $p_stone_name;
                     }
-                    if ($p_clr_name != '') {
-                        $p_clr .= $key == 0 ? $p_clr_name : ', ' . $p_clr_name;
+                    if ($p_clr_name != '' || $p_col_name != '') {
+                        $p_clr .= $key == 0 ? "$p_clr_name-$p_col_name" : ', ' . "$p_clr_name-$p_col_name";
                     }
                     if ($p_col_name != '') {
                         $p_col .= $key == 0 ? $p_col_name : ', ' . $p_col_name;
@@ -795,7 +795,7 @@ class ProductsController extends AppController {
 
                 $products[] = $p_stone;
                 $products[] = $p_clr;
-                $products[] = $p_col;
+//                $products[] = $p_col;
                 $products[] = $p_car;
                 $products[] = $p_no_dia;
                 $products[] = $p_shp;

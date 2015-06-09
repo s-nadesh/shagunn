@@ -213,11 +213,11 @@ $alphas = range('A', 'Z');
                 <td style="border:1px solid #000; border-right:0px; border-bottom:0px; border-top:0px; padding:5px;" align="center"><?php echo $product_name ?></td>
                 <?php }?>
                 <td style="border:1px solid #000; border-right:0px; border-top:0px; padding:5px;" align="center"><?php echo $ordercarts['Shoppingcart']['weight']; ?></td>
-                <td style="border:1px solid #000; border-right:0px; border-top:0px; padding:5px;" align="center"><?php echo $ordercarts['Shoppingcart']['goldamount'] ?></td>
+                <td style="border:1px solid #000; border-right:0px; border-top:0px; padding:5px;" align="center"><?php echo indian_number_format($ordercarts['Shoppingcart']['goldamount']) ?></td>
                 <td style="border:1px solid #000; border-right:0px; border-top:0px; padding:5px;" align="center"><?php echo $stone_wght ?></td>
-                <td style="border:1px solid #000; border-right:0px; border-top:0px; padding:5px;" align="center"><?php echo $ordercarts['Shoppingcart']['stoneamount']; ?></td>
+                <td style="border:1px solid #000; border-right:0px; border-top:0px; padding:5px;" align="center"><?php echo indian_number_format($ordercarts['Shoppingcart']['stoneamount']); ?></td>
                 <td style="border:1px solid #000; border-right:0px; border-top:0px; padding:5px;" align="center"><?php echo $gem_wght; ?></td>
-                <td style="border:1px solid #000; border-right:0px; border-top:0px; padding:5px;" align="center"><?php echo $ordercarts['Shoppingcart']['gemstoneamount']; ?></td>
+                <td style="border:1px solid #000; border-right:0px; border-top:0px; padding:5px;" align="center"><?php echo indian_number_format($ordercarts['Shoppingcart']['gemstoneamount']); ?></td>
                 <td style="border:1px solid #000; border-right:0px; border-top:0px; padding:5px;" align="center"><?php echo $ordercarts['Shoppingcart']['quantity'] ?></td>
                 <?php $gold_amt = $ordercarts['Shoppingcart']['goldamount'] + $ordercarts['Shoppingcart']['stoneamount'] + $ordercarts['Shoppingcart']['gemstoneamount']?>
                 <td style="border:1px solid #000; border-top:0px; padding:5px;" align="center"><?php echo indian_number_format($gold_amt) ?></td>
@@ -254,7 +254,8 @@ $alphas = range('A', 'Z');
                 <td style="border:1px solid #000; border-right:0px; border-top:0px; padding:5px;" align="center"></td>
                 <?php $suffix = $order_count > 1 ? "($alphas[$o_key])" : '';?>
                 <td style="border:1px solid #000; border-top:0px; border-right:0px; padding:5px;" align="right" colspan="7"><strong>Total Price <?php echo $suffix?></strong></td>
-                <td style="border:1px solid #000; border-top:0px; padding:5px;" align="center"><strong><?php echo $net_amount = ($gold_amt + $making_charge + $vat) - $discount_amount ?></strong></td>
+                <?php $net_amount = ($gold_amt + $making_charge + $vat) - $discount_amount ?>
+                <td style="border:1px solid #000; border-top:0px; padding:5px;" align="center"><strong><?php echo indian_number_format($net_amount) ?></strong></td>
             </tr>
             <?php
             $net_product_amount += $net_amount;
@@ -273,7 +274,7 @@ $alphas = range('A', 'Z');
             }
             ?>
             <td style="border:1px solid #000; border-top:0px; border-right:0px; font-size:18px; padding:5px;" align="right" colspan="7"><strong>Total Price (Rs.)<?php echo $suffix_all?></strong></td>
-            <td style="border:1px solid #000; border-top:0px; padding:5px; font-size:18px;" align="center"><strong><?php echo $net_product_amount; ?></strong></td>
+            <td style="border:1px solid #000; border-top:0px; padding:5px; font-size:18px;" align="center"><strong><?php echo indian_number_format($net_product_amount); ?></strong></td>
         </tr>
 
         <?php
@@ -289,7 +290,7 @@ $alphas = range('A', 'Z');
             ?>        <tr>
                 <td style="border:1px solid #000; border-right:0px; border-top:0px; padding:5px;" align="center"></td>
                 <td style="border:1px solid #000; border-top:0px; border-right:0px; padding:5px;" align="right" colspan="7"><strong>Amount Paid by Customer (Rs.)</strong></td>
-                <td style="border:1px solid #000; border-top:0px; padding:5px;" align="center"><strong><?php echo $paid; ?></strong></td>
+                <td style="border:1px solid #000; border-top:0px; padding:5px;" align="center"><strong><?php echo indian_number_format($paid); ?></strong></td>
             </tr>
             <?php
         }
@@ -298,7 +299,7 @@ $alphas = range('A', 'Z');
             <tr>
                 <td style="border:1px solid #000; border-right:0px; border-top:0px; padding:5px;" align="center"></td>
                 <td style="border:1px solid #000; border-top:0px; border-right:0px; padding:5px;" align="right" colspan="7"><strong>Balance Amount to be collected</strong></td>
-                <td style="border:1px solid #000; border-top:0px; padding:5px;" align="center"><strong><?php echo $balance; ?></strong></td>
+                <td style="border:1px solid #000; border-top:0px; padding:5px;" align="center"><strong><?php echo indian_number_format($balance); ?></strong></td>
             </tr>
         <?php } ?>
 

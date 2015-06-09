@@ -1057,6 +1057,7 @@ class OrdersController extends AppController {
                             'remarks' => $this->data['Order']['orderstatus_remarks'],
                     ));
                     $this->Orderhistory->save($orderhistory);
+                    $this->Orderhistory->clear();
                     $this->order_status_mail($this->request->data['Order']['order_id']);
                     $order_status = $this->Orderstatus->findByOrderStsId($this->data['Order']['order_status_id']);
                     $haystack = array('Completed', 'completed', 'Finished', 'finished', 'Delivered', 'delivered', 'Cancelled', 'cancelled');
@@ -1098,6 +1099,7 @@ class OrdersController extends AppController {
                             'remarks' => $this->data['Order']['adminstatus_remarks'],
                     ));
                     $this->Orderhistory->save($orderhistory);
+                    $this->Orderhistory->clear();
                 }
                 if ($this->request->data['Order']['old_brokerage_status_id'] != $this->request->data['Order']['brokerage_status_id']) {
                     $orderhistory = array(
@@ -1109,6 +1111,7 @@ class OrdersController extends AppController {
                             'remarks' => $this->data['Order']['brokeragestatus_remarks'],
                     ));
                     $this->Orderhistory->save($orderhistory);
+                    $this->Orderhistory->clear();
                 }
 
                 $this->Session->setFlash('<div class="success msg">Order details updated successfully</div>', '');
@@ -1846,6 +1849,7 @@ class OrdersController extends AppController {
                             'changed_by' => $this->Session->read('User.first_name').' '.$this->Session->read('User.last_name'),
                     ));
                     $this->Orderhistory->save($orderhistory);
+                    $this->Orderhistory->clear();
                     if ($this->Order->save($this->request->data)) {
                         $this->order_status_mail_to_admin($this->request->data['Order']['order_id']);
                         $this->Session->setFlash('<div class="success msg">Order status updated successfully</div>', '');
@@ -1864,6 +1868,7 @@ class OrdersController extends AppController {
                             'changed_by' => $this->Session->read('User.first_name').' '.$this->Session->read('User.last_name'),
                     ));
                     $this->Orderhistory->save($orderhistory);
+                    $this->Orderhistory->clear();
                 }
                 $this->redirect(array('action' => 'order_view', $this->data['Order']['order_id'], 'controller' => 'orders'));
             }
