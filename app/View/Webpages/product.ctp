@@ -453,16 +453,16 @@
                         ?>
                         <!--</div>-->
                         <div class="gridproduct">
-                            <div class="productDiv item" style="position:relative;">
+                            <div class="productDiv" style="position:relative;">
                                 <div style="position:absolute; right:-9px;">
                                     <div style="position:relative;"><?php
                                         if (in_array('1', explode(",", $products['Product']['product_view_type']))) {
-                                            echo $this->Html->image('offer_img.png', array("alt" => "Image"));
+                                            echo $this->Html->image('offer_img2.png', array("alt" => "Image"));
                                         }
                                         ?></div>
                                     <div style="position:relative;"><?php
                                         if (in_array('2', explode(",", $products['Product']['product_view_type']))) {
-                                            echo $this->Html->image('offer_img2.png', array("alt" => "Image"));
+                                            echo $this->Html->image('offer_img.png', array("alt" => "Image"));
                                         }
                                         ?></div>
                                 </div>
@@ -505,13 +505,12 @@
                                     <p align="center">
 
 
-                                        <input name="" type="submit" value="" class="addBtn add-to-cart">
-<!--                                        <a href="<?php echo BASE_URL; ?><?php echo str_replace(' ', '_', strtolower(trim($category['Category']['category']))) . "/" . $subcat . "/" . $products['Product']['product_id'] . "/" . $Product_product_name; ?><?php
+                                        <a href="<?php echo BASE_URL; ?><?php echo str_replace(' ', '_', strtolower(trim($category['Category']['category']))) . "/" . $subcat . "/" . $products['Product']['product_id'] . "/" . $Product_product_name; ?><?php
                                         if (isset($_REQUEST['goldpurity'])) {
                                             echo '?purity=' . $_REQUEST['goldpurity'];
                                         }
                                         ?>">
-                                            <input name="" type="submit" value="" class="addBtn" ></a>-->
+                                            <input name="" type="submit" value="" class="addBtn" ></a>
                                         <a href="<?php echo BASE_URL; ?>webpages/whislist/<?php
                                         if (!empty($this->params['pass']['0'])) {
                                             echo $this->params['pass']['0'];
@@ -533,12 +532,12 @@
                                 <div style="position:absolute; right:-9px;">
                                     <div style="position:relative;"><?php
                                         if (in_array('1', explode(",", $products['Product']['product_view_type']))) {
-                                            echo $this->Html->image('offer_img.png', array("alt" => "Image"));
+                                            echo $this->Html->image('offer_img2.png', array("alt" => "Image"));
                                         }
                                         ?></div>
                                     <div style="position:relative;"><?php
                                         if (in_array('2', explode(",", $products['Product']['product_view_type']))) {
-                                            echo $this->Html->image('offer_img2.png', array("alt" => "Image"));
+                                            echo $this->Html->image('offer_img.png', array("alt" => "Image"));
                                         }
                                         ?></div>
                                 </div>
@@ -609,14 +608,14 @@
 
                 <?php } else {
                     ?>
-                    <div class="no_more_image"> <div style="float:left; width:100%; padding:8px 0px 8px 0px; color:#ad8000; text-align:center; margin-top:30px; border-bottom:2px solid #dba715; background-color:#e7cb5d;" id="loadingimgae">No more products to show</div></div>
+                    <div class="no_more_image"> <div style="float:left; width:100%; padding:8px 0px 8px 0px; color:#ad8000; text-align:center; margin-top:30px; border-bottom:2px solid #dba715; background-color:#e7cb5d;" id="loadingimgae">No More Jewellery Available to view</div></div>
 
                 <?php }
                 ?>
             </div>
             <?php if (!empty($product)) { ?>
                 <div class="no_more_image" style="display:none;">
-                    <div style="float:left; width:100%; padding:8px 0px 8px 0px; color:#ad8000; text-align:center; margin-top:30px; border-bottom:2px solid #dba715; background-color:#e7cb5d;" id="loadingimgae">No more products to show</div>
+                    <div style="float:left; width:100%; padding:8px 0px 8px 0px; color:#ad8000; text-align:center; margin-top:30px; border-bottom:2px solid #dba715; background-color:#e7cb5d;" id="loadingimgae">No More Jewellery Available to view</div>
                 </div>        
             <?php } ?>
         </div>
@@ -731,8 +730,8 @@
             if (value == 0) {
                 $('#flag').val('1');
                 if (parseInt($('#total_page').val()) > parseInt($('#current_page').val())) {
-                    $('.helpfade').show();
-                    $('.helptips').show();
+//                    $('.helpfade').show();
+//                    $('.helptips').show();
                     display_page = parseInt($('#current_page').val()) + 1;
                     checker = $('.checker').val();
                     $.ajax({
@@ -765,8 +764,8 @@
                                 values = parseInt($('#current_page').val()) + 1;
                                 $('#current_page').val(values);
                                 $('.countpage').html(parseInt($('.countpage').html()) + parseInt(data.count));
-                                $('.helpfade').hide();
-                                $('.helptips').hide();
+//                                $('.helpfade').hide();
+//                                $('.helptips').hide();
                                 $('#flag').val('0');
                             } else {
                                 $('#flag').val('1');

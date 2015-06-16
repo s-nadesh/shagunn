@@ -19,7 +19,7 @@
                         <ul>
                             <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <?php echo $this->Html->image("phone_icn.png", array("alt" => "index")); ?><span style="padding-top:3px; font-size:16px;"> 1800 1022 066</span></li>
                             <li style="color:#dba715;"><?php //echo  $this->Html->image("cart_icn.png",array("alt" => "index"));                   ?>
-                                <div id="loginContainer">
+<!--                                <div id="loginContainer">
                                     <?php echo $this->Html->image("cart_icn.png", array("alt" => "index", 'style' => 'margin-top: 10px;')); ?>
                                     <a href="#" id="loginButton" class="shopping-cart"><span id="top_qty"> Cart <?php
                                     if ($this->Session->read('cart_process') != '') {
@@ -34,8 +34,8 @@
                                         <form id="loginForm">
                                         </form>
                                     </div>
-                                </div>
-<!--                                <a class="shopping-cart" href="<?php echo BASE_URL; ?>shoppingcarts/shopping_cart"> <?php echo $this->Html->image("cart_icn.png", array("alt" => "index")); ?> Cart <?php
+                                </div>-->
+                                <a class="shopping-cart" href="<?php echo BASE_URL; ?>shoppingcarts/shopping_cart"> <?php echo $this->Html->image("cart_icn.png", array("alt" => "index")); ?> Cart <?php
                                     if ($this->Session->read('cart_process') != '') {
                                         $cartcount = ClassRegistry::init('Shoppingcart')->find('first', array('conditions' => array('cart_session' => $this->Session->read('cart_process')), 'fields' => array('SUM(quantity) AS tot_qty')));
                                         if (!empty($cartcount)) {
@@ -43,7 +43,7 @@
                                         }
                                     }
                                     ?> 
-                                </a>-->
+                                </a>
 
                             </li>
                             <?php if ($this->Session->read('User') == '') { ?>   <li id="login"> <?php echo $this->Html->Link('Register', array('controller' => 'signin', 'action' => 'index')); ?>&nbsp;
