@@ -1359,6 +1359,9 @@ class OrdersController extends AppController {
                     $this->request->data['Discounthistory']['order_id'] = $this->Session->read('Order');
                     $this->request->data['Discounthistory']['date'] = date('Y-m-d H:i:s');
                     $this->request->data['Discounthistory']['coupon_code'] = $check_discount['Discount']['voucher_code'];
+                    
+                    //added by prakash
+                    $this->request->data['Discounthistory']['Type'] = $check_discount['Discount']['type'];
                     if ($check_discount['Discount']['per_amou'] == 1) {
                         $this->request->data['Discounthistory']['percentage'] = $check_discount['Discount']['percentage'];
                     } else {

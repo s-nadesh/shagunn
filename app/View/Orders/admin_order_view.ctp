@@ -84,13 +84,12 @@
                                 ?>
                                 <tr><td width="150"><strong >Sub Total Amount</strong></td><td>Rs.<?php echo indian_number_format($netamount = $cart_amount[0]['subtotal']); ?></td></tr>
                                 <?php if ($orderdetails['Order']['discount_amount'] > 0) { ?>
-
  <tr><td width="150"><strong >Discount Type</strong></td><td><?php if(!empty($Discounthistory['Discounthistory']['type'])){echo $Discounthistory['Discounthistory']['type'];}else{echo '-';}?></td></tr>
    <tr><td width="150"><strong >Discount Code</strong></td><td><?php
 		if(isset($Discounthistory['Discounthistory']['coupon_code']) && !empty($Discounthistory['Discounthistory']['coupon_code'])){echo $Discounthistory['Discounthistory']['coupon_code'];}else{echo '-';}
 		 ?></td></tr>
 
-                                      <tr><td width="150"><strong >Discount Code</strong></td><td><?php echo @$Discount['Discount']['voucher_code']; ?></td></tr>
+                                      <!--<tr><td width="150"><strong >Discount Code</strong></td><td><?php echo @$Discount['Discount']['voucher_code']; ?></td></tr>-->
                                      <!--<tr><td width="150"><strong ><?php //if($Discount['Discount']['per_amou']=="1") { echo "Percentage" ;} else { echo "Amount"; }    ?></strong></td>
                                      <td><?php
                                     //if($Discount['Discount']['per_amou']=="1") { echo $Discount['Discount']['percentage']."  %  "; 	 } else {
