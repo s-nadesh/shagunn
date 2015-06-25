@@ -103,11 +103,15 @@ class SigninController extends AppController {
                                         if (trim($_REQUEST['ref']) == "cart") {
                                             $this->redirect(array('controller' => 'orders', 'action' => 'shipping_details'));
                                         } else {
-
-                                            if ($check['User']['first_name'] != '' && $check['User']['phone_no'] != '')
-                                                $this->redirect(array('controller' => 'signin', 'action' => 'details'));
-                                            else
+                                            if ($check['User']['first_name'] != '' && $check['User']['phone_no'] != ''){
+                                                if($check['User']['user_type'] == '2'){
+                                                    $this->redirect(array('controller' => 'vendors', 'action' => 'user_orders'));
+                                                }else{
+                                                    $this->redirect(array('controller' => 'signin', 'action' => 'details'));
+                                                }
+                                            }else{
                                                 $this->redirect(array('controller' => 'signin', 'action' => 'personal'));
+                                            }
                                         }
                                     }else {
 										
@@ -323,7 +327,12 @@ class SigninController extends AppController {
                             $user['User']['password'] = sha1($password);
                             $this->User->save($user);
 						  // 	$password=$user['User']['password'];
-                            $activateemail = $this->Emailcontent->find('first', array('conditions' => array('eid' => 4)));
+                            if($user['User']['user_type'] == '2'){
+                                $template = 17;
+                            }else{
+                                $template = 4;
+                            }
+                            $activateemail = $this->Emailcontent->find('first', array('conditions' => array('eid' => $template)));
                             $activateemail['toemail'] = $this->request->data['User']['email'];
                             $message = str_replace(array('{link}', '{email}', '{password}'), array("<a target='_blank' href=" . BASE_URL . "signin/index/>" . BASE_URL . "signin/index" . "</a>", $activateemail['toemail'], $password), $activateemail['Emailcontent']['content']);
                             $adminmailid = $this->Adminuser->find('first', array('conditions' => array('admin_id' => '1')));

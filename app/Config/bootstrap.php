@@ -34,6 +34,9 @@ define('SMS_SITE','http://alerts.sinfini.com/api/v3');
 define('SMS_METHOD','sms');
 define('SMS_API_KEY','14328fib06qu253pb9z4d');
 define('SMS_SENDER_ID','BirlaG');
+
+define('INVOICE_PREFIX','SGN-');
+define('INVOICE_STR_PAD','7');
 /**
  * The settings below can be used to set additional paths to models, views and controllers.
  *

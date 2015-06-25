@@ -727,10 +727,10 @@ class ProductsController extends AppController {
         //
         $header_row = array("S.No", "Product Nmae", "Product Code", "Link", "Category", "Sub Category", "Vendor", "vendor product code",
             "Metal", "Metal Color", "Product weight", "Stone", "Special Work", "Gemstone", "Special Work Description",
-            "Special work charge", "vendor_making_charge", "vat_cst", "vendor_delivery_tat", "product_delivery_tat", "status",
+            "Special work charge", "Vendor Making Charges Calculation", "vendor_making_charge", "vat_cst", "vendor_delivery_tat", "product_delivery_tat", "status",
             "Diamond", "Stone Clarity & Color","Stone Carat", "no_of_diamonds", "stone_shape", "stone weight",
             "setting_type", "Gemstone ", "size ", "Shape ", "Stone weight ", "no of Stone ", "Setting type ", "Size ", "Purity",
-            "Product Type", "Collection Type");
+            "Product Type", "Collection Type", "Product View type", "Best Seller", "Making Charges Calculation", "Making Charge", "Height", "Width", "Stock");
 
         $header_row = array_merge($header_row, $header_menus_list);
         fputcsv($csv_file, $header_row, ',', '"');
@@ -752,7 +752,7 @@ class ProductsController extends AppController {
             if ($product_count == 0) {
                 $products[] = ' ';
                 $products[] = ' ';
-                $products[] = ' ';
+//                $products[] = ' ';
                 $products[] = ' ';
                 $products[] = ' ';
                 $products[] = ' ';
@@ -923,6 +923,7 @@ class ProductsController extends AppController {
                 $results['Product']['gemstone'],
                 $results['Product']['special_work_description'],
                 $results['Product']['special_work_charge'],
+                $results['Product']['vendor_making_charge_calc'] == 'PER' ? '%' : 'INR',
                 $results['Product']['vendor_making_charge'],
                 $results['Product']['vat_cst'],
                 $results['Product']['vendor_delivery_tat'],
@@ -958,10 +959,16 @@ class ProductsController extends AppController {
                 $b_seller = 'Yes';
             }
 
+            
             $row = array_merge($row, array($p_type));
             $row = array_merge($row, array($col_type));
             $row = array_merge($row, array($p_v_type));
             $row = array_merge($row, array($b_seller));
+            $row = array_merge($row, array($results['Product']['making_charge_calc'] == 'PER' ? '%' : 'INR'));
+            $row = array_merge($row, array($results['Product']['making_charge']));
+            $row = array_merge($row, array($results['Product']['height']));
+            $row = array_merge($row, array($results['Product']['width']));
+            $row = array_merge($row, array($results['Product']['stock_quantity']));
 
             $p_menu_exp = explode(",", $results['Product']['submenu_ids']);
             $p_offer_exp = explode(",", $results['Product']['offer_ids']);

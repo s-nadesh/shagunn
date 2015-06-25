@@ -399,6 +399,7 @@ class OrdersController extends AppController {
             } elseif ($order['Order']['cod_status'] == 'COD') {
                 $this->request->data['Order']['status'] = 'PartialPaid';
             }
+            $this->request->data['Order']['org_invoice'] = $this->generate_invoice_number();
             $this->Order->save($this->request->data);
         }
         $order1 = $this->Order->find('first', array('conditions' => array('order_id' => $this->Session->read('Order'))));
@@ -1987,6 +1988,24 @@ class OrdersController extends AppController {
         $message .= "<p>Thanks.</p>";
         $email->send($message);
         $email->reset();
+    }
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public function generate_invoice_number() {
+        $count = $this->Order->find('count');
+        $new_inv_no = INVOICE_PREFIX .(str_pad((1+ $count),INVOICE_STR_PAD,'0',STR_PAD_LEFT));
+        do {
+            $inv_no = $this->Order->findByOrgInvoice($new_inv_no);
+            if (!empty($inv_no)) {
+                $check_inv_no = $inv_no['Order']['org_invoice'];
+                $count++;
+                $new_inv_no = INVOICE_PREFIX .(str_pad((1+ $count),INVOICE_STR_PAD,'0',STR_PAD_LEFT));
+            } else {
+                break;
+            }
+        } while ($check_inv_no != $new_inv_no);
+        return $new_inv_no;
     }
 
 }

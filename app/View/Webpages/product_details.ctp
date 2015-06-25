@@ -1,4 +1,4 @@
-<?php //print_r($browse_product);exit;           ?>
+<?php //print_r($browse_product);exit;            ?>
 <div class="main">
     <header> &nbsp; </header>
     <div style="clear:both;">&nbsp;</div>
@@ -163,7 +163,7 @@
                                         <div id="productcode"> <span class="gemstoneprice">N/A</span>/- </div></td>
                                     <td width="20" align="center"><?php echo $this->Html->image("icons/plus_icn.png", array("alt" => "index")); ?></td>
                                 <?php } ?>
-                                    <td align="center"> <div style="margin-top: -15px;">MAKING CHARGES </div>
+                                <td align="center"> <div style="margin-top: -15px;">MAKING CHARGES </div>
                                     <hr />
                                     <div id="productcode">   <span class="makingcharge">N/A</span>/- </div></td>
                                 <td width="20" align="center"><?php echo $this->Html->image("icons/plus_icn.png", array("alt" => "index")); ?></td>
@@ -303,7 +303,8 @@
                                 <td colspan="6" style="margin: 5px;">
                                     <form id="deliveryForm" name="myForm" method="post">
                                         <input placeholder="Enter pincode" name="pincode" type="text" class="validate[required,minSize[6],custom[integer]] pincode" onkeypress="return intnumbers(this, event)" maxlength="6">&nbsp;&nbsp;&nbsp;
-                                        <input type="submit" name="update" class="update" value="Update" id="update" /></form>&nbsp;&nbsp;&nbsp; </td>
+                                        <input type="submit" name="update" class="update" value="Update" id="update" />
+                                    </form>&nbsp;&nbsp;&nbsp; </td>
                             </tr>
                             <tr>
                                 <td colspan="10"><span class="delivery_date"></span></td>
@@ -314,12 +315,14 @@
                             </tr>
                             <tr>
                                 <td colspan="9">
+                                    <span style="color: #F02222; display: none" id="delivery_checked_error">Please enter your pincode and Check COD availability</span>
                                     <form method="post" action="<?php echo BASE_URL; ?>shoppingcarts/addcart" name="Shopping" class="shoppingdetails">
                                         <div class="cartid"></div>
                                         <input type="hidden" name="data[Shopping][shoppingsubmit]" value="1" />
                                         <button type="submit" value="Submit" class="button" />BUY NOW</button>
-                                        &nbsp; or call 1800 102 2066 </td>
-                                </form>    
+                                        &nbsp; or call 1800 102 2066 
+                                    </form>
+                                </td>
                             </tr>
                         </table>
                     </td>
@@ -721,10 +724,11 @@ $(document).ready(function(){
                     dataType: 'json',
                     success: function (data) {
                         if (data.status == '200') {
-                            $('.delivery_date').html(data.date);
+                            $('.delivery_date').html(data.date).addClass('delivery_checked');
                         } else {
-                            $('.delivery_date').html(data.data);
+                            $('.delivery_date').html(data.data).addClass('delivery_checked');
                         }
+                        $('#delivery_checked_error').hide();
                     }
                 });
                 //form.validationEngine('detach');
@@ -735,6 +739,14 @@ $(document).ready(function(){
     });
     $(document).ready(function () {
         calprice();
+
+        $('.shoppingdetails').submit(function (event) {
+            if ($('.delivery_checked').length == 0) {
+                $('#delivery_checked_error').show();
+                $("#deliveryForm [name='pincode']").focus();
+                event.preventDefault();
+            }
+        });
     });
     $('.radio_gold_purity,.radio_diamond').click(function () {
         calprice();
@@ -742,6 +754,7 @@ $(document).ready(function(){
     $('#size,#color').change(function () {
         calprice();
     });
+
 </script>
 <script type="text/javascript">
     function calprice() {

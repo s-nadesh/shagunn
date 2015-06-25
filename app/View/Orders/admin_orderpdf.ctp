@@ -27,7 +27,7 @@ $cart_amount = ClassRegistry::init('Shoppingcart')->find('first', array('conditi
         padding: 0;
     }
     html, body {
-        font-size: 14px;
+        font-size: 15px;
         text-align: left;
         color: #373435;
         font-family: Arial, Helvetica, sans-serif;
@@ -48,12 +48,12 @@ $cart_amount = ClassRegistry::init('Shoppingcart')->find('first', array('conditi
                 New Link Road, Andheri (West)<br />
                 Mumbai 400 053 </td>
         </tr>
-<!--        <tr>
-            <td colspan="3">&nbsp;</td>
-        </tr>-->
         <tr>
             <td align="center" colspan="3"><span style="font-size:18px; font-weight:bold;">TAX INVOICE</span> <br />
-                Inoive No: #<?php echo $in . $orderinvoice['Order']['invoice']; ?></td>
+                Inoive No: #<?php echo $orderinvoice['Order']['org_invoice']; ?></td>
+        </tr>
+        <tr>
+            <td colspan="3">&nbsp;</td>
         </tr>
         <tr>
             <td style="border-top:1px solid #000;" colspan="3">&nbsp;</td>
@@ -195,6 +195,9 @@ $cart_amount = ClassRegistry::init('Shoppingcart')->find('first', array('conditi
         <tr>
             <td style="border-top:1px solid #000;" colspan="3">&nbsp;</td>
         </tr>
+        <tr>
+            <td colspan="3">&nbsp;</td>
+        </tr>
     </table>
     <table cellspacing="0" cellpadding="10" border="0" width="100%">
         <tr>
@@ -283,7 +286,7 @@ $cart_amount = ClassRegistry::init('Shoppingcart')->find('first', array('conditi
                 <td style="border:1px solid #000; border-top:0px; padding:5px;" align="center"><?php echo $making_charge != 0 ? indian_number_format($making_charge) : '-' ?></td>
             </tr>
             <tr>
-                <td style="border:1px solid #000; border-right:0px; border-top:0px; padding:5px;" align="center"></td>
+                <td style="border:1px solid #000; border-right:0px; border-top:0px; padding:5px; border-bottom:0px;" align="center"></td>
                 <td style="border:1px solid #000; border-top:0px; border-right:0px; padding:5px;" align="right" colspan="7">VAT</td>
                 <?php $vat = $ordercarts['Shoppingcart']['vat']; ?>
                 <td style="border:1px solid #000; border-top:0px; padding:5px;" align="center"><?php echo $vat != 0 ? indian_number_format($vat) : '-' ?></td>
@@ -347,39 +350,44 @@ $cart_amount = ClassRegistry::init('Shoppingcart')->find('first', array('conditi
         <?php } ?>
 
         <tr>
-            <td style="border:1px solid #000; border-top:0px; padding:5px; font-size:12px; font-style:italic;" align="center" colspan="9">This is computer generated invoice.No Signature required.</td>
+            <td style="border:1px solid #000; border-top:0px; padding:5px; font-size:13px; font-style:italic;" align="center" colspan="9">This is computer generated invoice.No Signature required.</td>
         </tr>
+        <?php for ($i = 1; $i <= 6; $i++) { ?>
+<!--            <tr>
+                <td style="border:1px solid #000; border-top:0px; border-bottom:0px; padding:5px; font-size:13px; font-style:italic;" align="center" colspan="9">&nbsp;</td>
+            </tr>-->
+        <?php } ?>
         <tr>
-            <td style="border:1px solid #000; border-top:0px; padding:5px; font-size:14px; font-style:italic;" align="left" colspan="9">
+            <td style="border:1px solid #000; border-top:0px; padding:5px; font-size:15px; font-style:italic;" align="left" colspan="9">
                 Mode of payment: 
                 <?php
                 if (($orderdetails['Order']['cod_status'] == 'PayU')) {
-                    echo '( Online Transfer : '.indian_number_format($net_product_amount).')';
+                    echo '( Online Transfer : ' . indian_number_format($net_product_amount) . ')';
                 } elseif (($orderdetails['Order']['cod_status'] == 'COD')) {
                     $paid = $paid != 0 ? indian_number_format(intval(round($paid))) : ' - ';
                     $balance = $balance != 0 ? indian_number_format($balance) : ' - ';
                     echo "( Online Transfer : {$paid}, COD: {$balance})";
                 } elseif (($orderdetails['Order']['cod_status'] == 'CHQ/DD')) {
-                    echo '( Cheque : '.indian_number_format($net_product_amount).')';
+                    echo '( Cheque : ' . indian_number_format($net_product_amount) . ')';
                 }
                 ?>
             </td>
         </tr>
         <tr>
-            <td style="border:1px solid #000; border-top:0px; border-right:0px; padding:5px; font-size:12px; font-style:italic;" colspan="8"><strong>Contact us : 1800  102 2066</strong></td>
-            <td style="border:1px solid #000; border-top:0px; border-left:0px; padding:5px; font-size:12px; font-style:italic;">customer.service@shagunn.in</td>
+            <td style="border:1px solid #000; border-top:0px; border-right:0px; padding:5px; font-size:13px; font-style:italic;" colspan="8"><strong>Contact us : 1800  102 2066</strong></td>
+            <td style="border:1px solid #000; border-top:0px; border-left:0px; padding:5px; font-size:13px; font-style:italic;">customer.service@shagunn.in</td>
         </tr>
         <tr>
-            <td style="border:1px solid #000; border-top:0px; padding:5px; font-size:12px;" colspan="9"><strong>Returns Policy :</strong> At Shagunn it is our endeavour to deliver perfectly against customers orders. In case you need to return/exchange the product, we shall require the original jewellery box along with untampered price tag on the jewellery and original invoice.Please help us to help you better. Terms and condition apply.</td>
+            <td style="border:1px solid #000; border-top:0px; padding:5px; font-size:13px;" colspan="9"><strong>Returns Policy :</strong> At Shagunn it is our endeavour to deliver perfectly against customers orders. In case you need to return/exchange the product, we shall require the original jewellery box along with untampered price tag on the jewellery and original invoice.Please help us to help you better. Terms and condition apply.</td>
         </tr>
         <tr>
-            <td style="border:1px solid #000; border-top:0px; padding:5px; font-size:12px;" align="center" colspan="9">The goods sold as part of this shipment are intended for end user consumption/retail sale and not for re-sale.</td>
+            <td style="border:1px solid #000; border-top:0px; padding:5px; font-size:13px;" align="center" colspan="9">The goods sold as part of this shipment are intended for end user consumption/retail sale and not for re-sale.</td>
         </tr>
         <tr>
-            <td style="border:1px solid #000; border-top:0px; padding:5px; font-size:12px;" colspan="9"><strong>Declaration :</strong> I / We hereby certify that my/our registration certificate under the Maharashtra Value Added Tax Act, 2002 is in force on the date on which the sale of the goods specified in this tax invoice is made by me / us and that the transaction of sale covered by this tax invoice has been effected by me / us and it shall be accounted for in the turnover of sales while filing of return and the due tax, if any, payable on the sale has been paid or shall be paid.</td>
+            <td style="border:1px solid #000; border-top:0px; padding:5px; font-size:13px;" colspan="9"><strong>Declaration :</strong> I / We hereby certify that my/our registration certificate under the Maharashtra Value Added Tax Act, 2002 is in force on the date on which the sale of the goods specified in this tax invoice is made by me / us and that the transaction of sale covered by this tax invoice has been effected by me / us and it shall be accounted for in the turnover of sales while filing of return and the due tax, if any, payable on the sale has been paid or shall be paid.</td>
         </tr>
         <tr>
-            <td style="border:1px solid #000; border-top:0px; padding:5px; font-size:12px;" colspan="9"><strong>Regd. Office :</strong> Birla Gold and Precious Metals Pvt. Ltd. Morya Landmark II, 2nd Floor,202, New Link Road, Andheri (W), Mumbai - 400053,Maharashtra,India</td>
+            <td style="border:1px solid #000; border-top:0px; padding:5px; font-size:13px;" colspan="9"><strong>Regd. Office :</strong> Birla Gold and Precious Metals Pvt. Ltd. Morya Landmark II, 2nd Floor,202, New Link Road, Andheri (W), Mumbai - 400053,Maharashtra,India</td>
         </tr>
     </table>
 </div>

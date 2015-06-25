@@ -18,28 +18,28 @@
                     <div class="shop_info_menu">
                         <ul>
                             <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <?php echo $this->Html->image("phone_icn.png", array("alt" => "index")); ?><span style="padding-top:3px; font-size:16px;"> 1800 1022 066</span></li>
-                            <li style="color:#dba715;"><?php //echo  $this->Html->image("cart_icn.png",array("alt" => "index"));                   ?>
-<!--                                <div id="loginContainer">
-                                    <?php echo $this->Html->image("cart_icn.png", array("alt" => "index", 'style' => 'margin-top: 10px;')); ?>
-                                    <a href="#" id="loginButton" class="shopping-cart"><span id="top_qty"> Cart <?php
-                                    if ($this->Session->read('cart_process') != '') {
-                                        $cartcount = ClassRegistry::init('Shoppingcart')->find('first', array('conditions' => array('cart_session' => $this->Session->read('cart_process')), 'fields' => array('SUM(quantity) AS tot_qty')));
-                                        if (!empty($cartcount)) {
-                                            echo '(' . $cartcount[0]['tot_qty'] . ')';
-                                        }
+                            <li style="color:#dba715;"><?php //echo  $this->Html->image("cart_icn.png",array("alt" => "index"));                    ?>
+                                <!--                                <div id="loginContainer">
+                                <?php echo $this->Html->image("cart_icn.png", array("alt" => "index", 'style' => 'margin-top: 10px;')); ?>
+                                                                    <a href="#" id="loginButton" class="shopping-cart"><span id="top_qty"> Cart <?php
+                                if ($this->Session->read('cart_process') != '') {
+                                    $cartcount = ClassRegistry::init('Shoppingcart')->find('first', array('conditions' => array('cart_session' => $this->Session->read('cart_process')), 'fields' => array('SUM(quantity) AS tot_qty')));
+                                    if (!empty($cartcount)) {
+                                        echo '(' . $cartcount[0]['tot_qty'] . ')';
                                     }
-                                    ?></span></a>
-                                    <div style="clear:both"></div>
-                                    <div id="loginBox">                
-                                        <form id="loginForm">
-                                        </form>
-                                    </div>
-                                </div>-->
+                                }
+                                ?></span></a>
+                                                                    <div style="clear:both"></div>
+                                                                    <div id="loginBox">                
+                                                                        <form id="loginForm">
+                                                                        </form>
+                                                                    </div>
+                                                                </div>-->
                                 <a class="shopping-cart" href="<?php echo BASE_URL; ?>shoppingcarts/shopping_cart"> <?php echo $this->Html->image("cart_icn.png", array("alt" => "index")); ?> Cart <?php
                                     if ($this->Session->read('cart_process') != '') {
                                         $cartcount = ClassRegistry::init('Shoppingcart')->find('first', array('conditions' => array('cart_session' => $this->Session->read('cart_process')), 'fields' => array('SUM(quantity) AS tot_qty')));
                                         if (!empty($cartcount)) {
-                                            echo '(' . $cartcount[0]['tot_qty'] . ')';
+                                            echo $cartcount[0]['tot_qty'] != '' ? '(' . $cartcount[0]['tot_qty'] . ')' : '';
                                         }
                                     }
                                     ?> 
@@ -51,7 +51,13 @@
                                 </li>
                             <?php } ?>
                             <?php if ($this->Session->read('User')) { ?>
-                                <li id="login"><?php echo $this->Html->link('My Account', array('action' => 'details', 'controller' => 'signin')); ?> <?php echo $this->Session->read('User.user_type') == 1 ? ' / ' . $this->Html->link('My Catalogue', array('action' => 'index', 'controller' => 'franchiseeproducts')) : ''; ?> /  <?php echo $this->Html->link('My Order', array('action' => 'my_order', 'controller' => 'orders')); ?> /  <?php echo $this->Html->link('Wish List', array('action' => 'wishlist', 'controller' => 'signin')); ?> / <?php echo $this->Html->link('Logout', array('controller' => 'signin', 'action' => 'logout'), array('escape' => false, 'id' => 'login')); ?>
+                                <li id="login">
+                                    <?php echo $this->Session->read('User.user_type') == 2 ? $this->Html->link('User Orders', array('action' => 'user_orders', 'controller' => 'vendors')) . ' / ' : ''; ?>   
+                                    <?php echo $this->Html->link('My Account', array('action' => 'details', 'controller' => 'signin')); ?> 
+                                    <?php echo $this->Session->read('User.user_type') == 1 ? ' / ' . $this->Html->link('My Catalogue', array('action' => 'index', 'controller' => 'franchiseeproducts')) : ''; ?> /  
+                                    <?php echo $this->Html->link('My Order', array('action' => 'my_order', 'controller' => 'orders')); ?> /  
+                                    <?php echo $this->Html->link('Wish List', array('action' => 'wishlist', 'controller' => 'signin')); ?> / 
+                                    <?php echo $this->Html->link('Logout', array('controller' => 'signin', 'action' => 'logout'), array('escape' => false, 'id' => 'login')); ?>
                                 <?php } else { ?>
                                 <li id="login"><?php echo $this->Html->Link('Sign in', array('controller' => 'signin', 'action' => 'index')); ?> /
                                 <?php } ?>
@@ -277,7 +283,7 @@
                                         'Category.category' => array('Gold Coins', 'Gold Coin')
                                 )));
                                 ?>
-        <?php $gold_url = !empty($gold_category) ? BASE_URL . "details/" . $gold_category['Category']['link'] : ''; ?>
+                                <?php $gold_url = !empty($gold_category) ? BASE_URL . "details/" . $gold_category['Category']['link'] : ''; ?>
                                 <a class="primary_link" href="<?php echo $gold_url ?>"><?php echo $menu['Menu']['menu_name'] ?></a>
                                 <div class="dropdown gold_navmenu vertical_menu">
                                     <div class="menutabs" id="tabs<?php echo $menu['Menu']['menu_id'] ?>">
@@ -302,14 +308,14 @@
                                             <li><a href="#tabs-801" onclick="location.href = '<?php echo BASE_URL . 'product?goldfineness=999' ?>'">24K 999</a></li>
                                             <li><a href="#tabs-802" onclick="location.href = '<?php echo BASE_URL . 'product?goldfineness=995' ?>'">24K 995</a></li>
                                         </ul>
-        <?php if (isset($products)) { ?>
+                                        <?php if (isset($products)) { ?>
                                             <div id="tabs-<?php echo $menu['Menu']['menu_id'] . $cateogies['Category']['category_id']; ?>">
                                                 <div style="float:left;">
                                                     <div class="clear">&nbsp;</div>
                                                 </div>
                                             </div>
 
-        <?php } ?>
+                                        <?php } ?>
                                         <div id="tabs-801">
                                             <div style="float:left;">
                                                 <div class="clear">&nbsp;</div>
@@ -359,7 +365,7 @@
                                                 $gift_sub_count++;
                                             }
                                             ?> 
-        <?php if ($menu['Menu']['menu_id'] == 7) { ?>
+                                            <?php if ($menu['Menu']['menu_id'] == 7) { ?>
                                                 <li><a class="titlesubmenu" style="cursor: text !important;"><strong>Gift Suits you</strong></a></li>
                                                 <li><a href="#tabs-1001" onclick="location.href = '<?php echo BASE_URL . 'product?price=1' ?>'">Under Rs. 10,000 /-</a></li>
                                                 <li><a href="#tabs-1002" onclick="location.href = '<?php echo BASE_URL . 'product?pricefilter=2' ?>'">Rs. 10,001 /- to Rs. 25,000/-</a></li>
@@ -391,18 +397,18 @@
                                             }
                                         }
                                         ?>
-        <?php for ($k = 1001; $k <= 1005; $k++) { ?>
+                                        <?php for ($k = 1001; $k <= 1005; $k++) { ?>
                                             <div id="tabs-<?php echo $k ?>">
                                                 <div style="float:left;">
                                                     <div class="clear">&nbsp;</div>
                                                 </div>
                                             </div>
-        <?php } ?>
+                                        <?php } ?>
                                     </div>
                                 </div>
                             </li>
                             <!--Offers-->
-    <?php } elseif ($menu['Menu']['menu_id'] == 8) { ?>
+                        <?php } elseif ($menu['Menu']['menu_id'] == 8) { ?>
                             <li class="baseitem" id="offer_header" data-left="<?php echo $left ?>">
                                 <a class="primary_link" href="#"><?php echo $menu['Menu']['menu_name'] ?></a>
                                 <div class="dropdown vertical_menu" id="<?php echo strtolower($menu['Menu']['menu_name']) ?>_navmenu">
@@ -437,8 +443,8 @@
                                     </div>
                                 </div>
                             </li>
-    <?php } ?>
-<?php } ?>
+                        <?php } ?>
+                    <?php } ?>
 
 
                 </ul>
@@ -458,19 +464,19 @@
 <script>
     $(document).ready(function () {
         $("#autoForm").validationEngine();
-        
-         $.ajax({
-                type: "POST",
-                url: "<?php echo BASE_URL; ?>shoppingcarts/minicart",
-                dataType: 'html',
-                success: function (data) {
-                    $('#loginForm').html(data);
-//                    $('#product_div_'+product_id).html(data.product_details);
-//                    $('#diamond_div_'+product_id).html(data.stonedetails);
-//                    $('#price_div_'+product_id).html(data.pricediv);
-//                    $('#gemstoneprice_'+product_id).html(data.gemstone);
-//                    $('#gemstone_'+product_id).html(data.gemstonediv);
-                }
-            });
+
+//        $.ajax({
+//            type: "POST",
+//            url: "<?php echo BASE_URL; ?>shoppingcarts/minicart",
+//            dataType: 'html',
+//            success: function (data) {
+//                $('#loginForm').html(data);
+////                    $('#product_div_'+product_id).html(data.product_details);
+////                    $('#diamond_div_'+product_id).html(data.stonedetails);
+////                    $('#price_div_'+product_id).html(data.pricediv);
+////                    $('#gemstoneprice_'+product_id).html(data.gemstone);
+////                    $('#gemstone_'+product_id).html(data.gemstonediv);
+//            }
+//        });
     });
 </script>
