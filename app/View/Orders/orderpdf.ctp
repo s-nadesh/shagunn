@@ -366,7 +366,8 @@ $cart_amount = ClassRegistry::init('Shoppingcart')->find('first', array('conditi
                 } elseif (($orderdetails['Order']['cod_status'] == 'COD')) {
                     $paid = $paid != 0 ? indian_number_format(intval(round($paid))) : ' - ';
                     $balance = $balance != 0 ? indian_number_format($balance) : ' - ';
-                    echo "( Online Transfer : {$paid}, COD: {$balance})";
+                    echo "( 30% of total cost will be paid online. 70% will be COD )";
+//                    echo "( Online Transfer : {$paid}, COD: {$balance})";
                 } elseif (($orderdetails['Order']['cod_status'] == 'CHQ/DD')) {
                     echo '( Cheque : ' . indian_number_format($net_product_amount) . ')';
                 }

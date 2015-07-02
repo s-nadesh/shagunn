@@ -758,8 +758,8 @@ $(document).ready(function(){
 </script>
 <script type="text/javascript">
     function calprice() {
-        $('.helpfade').show();
-        $('.helptips').show();
+//        $('.helpfade').show();
+//        $('.helptips').show();
         var product_id = $('.product_id').val();
         var size = $('#size').length > 0 ? ($('#size').val() == '' ? $('#size option:last').val() : $('#size').val()) : '';
         var color = $('#color').length > 0 ? $('#color').val() : '';
@@ -789,8 +789,8 @@ $(document).ready(function(){
                  $('.diamond_div').css({"overflow-y":"hidden","overflow-x":"scroll"})
                  }*/
                 //console.log(data);
-                $('.helpfade').hide();
-                $('.helptips').hide();
+//                $('.helpfade').hide();
+//                $('.helptips').hide();
             }
         });
     }

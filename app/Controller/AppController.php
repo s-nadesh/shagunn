@@ -137,6 +137,13 @@ class AppController extends Controller {
 
     protected function mailsend($fromname, $from, $to, $subject, $message, $cc = NULL, $attachment = 0, $attachmentsfiles = '', $template = 'default', $layout = 'default') {
         App::uses('CakeEmail', 'Network/Email');
+//        $Email = new CakeEmail();
+//        $Email->from('arulmani090@gmail.com');
+//        $Email->to('softwaretesterid@gmail.com');
+//        $Email->subject('About');
+//        $Email->send('My message');
+//        return true;
+        
         $email = new CakeEmail();
         if ($_SERVER['HTTP_HOST'] == 'localhost' || $_SERVER['HTTP_HOST'] == '192.168.1.3') {
             $email->config('smtp');
@@ -153,11 +160,12 @@ class AppController extends Controller {
         }
         $email->template($template, $layout);
         $email->to(trim($to));
+        $email->replyTo(trim($from));
         if ($cc != '' || $cc != NULL) {
             $email->cc($cc);
         }
         $email->subject($subject);
-		$email->layout=$layout;
+        $email->layout = $layout;
         $email->send($message);
         $email->reset();
     }
@@ -223,9 +231,9 @@ class AppController extends Controller {
         );
         $this->set($params);
     }
-    
+
     public function sendsms($phone, $message) {
-        if(ENABLE_SMS){
+        if (ENABLE_SMS) {
             include 'sendsms.php';
             $sendsms = new sendsms(SMS_SITE, SMS_METHOD, SMS_API_KEY, SMS_SENDER_ID);
             $sendsms->send_sms($phone, $message, '', 'xml');
@@ -235,7 +243,7 @@ class AppController extends Controller {
     public function get_sms_message($id) {
         $message = '';
         $sms_template = $this->Smstemplate->findBySmsId($id);
-        if(!empty($sms_template)){
+        if (!empty($sms_template)) {
             $message = $sms_template['Smstemplate']['content'];
         }
         return $message;

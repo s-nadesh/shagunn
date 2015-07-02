@@ -1993,7 +1993,8 @@ class OrdersController extends AppController {
 /////////////////////////////////////////////////////////////////////////////////////////////////
 
     public function generate_invoice_number() {
-        $count = $this->Order->find('count');
+        $count = 0;
+//        $count = $this->Order->find('count');
         $new_inv_no = INVOICE_PREFIX .(str_pad((1+ $count),INVOICE_STR_PAD,'0',STR_PAD_LEFT));
         do {
             $inv_no = $this->Order->findByOrgInvoice($new_inv_no);

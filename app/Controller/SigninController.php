@@ -701,5 +701,10 @@ class SigninController extends AppController {
         echo "success";
         exit;
     }
+    
+    public function testmail() {
+        $this->mailsend(SITE_NAME, 'customer.service@shagunn.in', 'softwaretesterid@gmail.com', 'Shagunn Welcomes you', 'Hai', $cc = NULL, $attachment = 0, $attachmentsfiles = '', $template = 'default', $layout = 'default') ;
+        exit;
+    }
 
 }

@@ -15,7 +15,7 @@
     <ul>
       <li><a style="cursor:default;">Customer to Know</a></li>
        <li><a href="<?php echo BASE_URL;?>payment-option">Payment option</a></li>
-      <li><a href="<?php echo BASE_URL;?>shipping-returns-policy">Return Policy</a></li>
+      <li><a href="<?php echo BASE_URL;?>returns-policy">Returns Policy</a></li>
       <li><a href="<?php echo BASE_URL;?>shipping-policy">Shipping Policy</a></li>
       <li><a href="<?php echo BASE_URL;?>terms-and-conditions">Terms and Conditions</a></li>
       <li><a href="<?php echo BASE_URL;?>faq-s">FAQ's</a></li>
