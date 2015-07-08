@@ -16,7 +16,7 @@ class ShoppingcartsController extends AppController {
      * @var array
      */
     public $components = array('Paginator', 'Session', 'Image');
-    public $uses = array('Shoppingcart', 'Product','Order','Discounthistory');
+    public $uses = array('Shoppingcart', 'Product','Order','Discounthistory', 'User');
     public $layout = 'webpage';
 	/*List Shopping Carts in User Login */
     public function shopping_cart() {
@@ -127,6 +127,11 @@ class ShoppingcartsController extends AppController {
 				$this->Session->delete('discount');
 			}
             $this->Session->write('cart_process', $cart_session);
+            
+            if($this->Session->check('User.user_id')){
+                $this->User->id = $this->Session->read('User.user_id');
+                $this->User->saveField('cart_session', $cart_session);
+            }
         }
         $this->redirect(array('action' => 'shopping_cart'));
     }

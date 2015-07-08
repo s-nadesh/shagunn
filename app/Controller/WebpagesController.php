@@ -17,7 +17,7 @@ class WebpagesController extends AppController {
      * @var array
      */
     public $components = array('Paginator', 'Session', 'Cookie', 'Image');
-    public $uses = array('Banner', 'Advertisement', 'Newsletter', 'Jeweltype', 'Testimonial', 'Enquries', 'Question', 'Rating', 'Product', 'Whislist', 'Shippingrate', 'Subcategory', 'Productsize', 'Price', 'Productstone', 'Category', 'Size', 'Metalcolor', 'Metal', 'Diamond', 'Gemstone', 'Clarity', 'Color', 'Carat', 'Shape', 'Settingtype', 'Purity', 'Productmetal', 'Productgemstone', 'Productdiamond', 'Staticpage', 'Category', 'Jewellrequest', 'Jewelldiamond', 'Jewellstone', 'Collectiontype', 'Submenu', 'Offer','User');
+    public $uses = array('Banner', 'Advertisement', 'Newsletter', 'Jeweltype', 'Testimonial', 'Enquries', 'Question', 'Rating', 'Product', 'Whislist', 'Shippingrate', 'Subcategory', 'Productsize', 'Price', 'Productstone', 'Category', 'Size', 'Metalcolor', 'Metal', 'Diamond', 'Gemstone', 'Clarity', 'Color', 'Carat', 'Shape', 'Settingtype', 'Purity', 'Productmetal', 'Productgemstone', 'Productdiamond', 'Staticpage', 'Category', 'Jewellrequest', 'Jewelldiamond', 'Jewellstone', 'Collectiontype', 'Submenu', 'Offer', 'User', 'Shoppingcart');
     public $layout = 'webpage';
 
     public function index() {
@@ -164,7 +164,7 @@ class WebpagesController extends AppController {
 		 IF(stone=\'Yes\',ROUND(stoneweight*(SELECT price FROM sha_price WHERE clarity_id=Product.stone_clarity_id AND color_id=Product.stone_color_id AND status=\'Active\' AND metal_fineness=Product.metal_fineness)),0)+
 		 IF(Product.gemstone=\'Yes\',ROUND((SELECT SUM(Productgemstone.stone_weight*Productgemstone.stone_price) FROM sha_productgemstone AS Productgemstone WHERE product_id=Product.product_id)),0))*vat_cst/100)) AS totprice',
             'Product.*');
-        
+
         //Issue query . Takes more time to retrieve. so commented.
 //       $field = array('ROUND(ROUND((' . (isset($_REQUEST['goldpurity']) ? $_REQUEST['goldpurity'] : '(SELECT value FROM sha_productmetal AS Productmetal  WHERE type=\'Purity\' AND Productmetal.product_id=Product.product_id  ORDER BY value ASC LIMIT 0,1)') . '/24)*(SELECT price FROM sha_price WHERE metal_id=1 AND metalcolor_id=Product.metal_color_id AND metal_fineness=Product.metal_fineness))* Product.metal_weight) AS metalprice',
 //            '(SELECT price FROM sha_price WHERE metal_id=1 AND metalcolor_id=Product.metal_color_id AND metal_fineness=Product.metal_fineness) AS price',
@@ -186,7 +186,7 @@ class WebpagesController extends AppController {
 //		 IF(stone=\'Yes\',(ROUND((SELECT SUM(Productdiamond.stone_weight) FROM sha_productdiamond AS Productdiamond WHERE Productdiamond.product_id=Product.product_id GROUP BY clarity, color ORDER BY FIELD(`clarity`,\'SI\',\'VS\',\'VVS\'),FIELD(`color`,\'IJ\',\'GH\',\'EF\') LIMIT 0,1)*(SELECT price FROM sha_price WHERE clarity_id=(SELECT clarity_id FROM sha_clarity WHERE clarity=(SELECT clarity FROM sha_productdiamond AS Productdiamond WHERE Productdiamond.product_id=Product.product_id GROUP BY clarity, color ORDER BY FIELD(`clarity`,\'SI\',\'VS\',\'VVS\'),FIELD(`color`,\'IJ\',\'GH\',\'EF\') LIMIT 0,1)) AND color_id=(SELECT color_id FROM sha_color WHERE clarity=(SELECT clarity FROM sha_productdiamond AS Productdiamond WHERE Productdiamond.product_id=Product.product_id GROUP BY clarity, color ORDER BY FIELD(`clarity`,\'SI\',\'VS\',\'VVS\'),FIELD(`color`,\'IJ\',\'GH\',\'EF\') LIMIT 0,1) AND color=(SELECT color FROM sha_productdiamond AS Productdiamond WHERE Productdiamond.product_id=Product.product_id GROUP BY clarity, color ORDER BY FIELD(`clarity`,\'SI\',\'VS\',\'VVS\'),FIELD(`color`,\'IJ\',\'GH\',\'EF\') LIMIT 0,1)) AND status=\'Active\'))),0)+
 //		 IF(Product.gemstone=\'Yes\',ROUND((SELECT SUM(Productgemstone.stone_weight*(SELECT Price.price FROM sha_price AS Price WHERE Price.gemstone_id=(SELECT Gemstone.gemstone_id FROM sha_gemstone AS Gemstone WHERE Gemstone.stone=Productgemstone.gemstone) AND Price.gemstoneshape=(SELECT Shape.shape_id FROM sha_shape AS Shape WHERE Shape.shape = Productgemstone.shape ))) FROM sha_productgemstone AS Productgemstone WHERE product_id=Product.product_id)),0))*vat_cst/100)) AS totprice',
 //            'Product.*');
-       
+
         $joins = $group = $order = '';
         $joins = array();
         if (!empty($this->params['pass']['0'])) {
@@ -286,11 +286,11 @@ class WebpagesController extends AppController {
                 $conditions['Product.gemstone'] = 'Yes';
                 //$conditions[]='product_id IN (SELECT Productgemstone.product_id FROM sha_productgemstone AS Productgemstone WHERE Productgemstone.product_id=Product.product_id AND Productgemstone.gemstone=\''.$_GET['gemstone'].'\')';
                 $joins[] = array(
-                'table' => 'productgemstone',
-                'alias' => 'Productgemstone',
-                'type' => 'inner',
-                'foreignKey' => false,
-                'conditions' => array('`Productgemstone.product_id`=`Product.product_id`', 'Productgemstone.gemstone' => $_GET['gemstone'])
+                    'table' => 'productgemstone',
+                    'alias' => 'Productgemstone',
+                    'type' => 'inner',
+                    'foreignKey' => false,
+                    'conditions' => array('`Productgemstone.product_id`=`Product.product_id`', 'Productgemstone.gemstone' => $_GET['gemstone'])
                 );
             }
             if (!empty($_GET['shape'])) {
@@ -300,11 +300,11 @@ class WebpagesController extends AppController {
                     $gdetails = '';
                 }
                 $joins[] = array(
-                'table' => 'productgemstone',
-                'alias' => 'Productgemstone',
-                'type' => 'inner',
-                'foreignKey' => false,
-                'conditions' => array('`Productgemstone.product_id`=`Product.product_id`', 'Productgemstone.shape' => $_GET['shape'], $gdetails)
+                    'table' => 'productgemstone',
+                    'alias' => 'Productgemstone',
+                    'type' => 'inner',
+                    'foreignKey' => false,
+                    'conditions' => array('`Productgemstone.product_id`=`Product.product_id`', 'Productgemstone.shape' => $_GET['shape'], $gdetails)
                 );
                 $joins[] = array(
                     'table' => 'productdiamond',
@@ -371,46 +371,46 @@ class WebpagesController extends AppController {
             }
         }
 
-            if (empty($joins)) {
-                $joins = '';
+        if (empty($joins)) {
+            $joins = '';
+        }
+
+        $product = $this->Product->find('all', array('conditions' => $conditions, 'fields' => $field, 'limit' => '6', 'group' => $group, 'joins' => $joins, 'order' => $order));
+
+
+        //added by prakash
+        if (isset($_GET['submenu'])) {
+            $conditions[] = "FIND_IN_SET({$_GET['submenu']},Product.submenu_ids)";
+            $submenu = $this->Submenu->findBySubmenuId($_GET['submenu']);
+            $this->set('n_filter', $submenu['Menu']['menu_name'] . ' (' . $submenu['Submenu']['submenu_name'] . ')');
+        }
+
+        if (isset($_GET['goldfineness'])) {
+            $conditions[] = "FIND_IN_SET({$_GET['goldfineness']},Product.metal_fineness)";
+            $this->set('n_filter', "24K {$_GET['goldfineness']}");
+        }
+
+        if (isset($_GET['offers'])) {
+            $conditions[] = "FIND_IN_SET({$_GET['offers']},Product.offer_ids)";
+            $offer = $this->Offer->findByOfferId($_GET['offers']);
+            $this->set('n_filter', $offer['Submenu']['submenu_name'] . ' (' . $offer['Offer']['offer_name'] . ')');
+        }
+
+        if (!empty($_GET['pricefilter'])) {
+            if ($_GET['pricefilter'] == 2) {
+                $cod = 'between 10001 AND 25000';
+                $this->set('n_filter', "Rs. 10,001 /- to Rs. 25,000/-");
+            } elseif ($_GET['pricefilter'] == 3) {
+                $cod = 'between 25001 AND 50000';
+                $this->set('n_filter', "Rs. 25,001 /- to Rs. 50,000/-");
+            } elseif ($_GET['pricefilter'] == 4) {
+                $cod = 'between 50001 AND 75000';
+                $this->set('n_filter', "Rs. 50,001 /- to Rs. 75,000/-");
+            } elseif ($_GET['pricefilter'] == 5) {
+                $cod = '> 75001';
+                $this->set('n_filter', "Rs. 75,001 /- and above");
             }
-
-            $product = $this->Product->find('all', array('conditions' => $conditions, 'fields' => $field, 'limit' => '6', 'group' => $group, 'joins' => $joins, 'order' => $order));
-
-
-            //added by prakash
-            if (isset($_GET['submenu'])) {
-                $conditions[] = "FIND_IN_SET({$_GET['submenu']},Product.submenu_ids)";
-                $submenu = $this->Submenu->findBySubmenuId($_GET['submenu']);
-                $this->set('n_filter', $submenu['Menu']['menu_name'] . ' (' . $submenu['Submenu']['submenu_name'] . ')');
-            }
-
-            if (isset($_GET['goldfineness'])) {
-                $conditions[] = "FIND_IN_SET({$_GET['goldfineness']},Product.metal_fineness)";
-                $this->set('n_filter', "24K {$_GET['goldfineness']}");
-            }
-
-            if (isset($_GET['offers'])) {
-                $conditions[] = "FIND_IN_SET({$_GET['offers']},Product.offer_ids)";
-                $offer = $this->Offer->findByOfferId($_GET['offers']);
-                $this->set('n_filter', $offer['Submenu']['submenu_name'] . ' (' . $offer['Offer']['offer_name'] . ')');
-            }
-
-            if (!empty($_GET['pricefilter'])) {
-                if ($_GET['pricefilter'] == 2) {
-                    $cod = 'between 10001 AND 25000';
-                    $this->set('n_filter', "Rs. 10,001 /- to Rs. 25,000/-");
-                } elseif ($_GET['pricefilter'] == 3) {
-                    $cod = 'between 25001 AND 50000';
-                    $this->set('n_filter', "Rs. 25,001 /- to Rs. 50,000/-");
-                } elseif ($_GET['pricefilter'] == 4) {
-                    $cod = 'between 50001 AND 75000';
-                    $this->set('n_filter', "Rs. 50,001 /- to Rs. 75,000/-");
-                } elseif ($_GET['pricefilter'] == 5) {
-                    $cod = '> 75001';
-                    $this->set('n_filter', "Rs. 75,001 /- and above");
-                }
-                $conditions[] = '(ROUND(ROUND((metal_purity/24)*(SELECT price FROM sha_price WHERE metal_id=1 AND metalcolor_id=Product.metal_color_id AND metal_fineness=Product.metal_fineness))*metal_weight)+
+            $conditions[] = '(ROUND(ROUND((metal_purity/24)*(SELECT price FROM sha_price WHERE metal_id=1 AND metalcolor_id=Product.metal_color_id AND metal_fineness=Product.metal_fineness))*metal_weight)+
 		 ROUND(ROUND(ROUND((metal_purity/24)*(SELECT price FROM sha_price WHERE metal_id=1 AND metalcolor_id=Product.metal_color_id AND metal_fineness=Product.metal_fineness))*metal_weight)*making_charge/100)+
 		 IF(stone=\'Yes\',ROUND(stoneweight*(SELECT price FROM sha_price WHERE clarity_id=Product.stone_clarity_id AND color_id=Product.stone_color_id AND status=\'Active\' AND metal_fineness=Product.metal_fineness)),0)+
 		 IF(Product.gemstone=\'Yes\',ROUND((SELECT SUM(Productgemstone.stone_weight*Productgemstone.stone_price) FROM sha_productgemstone AS Productgemstone WHERE product_id=Product.product_id)),0)+
@@ -426,7 +426,7 @@ class WebpagesController extends AppController {
 //		 ROUND(ROUND(ROUND((' . (isset($_REQUEST['goldpurity']) ? $_REQUEST['goldpurity'] : '(SELECT value FROM sha_productmetal AS Productmetal WHERE type=\'Purity\' AND Productmetal.product_id=Product.product_id  ORDER BY value ASC LIMIT 0,1)') . '/24)*(SELECT price FROM sha_price WHERE metal_id=1 AND metalcolor_id=Product.metal_color_id AND metal_fineness=Product.metal_fineness))*Product.metal_weight)*making_charge/100)+
 //		 IF(stone=\'Yes\',ROUND((SELECT SUM(Productdiamond.stone_weight) FROM sha_productdiamond AS Productdiamond WHERE Productdiamond.product_id=Product.product_id GROUP BY clarity, color ORDER BY FIELD(`clarity`,\'SI\',\'VS\',\'VVS\'),FIELD(`color`,\'IJ\',\'GH\',\'EF\') LIMIT 0,1)*(SELECT price FROM sha_price WHERE clarity_id=(SELECT clarity_id FROM sha_clarity WHERE clarity=(SELECT clarity FROM sha_productdiamond AS Productdiamond WHERE Productdiamond.product_id=Product.product_id GROUP BY clarity, color ORDER BY FIELD(`clarity`,\'SI\',\'VS\',\'VVS\'),FIELD(`color`,\'IJ\',\'GH\',\'EF\') LIMIT 0,1)) AND color_id=(SELECT color_id FROM sha_color WHERE clarity=(SELECT clarity FROM sha_productdiamond AS Productdiamond WHERE Productdiamond.product_id=Product.product_id GROUP BY clarity, color ORDER BY FIELD(`clarity`,\'SI\',\'VS\',\'VVS\'),FIELD(`color`,\'IJ\',\'GH\',\'EF\') LIMIT 0,1) AND color=(SELECT color FROM sha_productdiamond AS Productdiamond WHERE Productdiamond.product_id=Product.product_id GROUP BY clarity, color ORDER BY FIELD(`clarity`,\'SI\',\'VS\',\'VVS\'),FIELD(`color`,\'IJ\',\'GH\',\'EF\') LIMIT 0,1)) AND status=\'Active\')),0)+
 //		 IF(Product.gemstone=\'Yes\',ROUND((SELECT SUM(Productgemstone.stone_weight*(SELECT Price.price FROM sha_price AS Price WHERE Price.gemstone_id=(SELECT Gemstone.gemstone_id FROM sha_gemstone AS Gemstone WHERE Gemstone.stone=Productgemstone.gemstone) AND Price.gemstoneshape=(SELECT Shape.shape_id FROM sha_shape AS Shape WHERE Shape.shape = Productgemstone.shape ))) FROM sha_productgemstone AS Productgemstone WHERE product_id=Product.product_id)),0))*vat_cst/100)) ' . $cod;
-            }
+        }
 
         $product = $this->Product->find('all', array('conditions' => $conditions, 'fields' => $field, 'limit' => '6', 'group' => $group, 'joins' => $joins, 'order' => $order));
         $productcount = $this->Product->find('all', array('conditions' => $conditions, 'fields' => $field, 'group' => $group, 'joins' => $joins, 'order' => $order));
@@ -440,28 +440,28 @@ class WebpagesController extends AppController {
         $this->layout = '';
         $this->render(false);
         if ($this->request->data) {
-			/*  $lastCreated = $this->User->find('count', array(
-        'conditions' => array('user_type' => '1')
-    ));
-	print_r($lastCreated); */
-	 $check_pin = $this->User->find('first', array('conditions' => array('user_type' => 1,'pincode' => $this->request->data['Enquries']['pincode'], 'status !=' => 'Trash')));
-	 
-	 //$paymentcount = $this->Payment->find("count", array('conditions' => array('user_id' => $results['User']['user_id'])));
-	if($check_pin){
-            if (!empty($this->request->data['Enquries']['name'])) {
-                $check = $this->Enquries->create();
-                if (empty($check)) {
-                    $this->request->data['Enquries']['created_date'] = date('Y-m-d H:i:s');
-                    $this->Enquries->save($this->request->data);
-                    $this->Session->setFlash("<div class='success msg'>" . __('Details saved successfully.') . "</div>");
-                    $this->redirect(array('action' => 'index'));
+            /*  $lastCreated = $this->User->find('count', array(
+              'conditions' => array('user_type' => '1')
+              ));
+              print_r($lastCreated); */
+            $check_pin = $this->User->find('first', array('conditions' => array('user_type' => 1, 'pincode' => $this->request->data['Enquries']['pincode'], 'status !=' => 'Trash')));
+
+            //$paymentcount = $this->Payment->find("count", array('conditions' => array('user_id' => $results['User']['user_id'])));
+            if ($check_pin) {
+                if (!empty($this->request->data['Enquries']['name'])) {
+                    $check = $this->Enquries->create();
+                    if (empty($check)) {
+                        $this->request->data['Enquries']['created_date'] = date('Y-m-d H:i:s');
+                        $this->Enquries->save($this->request->data);
+                        $this->Session->setFlash("<div class='success msg'>" . __('Details saved successfully.') . "</div>");
+                        $this->redirect(array('action' => 'index'));
+                    }
                 }
+            } else {
+                $this->Session->setFlash("<div class='error msg'>" . __("Sorry, We don't have a Jewellery Outlet nearest to your Location.") . "</div>");
+                $this->redirect(array('action' => 'index'));
             }
-        }else{
-			$this->Session->setFlash("<div class='error msg'>" . __("Sorry, We don't have a Jewellery Outlet nearest to your Location.") . "</div>");
-			$this->redirect(array('action' => 'index'));
-		}
-	}
+        }
     }
 
     public function admin_home_enquiries() {
@@ -1054,7 +1054,7 @@ class WebpagesController extends AppController {
 //		 IF(stone=\'Yes\',(ROUND((SELECT SUM(Productdiamond.stone_weight) FROM sha_productdiamond AS Productdiamond WHERE Productdiamond.product_id=Product.product_id GROUP BY clarity, color ORDER BY FIELD(`clarity`,\'SI\',\'VS\',\'VVS\'),FIELD(`color`,\'IJ\',\'GH\',\'EF\') LIMIT 0,1)*(SELECT price FROM sha_price WHERE clarity_id=(SELECT clarity_id FROM sha_clarity WHERE clarity=(SELECT clarity FROM sha_productdiamond AS Productdiamond WHERE Productdiamond.product_id=Product.product_id GROUP BY clarity, color ORDER BY FIELD(`clarity`,\'SI\',\'VS\',\'VVS\'),FIELD(`color`,\'IJ\',\'GH\',\'EF\') LIMIT 0,1)) AND color_id=(SELECT color_id FROM sha_color WHERE clarity=(SELECT clarity FROM sha_productdiamond AS Productdiamond WHERE Productdiamond.product_id=Product.product_id GROUP BY clarity, color ORDER BY FIELD(`clarity`,\'SI\',\'VS\',\'VVS\'),FIELD(`color`,\'IJ\',\'GH\',\'EF\') LIMIT 0,1) AND color=(SELECT color FROM sha_productdiamond AS Productdiamond WHERE Productdiamond.product_id=Product.product_id GROUP BY clarity, color ORDER BY FIELD(`clarity`,\'SI\',\'VS\',\'VVS\'),FIELD(`color`,\'IJ\',\'GH\',\'EF\') LIMIT 0,1)) AND status=\'Active\'))),0)+
 //		 IF(Product.gemstone=\'Yes\',ROUND((SELECT SUM(Productgemstone.stone_weight*(SELECT Price.price FROM sha_price AS Price WHERE Price.gemstone_id=(SELECT Gemstone.gemstone_id FROM sha_gemstone AS Gemstone WHERE Gemstone.stone=Productgemstone.gemstone) AND Price.gemstoneshape=(SELECT Shape.shape_id FROM sha_shape AS Shape WHERE Shape.shape = Productgemstone.shape ))) FROM sha_productgemstone AS Productgemstone WHERE product_id=Product.product_id)),0))*vat_cst/100)) AS totprice',
 //            'Product.*');
-        
+
         $joins = $group = $order = '';
         $joins = array();
         if (!empty($this->params['pass']['0'])) {
@@ -1153,11 +1153,11 @@ class WebpagesController extends AppController {
                 $conditions['Product.gemstone'] = 'Yes';
                 //$conditions[]='product_id IN (SELECT Productgemstone.product_id FROM sha_productgemstone AS Productgemstone WHERE Productgemstone.product_id=Product.product_id AND Productgemstone.gemstone=\''.$_GET['gemstone'].'\')';
                 $joins[] = array(
-                        'table' => 'productgemstone',
-                        'alias' => 'Productgemstone',
-                        'type' => 'inner',
-                        'foreignKey' => false,
-                        'conditions' => array('`Productgemstone.product_id`=`Product.product_id`', 'Productgemstone.gemstone' => $_GET['gemstone'])
+                    'table' => 'productgemstone',
+                    'alias' => 'Productgemstone',
+                    'type' => 'inner',
+                    'foreignKey' => false,
+                    'conditions' => array('`Productgemstone.product_id`=`Product.product_id`', 'Productgemstone.gemstone' => $_GET['gemstone'])
                 );
             }
             if (!empty($_GET['shape'])) {
@@ -1167,18 +1167,18 @@ class WebpagesController extends AppController {
                     $gdetails = '';
                 }
                 $joins[] = array(
-                        'table' => 'productgemstone',
-                        'alias' => 'Productgemstone',
-                        'type' => 'inner',
-                        'foreignKey' => false,
-                        'conditions' => array('`Productgemstone.product_id`=`Product.product_id`', 'Productgemstone.shape' => $_GET['shape'], $gdetails)
+                    'table' => 'productgemstone',
+                    'alias' => 'Productgemstone',
+                    'type' => 'inner',
+                    'foreignKey' => false,
+                    'conditions' => array('`Productgemstone.product_id`=`Product.product_id`', 'Productgemstone.shape' => $_GET['shape'], $gdetails)
                 );
                 $joins[] = array(
-                        'table' => 'productdiamond',
-                        'alias' => 'Productdiamond',
-                        'type' => 'inner',
-                        'foreignKey' => false,
-                        'conditions' => array('`Productdiamond.product_id`=`Product.product_id`', 'Productdiamond.shape' => $_GET['shape'])
+                    'table' => 'productdiamond',
+                    'alias' => 'Productdiamond',
+                    'type' => 'inner',
+                    'foreignKey' => false,
+                    'conditions' => array('`Productdiamond.product_id`=`Product.product_id`', 'Productdiamond.shape' => $_GET['shape'])
                 );
                 //$conditions[]='product_id IN (SELECT Productgemstone.product_id FROM sha_productgemstone AS Productgemstone WHERE Productgemstone.product_id=Product.product_id AND Productgemstone.gemstone=\''.$_GET['gemstone'].'\')';
             }
@@ -1205,7 +1205,7 @@ class WebpagesController extends AppController {
 		 ROUND(ROUND(ROUND((metal_purity/24)*(SELECT price FROM sha_price WHERE metal_id=1 AND metalcolor_id=Product.metal_color_id AND metal_fineness=Product.metal_fineness))*metal_weight)*making_charge/100)+
 		 IF(stone=\'Yes\',ROUND(stoneweight*(SELECT price FROM sha_price WHERE clarity_id=Product.stone_clarity_id AND color_id=Product.stone_color_id AND status=\'Active\' AND metal_fineness=Product.metal_fineness)),0)+
 		 IF(Product.gemstone=\'Yes\',ROUND((SELECT SUM(Productgemstone.stone_weight*Productgemstone.stone_price) FROM sha_productgemstone AS Productgemstone WHERE product_id=Product.product_id)),0))*vat_cst/100)) ' . $cod;
-        //Issue query . Takes more time to retrieve. so commented.
+                //Issue query . Takes more time to retrieve. so commented.
 //                $conditions[] = '(ROUND(ROUND((' . (isset($_REQUEST['goldpurity']) ? $_REQUEST['goldpurity'] : '(SELECT value FROM sha_productmetal AS Productmetal WHERE type=\'Purity\' AND Productmetal.product_id=Product.product_id ORDER BY value ASC LIMIT 0,1)') . '/24)*(SELECT price FROM sha_price WHERE metal_id=1 AND metalcolor_id=Product.metal_color_id))*Product.metal_weight)+
 //		 ROUND(ROUND(ROUND((' . (isset($_REQUEST['goldpurity']) ? $_REQUEST['goldpurity'] : '(SELECT value FROM sha_productmetal AS Productmetal  WHERE type=\'Purity\'  AND Productmetal.product_id=Product.product_id  ORDER BY value ASC LIMIT 0,1)') . '/24)*(SELECT price FROM sha_price WHERE metal_id=1 AND metalcolor_id=Product.metal_color_id))*metal_weight)*making_charge/100)+
 //		 IF(stone=\'Yes\',ROUND((SELECT SUM(Productdiamond.stone_weight) FROM sha_productdiamond AS Productdiamond WHERE Productdiamond.product_id=Product.product_id GROUP BY clarity, color ORDER BY FIELD(`clarity`,\'SI\',\'VS\',\'VVS\'),FIELD(`color`,\'IJ\',\'GH\',\'EF\') LIMIT 0,1)*(SELECT price FROM sha_price WHERE clarity_id=(SELECT clarity_id FROM sha_clarity WHERE clarity=(SELECT clarity FROM sha_productdiamond AS Productdiamond WHERE Productdiamond.product_id=Product.product_id GROUP BY clarity, color ORDER BY FIELD(`clarity`,\'SI\',\'VS\',\'VVS\'),FIELD(`color`,\'IJ\',\'GH\',\'EF\') LIMIT 0,1)) AND color_id=(SELECT color_id FROM sha_color WHERE clarity=(SELECT clarity FROM sha_productdiamond AS Productdiamond WHERE Productdiamond.product_id=Product.product_id GROUP BY clarity, color ORDER BY FIELD(`clarity`,\'SI\',\'VS\',\'VVS\'),FIELD(`color`,\'IJ\',\'GH\',\'EF\') LIMIT 0,1) AND color=(SELECT color FROM sha_productdiamond AS Productdiamond WHERE Productdiamond.product_id=Product.product_id GROUP BY clarity, color ORDER BY FIELD(`clarity`,\'SI\',\'VS\',\'VVS\'),FIELD(`color`,\'IJ\',\'GH\',\'EF\') LIMIT 0,1)) AND status=\'Active\')),0)+
@@ -1235,36 +1235,36 @@ class WebpagesController extends AppController {
                 }
             }
         }
-            
+
         if (empty($joins)) {
             $joins = '';
         }
 
-            //added by prakash
-            if (isset($_GET['submenu'])) {
-                $conditions[] = "FIND_IN_SET({$_GET['submenu']},Product.submenu_ids)";
-            }
+        //added by prakash
+        if (isset($_GET['submenu'])) {
+            $conditions[] = "FIND_IN_SET({$_GET['submenu']},Product.submenu_ids)";
+        }
 
-            if (isset($_GET['goldfineness'])) {
-                $conditions[] = "FIND_IN_SET({$_GET['goldfineness']},Product.metal_fineness)";
-            }
+        if (isset($_GET['goldfineness'])) {
+            $conditions[] = "FIND_IN_SET({$_GET['goldfineness']},Product.metal_fineness)";
+        }
 
-            if (isset($_GET['offers'])) {
-                $conditions[] = "FIND_IN_SET({$_GET['offers']},Product.offer_ids)";
-            }
+        if (isset($_GET['offers'])) {
+            $conditions[] = "FIND_IN_SET({$_GET['offers']},Product.offer_ids)";
+        }
 
-            if (!empty($_GET['pricefilter'])) {
-                if ($_GET['pricefilter'] == 2) {
-                    $cod = 'between 10001 AND 25000';
-                } elseif ($_GET['pricefilter'] == 3) {
-                    $cod = 'between 25001 AND 50000';
-                } elseif ($_GET['pricefilter'] == 4) {
-                    $cod = 'between 50001 AND 75000';
-                } elseif ($_GET['pricefilter'] == 5) {
-                    $cod = '> 75001';
-                }
-                //$conditions[]='status =\'Active\' HAVING metalprice+stoneprice+gemstoneprice+ROUND(metalprice*mc/100)+ ROUND((metalprice+stoneprice+gemstoneprice+ROUND(metalprice* mc/100))* vat/100) '.$cod;
-                $conditions[] = '(ROUND(ROUND((metal_purity/24)*(SELECT price FROM sha_price WHERE metal_id=1 AND metalcolor_id=Product.metal_color_id AND metal_fineness=Product.metal_fineness))*metal_weight)+
+        if (!empty($_GET['pricefilter'])) {
+            if ($_GET['pricefilter'] == 2) {
+                $cod = 'between 10001 AND 25000';
+            } elseif ($_GET['pricefilter'] == 3) {
+                $cod = 'between 25001 AND 50000';
+            } elseif ($_GET['pricefilter'] == 4) {
+                $cod = 'between 50001 AND 75000';
+            } elseif ($_GET['pricefilter'] == 5) {
+                $cod = '> 75001';
+            }
+            //$conditions[]='status =\'Active\' HAVING metalprice+stoneprice+gemstoneprice+ROUND(metalprice*mc/100)+ ROUND((metalprice+stoneprice+gemstoneprice+ROUND(metalprice* mc/100))* vat/100) '.$cod;
+            $conditions[] = '(ROUND(ROUND((metal_purity/24)*(SELECT price FROM sha_price WHERE metal_id=1 AND metalcolor_id=Product.metal_color_id AND metal_fineness=Product.metal_fineness))*metal_weight)+
 		 ROUND(ROUND(ROUND((metal_purity/24)*(SELECT price FROM sha_price WHERE metal_id=1 AND metalcolor_id=Product.metal_color_id AND metal_fineness=Product.metal_fineness))*metal_weight)*making_charge/100)+
 		 IF(stone=\'Yes\',ROUND(stoneweight*(SELECT price FROM sha_price WHERE clarity_id=Product.stone_clarity_id AND color_id=Product.stone_color_id AND status=\'Active\' AND metal_fineness=Product.metal_fineness)),0)+
 		 IF(Product.gemstone=\'Yes\',ROUND((SELECT SUM(Productgemstone.stone_weight*Productgemstone.stone_price) FROM sha_productgemstone AS Productgemstone WHERE product_id=Product.product_id)),0)+
@@ -1272,7 +1272,7 @@ class WebpagesController extends AppController {
 		 ROUND(ROUND(ROUND((metal_purity/24)*(SELECT price FROM sha_price WHERE metal_id=1 AND metalcolor_id=Product.metal_color_id AND metal_fineness=Product.metal_fineness))*metal_weight)*making_charge/100)+
 		 IF(stone=\'Yes\',ROUND(stoneweight*(SELECT price FROM sha_price WHERE clarity_id=Product.stone_clarity_id AND color_id=Product.stone_color_id AND status=\'Active\' AND metal_fineness=Product.metal_fineness)),0)+
 		 IF(Product.gemstone=\'Yes\',ROUND((SELECT SUM(Productgemstone.stone_weight*Productgemstone.stone_price) FROM sha_productgemstone AS Productgemstone WHERE product_id=Product.product_id)),0))*vat_cst/100)) ' . $cod;
-            }
+        }
         if (!empty($_GET['page'])) {
             $offset = ($_GET['page'] - 1) * 6;
         } else {
@@ -2115,12 +2115,12 @@ class WebpagesController extends AppController {
 //        $array = array_merge(array('pricediv' => $price, 'product_details' => $product_details, 'stonedetails' => $stonehtml, 'gemstonediv' => $gemstone, 'cartdiv' => $cart), $json);
 //        return $array;
     }
-    
+
     public function calculate_price_request($customid, $size, $productid, $gcolor) {
-        echo $customid.'<br />';
-        echo $size.'<br />';
-        echo $productid.'<br />';
-        echo $gcolor.'<br />';
+        echo $customid . '<br />';
+        echo $size . '<br />';
+        echo $productid . '<br />';
+        echo $gcolor . '<br />';
         exit;
         $product = $this->Product->find('first', array('conditions' => array('product_id' => $productid)));
         $category = $this->Category->find('first', array('conditions' => array('category_id' => $product['Product']['category_id'])));
@@ -2235,6 +2235,51 @@ class WebpagesController extends AppController {
 
         $this->set('product', $product);
         $this->set('total_weight', $total_weight);
+    }
+
+    public function cart_reminder() {
+        $users = $this->User->find('all', array('conditions' => array('User.cart_session !=' => '')));
+        foreach ($users as $key => $user) {
+            $carts = $this->Shoppingcart->find('all', array('conditions' => array('Shoppingcart.cart_session' => $user['User']['cart_session'], 'Shoppingcart.order_id' => '')));
+            $name = $user['User']['fullname'];
+            $product_name_code = '';
+            $days_left = 0;
+            $product_details = "<table border='1' cellpadding='1' width='100%'>";
+            $product_details .= "<thead>";
+            $product_details .= "<th colspan='2'>Product Name</th>";
+            $product_details .= "<th>Product Code</th>";
+            $product_details .= "</thead><tbody>";
+            foreach ($carts as $key => $cart) {
+                $product = $this->Product->findByProductId($cart['Shoppingcart']['product_id']);
+                $category = $this->Category->findByCategoryId($product['Product']['category_id']);
+                $product_name = $product['Product']['product_name'];
+                $product_code = "{$category['Category']['category_code']}{$product['Product']['product_code']}-{$cart['Shoppingcart']['purity']}K{$cart['Shoppingcart']['clarity']}{$cart['Shoppingcart']['color']}";
+                $product_name_code .= $key == 0 ? "{$product_name} ({$product_code})" : ", {$product_name} ({$product_code})";
+                if ($key == 0) {
+                    $dStart = new DateTime(date('Y-m-d', strtotime($cart['Shoppingcart']['created_date'])));
+                    $dEnd = new DateTime(date('Y-m-d'));
+                    $dDiff = $dStart->diff($dEnd);
+//                    echo $dDiff->format('%R'); // use for point out relation: smaller/greater
+                    $days_left = $dDiff->days;
+                }
+                $images = ClassRegistry::init('Productimage')->find('first', array('conditions' => array('product_id' => $product['Product']['product_id'], 'status' => 'Active')));
+                $src = BASE_URL."img/product/small/".$images['Productimage']['imagename'];
+                $product_image = "<img src='{$src}' alt='Image' width='120' height='90'/>";
+//                $product_image = $this->Html->image('product/small/' . $images['Productimage']['imagename'], array("alt" => "Image", 'width' => '120', 'height' => '90'));
+                $product_details .= "<tr>";
+                $product_details .= "<td>{$product_name}</td>";
+                $product_details .= "<td>{$product_image}</td>";
+                $product_details .= "<td>{$product_code}</td>";
+                $product_details .= "</tr>";
+            }
+            $product_details .= "</tbody></table>";
+            $activateemail = $this->Emailcontent->find('first', array('conditions' => array('eid' => 18)));
+            $message = str_replace(array('{product_name_code}', '{days_left}', '{product_details}', '{name}'), array($product_name_code, $days_left, $product_details, $name), $activateemail['Emailcontent']['content']);
+            $this->mailsend(SITE_NAME, $activateemail['Emailcontent']['fromemail'], $user['User']['email'], $activateemail['Emailcontent']['subject'], $message);
+            $this->User->id = $user['User']['user_id'];
+            $this->User->saveField('cart_session', '');
+        }
+        exit;
     }
 
 }
