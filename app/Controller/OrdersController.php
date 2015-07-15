@@ -762,11 +762,13 @@ class OrdersController extends AppController {
                 $msg.='<tr><td align="left">' . $product['Product']['product_name'] . '</td><td align="left">' . $cat['Category']['category_code'] . '' . $product['Product']['product_code'] . '-' . $carts['Shoppingcart']['purity'] . 'K' . $carts['Shoppingcart']['clarity'] . $carts['Shoppingcart']['color'] . '</td><td align="left">' . $orders['Order']['cod_status'] . '</td><td  align="left">' . 'Rs' . $carts['Shoppingcart']['total'] . '</td></tr>';
             }
             $msg.='</thead></table>';
+            
+            $this->requestAction(array('controller' => 'webpages', 'action' => 'cart_reminder', $user['User']['user_id'], $this->Session->read('Order'), 19));
         }
         $activateemail = $this->Emailcontent->find('first', array('conditions' => array('eid' => 13)));
         $message = str_replace(array('{name}', '{details}'), array($name, $msg), $activateemail['Emailcontent']['content']);
         $adminmailid = $this->Adminuser->find('first', array('conditions' => array('admin_id' => '1')));
-        $this->mailsend(SITE_NAME, $adminmailid['Adminuser']['email'], $user['User']['email'], $activateemail['Emailcontent']['subject'], $message);
+//        $this->mailsend(SITE_NAME, $adminmailid['Adminuser']['email'], $user['User']['email'], $activateemail['Emailcontent']['subject'], $message);
 
         $email = $this->Emailcontent->find('first', array('conditions' => array('eid' => 14)));
         $messagen = str_replace(array('{name}', '{details}'), array($name, $msg), $email['Emailcontent']['content']);
