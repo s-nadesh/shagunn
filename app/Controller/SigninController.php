@@ -99,6 +99,9 @@ class SigninController extends AppController {
                                     $tokenhash = $check['User']['tokenhash'];
                                     $this->Session->write('loginid', $check['User']['user_id']);
                                     $this->Session->write($check);
+                                    if ($check['User']['cart_session'] != '') {
+                                        $this->Session->write('cart_process', $check['User']['cart_session']);
+                                    }
                                     if (isset($_REQUEST['ref'])) {
                                         if (trim($_REQUEST['ref']) == "cart") {
                                             $this->redirect(array('controller' => 'orders', 'action' => 'shipping_details'));

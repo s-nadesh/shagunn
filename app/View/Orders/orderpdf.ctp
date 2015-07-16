@@ -51,15 +51,15 @@ $cart_amount = ClassRegistry::init('Shoppingcart')->find('first', array('conditi
     <table cellspacing="0" cellpadding="0" border="0" width="100%">
         <tr>
             <td width="200"><?php echo $this->Html->image("icons/tax_invoice_logo.png", array('style' => 'float: left; width: 35mm; height: 35mm; background-repeat: no-repeat')) ?></td>
-            <td width="200">&nbsp;</td>
-            <td valign="middle"> Birla Gold and Precious Metals Ltd<br />
+            <td width="100">&nbsp;</td>
+            <td valign="middle"> Birla Gold and Precious Metals Limited<br />
                 Morya Landmark II, 2nd Floor 202,<br />
                 New Link Road, Andheri (West)<br />
                 Mumbai 400 053 </td>
         </tr>
         <tr>
             <td align="center" colspan="3"><span style="font-size:18px; font-weight:bold;">TAX INVOICE</span> <br />
-                Inoive No: #<?php echo $orderinvoice['Order']['org_invoice']; ?></td>
+                Invoice No: #<?php echo $orderinvoice['Order']['org_invoice']; ?></td>
         </tr>
         <tr>
             <td colspan="3">&nbsp;</td>

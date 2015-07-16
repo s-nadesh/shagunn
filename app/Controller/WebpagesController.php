@@ -2241,7 +2241,7 @@ class WebpagesController extends AppController {
         if ($user_id != NULL) {
             $users = $this->User->find('all', array('conditions' => array('User.user_id' => $user_id)));
         } else {
-            $users = $this->User->find('all', array('conditions' => array('User.cart_session !=' => '')));
+            $users = $this->User->find('all', array('conditions' => array('User.cart_session !=' => '', 'User.reminder_sent' => 'N')));
         }
         foreach ($users as $key => $user) {
             if ($order_id != NULL) {
@@ -2249,47 +2249,72 @@ class WebpagesController extends AppController {
             } else {
                 $carts = $this->Shoppingcart->find('all', array('conditions' => array('Shoppingcart.cart_session' => $user['User']['cart_session'], 'Shoppingcart.order_id' => '')));
             }
-            $name = $user['User']['fullname'];
-            $product_name_code = '';
-            $days_left = 0;
-            $product_details = "<table width='100%' style='border: 1px solid black;'>";
-            $product_details .= "<thead>";
-            $product_details .= "<th colspan='2' style='border-right: 1px solid black;'>Product Name</th>";
-            $product_details .= "<th>Product Code</th>";
-            $product_details .= "</thead><tbody>";
-            foreach ($carts as $key => $cart) {
-                $product = $this->Product->findByProductId($cart['Shoppingcart']['product_id']);
-                $category = $this->Category->findByCategoryId($product['Product']['category_id']);
-                $product_name = $product['Product']['product_name'];
-                $product_code = "{$category['Category']['category_code']}{$product['Product']['product_code']}-{$cart['Shoppingcart']['purity']}K{$cart['Shoppingcart']['clarity']}{$cart['Shoppingcart']['color']}";
-                $product_name_code .= $key == 0 ? "{$product_name} ({$product_code})" : ", {$product_name} ({$product_code})";
-                if ($key == 0) {
-                    $dStart = new DateTime(date('Y-m-d', strtotime($cart['Shoppingcart']['created_date'])));
-                    $dEnd = new DateTime(date('Y-m-d'));
-                    $dDiff = $dStart->diff($dEnd);
-//                    echo $dDiff->format('%R'); // use for point out relation: smaller/greater
-                    $days_left = $dDiff->days;
+            if (!empty($carts)) {
+                $name = $user['User']['fullname'];
+                $product_name_code = '';
+                $days_left = 0;
+                $product_details = "<table width='100%' style='border: 1px solid black;'>";
+                $product_details .= "<thead>";
+                $product_details .= "<th colspan='2' style='border-right: 1px solid black;'>Product Name</th>";
+                $product_details .= "<th>Product Code</th>";
+                $product_details .= "</thead><tbody>";
+                foreach ($carts as $key => $cart) {
+                    $product = $this->Product->findByProductId($cart['Shoppingcart']['product_id']);
+                    $category = $this->Category->findByCategoryId($product['Product']['category_id']);
+                    $product_name = $product['Product']['product_name'];
+                    $product_code = "{$category['Category']['category_code']}{$product['Product']['product_code']}-{$cart['Shoppingcart']['purity']}K{$cart['Shoppingcart']['clarity']}{$cart['Shoppingcart']['color']}";
+                    $product_name_code .= $key == 0 ? "{$product_name} ({$product_code})" : ", {$product_name} ({$product_code})";
+                    if ($key == 0) {
+                        $dStart = new DateTime(date('Y-m-d', strtotime($cart['Shoppingcart']['created_date'])));
+                        $dEnd = new DateTime(date('Y-m-d'));
+                        $dDiff = $dStart->diff($dEnd);
+                        //                    echo $dDiff->format('%R'); // use for point out relation: smaller/greater
+                        $days_left = $dDiff->days;
+                    }
+                    $images = ClassRegistry::init('Productimage')->find('first', array('conditions' => array('product_id' => $product['Product']['product_id'], 'status' => 'Active')));
+                    $src = BASE_URL . "img/product/small/" . $images['Productimage']['imagename'];
+                    $product_image = "<img src='{$src}' alt='Image' width='120' height='90'/>";
+                    //                $product_image = $this->Html->image('product/small/' . $images['Productimage']['imagename'], array("alt" => "Image", 'width' => '120', 'height' => '90'));
+                    $product_details .= "<tr>";
+                    $product_details .= "<td style='border-top: 1px solid black; border-right: 1px solid black; text-align: center;'>{$product_name}</td>";
+                    $product_details .= "<td style='border-top: 1px solid black; border-right: 1px solid black; text-align: center;'>{$product_image}</td>";
+                    $product_details .= "<td style='border-top: 1px solid black; text-align: center;'>{$product_code}</td>";
+                    $product_details .= "</tr>";
                 }
-                $images = ClassRegistry::init('Productimage')->find('first', array('conditions' => array('product_id' => $product['Product']['product_id'], 'status' => 'Active')));
-                $src = BASE_URL . "img/product/small/" . $images['Productimage']['imagename'];
-                $product_image = "<img src='{$src}' alt='Image' width='120' height='90'/>";
-//                $product_image = $this->Html->image('product/small/' . $images['Productimage']['imagename'], array("alt" => "Image", 'width' => '120', 'height' => '90'));
-                $product_details .= "<tr>";
-                $product_details .= "<td style='border-top: 1px solid black; border-right: 1px solid black; text-align: center;'>{$product_name}</td>";
-                $product_details .= "<td style='border-top: 1px solid black; border-right: 1px solid black; text-align: center;'>{$product_image}</td>";
-                $product_details .= "<td style='border-top: 1px solid black; text-align: center;'>{$product_code}</td>";
-                $product_details .= "</tr>";
+                $link = BASE_URL . 'shoppingcarts/shopping_cart';
+                $product_details .= "<tr style='margin: 6px; padding: 6px;'><td colspan='3' style='border-top: 1px solid black; text-align: right; margin: 6px; padding: 6px;'><a href='{$link}' target='_blank' style='text-decoration: none'>Proceed To Checkout >> </a></td></tr>";
+                $product_details .= "</tbody></table>";
+                $activateemail = $this->Emailcontent->find('first', array('conditions' => array('eid' => $template_id)));
+                $message = str_replace(array('{product_name_code}', '{days_left}', '{product_details}', '{name}'), array($product_name_code, $days_left, $product_details, $name), $activateemail['Emailcontent']['content']);
+                $this->mailsend(SITE_NAME, $activateemail['Emailcontent']['fromemail'], $user['User']['email'], $activateemail['Emailcontent']['subject'], $message);
+                $this->User->id = $user['User']['user_id'];
+                $this->User->saveField('reminder_sent', 'Y');
             }
-            $link = BASE_URL . 'shoppingcarts/shopping_cart';
-            $product_details .= "<tr style='margin: 6px; padding: 6px;'><td colspan='3' style='border-top: 1px solid black; text-align: right; margin: 6px; padding: 6px;'><a href='{$link}' target='_blank' style='text-decoration: none'>Proceed To Checkout >> </a></td></tr>";
-            $product_details .= "</tbody></table>";
-            $activateemail = $this->Emailcontent->find('first', array('conditions' => array('eid' => $template_id)));
-            $message = str_replace(array('{product_name_code}', '{days_left}', '{product_details}', '{name}'), array($product_name_code, $days_left, $product_details, $name), $activateemail['Emailcontent']['content']);
-            $this->mailsend(SITE_NAME, $activateemail['Emailcontent']['fromemail'], $user['User']['email'], $activateemail['Emailcontent']['subject'], $message);
-            $this->User->id = $user['User']['user_id'];
-            $this->User->saveField('cart_session', '');
         }
         return true;
+    }
+
+    public function testmail($from, $to) {
+        $subject = 'Application Form ';
+        $message = 'testing';
+
+        $headers = 'MIME-Version: 1.0' . "\r\n";
+        $headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
+        $headers .= "From: admin <$from>" . "\r\n";
+        if (mail($to, $subject, $message, $headers)) {
+            echo "Mail Successfully Sent..";
+            exit;
+        }
+//        mail($to, 'test', 'test test');
+//        App::uses('CakeEmail', 'Network/Email');
+//        $Email = new CakeEmail();
+//        $Email->from($from);
+////        $Email->from('customer.service@shagunn.in');
+////        $Email->to('arulmani090@gmail.com');
+//        $Email->to($to);
+//        $Email->subject('About');
+//        $Email->send('My message');
+        exit;
     }
 
 }

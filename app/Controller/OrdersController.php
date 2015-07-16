@@ -292,6 +292,8 @@ class OrdersController extends AppController {
 
                     $this->Session->delete('Order');
                     $this->Session->delete('cart_process');
+                    $this->User->read(NULL, $user['User']['user_id']);
+                    $this->User->saveField('cart_session', '');
                     $this->Session->setFlash("<div class='success msg'>" . __('Your Order successfully updated.') . "</div>");
                     $this->redirect(BASE_URL . 'account-details');
                 }
@@ -698,6 +700,8 @@ class OrdersController extends AppController {
 
         $this->Session->delete('Order');
         $this->Session->delete('cart_process');
+        $this->User->read(NULL, $user['User']['user_id']);
+        $this->User->saveField('cart_session', '');
 
         $this->Session->setFlash("<div class='success msg'>" . __('Payment process successfully completed. We will deliver your order soon .') . "</div>");
         $this->redirect(array('controller' => 'orders', 'action' => 'my_order'));
