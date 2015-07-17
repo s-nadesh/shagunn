@@ -18,7 +18,7 @@ class EmailcontentsController extends AppController {
     public function admin_index() {
         $this->checkadmin();
         $this->Emailcontent->recursive = 0;
-        $this->paginate = array('conditions' => '');
+        $this->paginate = array('conditions' => array('Emailcontent.is_active' => 1));
         $this->set('emailcontent', $this->Paginator->paginate('Emailcontent'));
     }
 

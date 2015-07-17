@@ -2281,11 +2281,13 @@ class WebpagesController extends AppController {
                     $product_details .= "<td style='border-top: 1px solid black; text-align: center;'>{$product_code}</td>";
                     $product_details .= "</tr>";
                 }
-                $link = BASE_URL . 'shoppingcarts/shopping_cart';
-                $product_details .= "<tr style='margin: 6px; padding: 6px;'><td colspan='3' style='border-top: 1px solid black; text-align: right; margin: 6px; padding: 6px;'><a href='{$link}' target='_blank' style='text-decoration: none'>Proceed To Checkout >> </a></td></tr>";
+                $link = $template_id == 18 ? BASE_URL . 'shoppingcarts/shopping_cart' : BASE_URL . 'orders/order';
+                $process = $template_id == 18 ? 'Proceed To Checkout' : 'Go to Cart';
+                $product_details .= "<tr style='margin: 6px; padding: 6px;'><td colspan='3' style='border-top: 1px solid black; text-align: right; margin: 6px; padding: 6px;'><a href='{$link}' target='_blank' style='text-decoration: none'> >> {$process}</a></td></tr>";
                 $product_details .= "</tbody></table>";
                 $activateemail = $this->Emailcontent->find('first', array('conditions' => array('eid' => $template_id)));
-                $message = str_replace(array('{product_name_code}', '{days_left}', '{product_details}', '{name}'), array($product_name_code, $days_left, $product_details, $name), $activateemail['Emailcontent']['content']);
+                $gotocart = "<a href='$link' target='_blank'>go to cart</a>";
+                $message = str_replace(array('{product_name_code}', '{days_left}', '{product_details}', '{name}', '{gotocart}'), array($product_name_code, $days_left, $product_details, $name, $gotocart), $activateemail['Emailcontent']['content']);
                 $this->mailsend(SITE_NAME, $activateemail['Emailcontent']['fromemail'], $user['User']['email'], $activateemail['Emailcontent']['subject'], $message);
                 $this->User->id = $user['User']['user_id'];
                 $this->User->saveField('reminder_sent', 'Y');
