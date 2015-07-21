@@ -17,7 +17,7 @@ class WebpagesController extends AppController {
      * @var array
      */
     public $components = array('Paginator', 'Session', 'Cookie', 'Image');
-    public $uses = array('Banner', 'Advertisement', 'Newsletter', 'Jeweltype', 'Testimonial', 'Enquries', 'Question', 'Rating', 'Product', 'Whislist', 'Shippingrate', 'Subcategory', 'Productsize', 'Price', 'Productstone', 'Category', 'Size', 'Metalcolor', 'Metal', 'Diamond', 'Gemstone', 'Clarity', 'Color', 'Carat', 'Shape', 'Settingtype', 'Purity', 'Productmetal', 'Productgemstone', 'Productdiamond', 'Staticpage', 'Category', 'Jewellrequest', 'Jewelldiamond', 'Jewellstone', 'Collectiontype', 'Submenu', 'Offer', 'User', 'Shoppingcart');
+    public $uses = array('Banner', 'Advertisement', 'Newsletter', 'Jeweltype', 'Testimonial', 'Enquries', 'Question', 'Rating', 'Product', 'Whislist', 'Shippingrate', 'Subcategory', 'Productsize', 'Price', 'Productstone', 'Category', 'Size', 'Metalcolor', 'Metal', 'Diamond', 'Gemstone', 'Clarity', 'Color', 'Carat', 'Shape', 'Settingtype', 'Purity', 'Productmetal', 'Productgemstone', 'Productdiamond', 'Staticpage', 'Category', 'Jewellrequest', 'Jewelldiamond', 'Jewellstone', 'Collectiontype', 'Submenu', 'Offer', 'User', 'Shoppingcart','Locateus');
     public $layout = 'webpage';
 
     public function index() {
@@ -436,14 +436,14 @@ class WebpagesController extends AppController {
         $this->set('productcount', count($productcount));
     }
 
-    public function enquries() {
+   /* public function enquries() {
         $this->layout = '';
         $this->render(false);
         if ($this->request->data) {
             /*  $lastCreated = $this->User->find('count', array(
               'conditions' => array('user_type' => '1')
               ));
-              print_r($lastCreated); */
+              print_r($lastCreated); *
             $check_pin = $this->User->find('first', array('conditions' => array('user_type' => 1, 'pincode' => $this->request->data['Enquries']['pincode'], 'status !=' => 'Trash')));
 
             //$paymentcount = $this->Payment->find("count", array('conditions' => array('user_id' => $results['User']['user_id'])));
@@ -462,8 +462,46 @@ class WebpagesController extends AppController {
                 $this->redirect(array('action' => 'index'));
             }
         }
+    }*/
+ public function enquries() {
+        $this->layout = '';
+        $this->render(false);
+        if ($this->request->data) {
+			/*  $lastCreated = $this->User->find('count', array(
+        'conditions' => array('user_type' => '1')
+    ));
+	print_r($lastCreated); */
+	$search=array('user_type' => '1', 'status !=' => 'Trash','AND' => array(
+        array(
+            'OR' => array(
+                // topic
+                 array('pincode LIKE' => '%,'.$this->request->data['Enquries']['pincode']),
+                array('pincode LIKE' => '%'.$this->request->data['Enquries']['pincode'].',%'),
+                array('pincode LIKE' => $this->request->data['Enquries']['pincode'])
+            )
+        )));
+	 $check_pin = $this->User->find('first', array('conditions' => $search)); 
+	 
+	 //$paymentcount = $this->Payment->find("count", array('conditions' => array('user_id' => $results['User']['user_id'])));
+	if($check_pin){
+            if (!empty($this->request->data['Enquries']['name'])) {
+                $check = $this->Enquries->create();
+                if (empty($check)) {
+                    $this->request->data['Enquries']['created_date'] = date('Y-m-d H:i:s');
+                    $this->Enquries->save($this->request->data);
+                    $this->Session->setFlash("<div class='success msg'>" . __('Details saved successfully.') . "</div>");
+                    //$this->redirect(array('action' => 'index'));
+					$this->redirect(
+						array('controller' => 'Locateus', 'action' => 'locate_us','search'=>1,'zipcode' => $this->request->data['Enquries']['pincode'])
+					);
+                }
+            }
+        }else{
+			$this->Session->setFlash("<div class='error msg'>" . __("Sorry, We don't have a Jewellery Outlet nearest to your Location.") . "</div>");
+			$this->redirect(array('action' => 'index'));
+		}
+	}
     }
-
     public function admin_home_enquiries() {
         /* $this->layout="admin";
           $this->checkadmin();
