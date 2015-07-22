@@ -71,12 +71,12 @@ if (!empty($product)) {
             <div style="position:absolute; right:-9px;">'.$tag_image.'</div>
             </div>';
         if (!empty($images['Productimage']['imagename'])) {
-            $image = '<a href="' . BASE_URL . $category['Category']['category'] . "/" . $subcat . "/" . $products['Product']['product_id'] . "/" . $Product_product_name . $urls . '">' . $this->Html->image('product/small/' . $images['Productimage']['imagename'], array('border' => 0, 'class' => 'xyz')) . '</a>';
+            $image = '<a href="' . str_replace(' ', '_', strtolower(BASE_URL . $category['Category']['category'] . "/" . $subcat . "/" . $products['Product']['product_id'] . "/" . $Product_product_name . $urls)) . '">' . $this->Html->image('product/small/' . $images['Productimage']['imagename'], array('border' => 0, 'class' => 'xyz')) . '</a>';
         } else {
             $image = 'No Image Found';
         }
 
-        $productdiv.='<p style="height:133px;">' . $image . '</p> <p align="center">Rs. ' . indian_number_format($products[0]['totprice']) . '</p>
+        $productdiv.='<p style="height:133px;">' . $image . '</p> <p align="center" class="total_amount_'.$products['Product']['product_id'].'"></p>
           <div style="border-bottom:1px solid #ccc; float:left; width:100%; padding-bottom:5px;">
             <div style="float:left; color:#dba715; font-size:18px; font-weight:bold;">&nbsp;</div>
             <div style="float:right;">';
@@ -102,7 +102,7 @@ if (!empty($product)) {
           <div style="clear:both;"></div>
           <div style="border-bottom:1px solid #ccc; float:left; width:100%;">
             <p align="center">			
-             <a href="' . BASE_URL . $category['Category']['category'] . "/" . $subcat . "/" . $products['Product']['product_id'] . "/" . $Product_product_name . $urls . '"><input name="" type="submit" value="" class="addBtn" ></a>
+             <a href="' . str_replace(' ', '_', strtolower(BASE_URL . $category['Category']['category'] . "/" . $subcat . "/" . $products['Product']['product_id'] . "/" . $Product_product_name . $urls)) . '"><input name="" type="submit" value="" class="addBtn" ></a>
 <a href="' . BASE_URL . 'webpages/whislist/' . $category['Category']['link'] . '/' . $products['Product']['product_id'] . '/' . (!empty($images) ? $images['Productimage']['image_id'] : '') . '">			 <input name="" type="button" value="" class="wish_list_btn"></a>
             </p>
           </div> </div></div>';
@@ -114,7 +114,7 @@ if (!empty($product)) {
           </div>
           <div style="float:left; width:270px;">';
         if (!empty($images['Productimage']['imagename'])) {
-            $image = '<a href="' . BASE_URL . $category['Category']['category'] . "/" . $subcat . "/" . $products['Product']['product_id'] . "/" . $Product_product_name . $urls . '">' . $this->Html->image('product/small/' . $images['Productimage']['imagename'], array('border' => 0, 'class' => 'xyz')) . '</a>';
+            $image = '<a href="' . str_replace(' ', '_', strtolower(BASE_URL . $category['Category']['category'] . "/" . $subcat . "/" . $products['Product']['product_id'] . "/" . $Product_product_name . $urls)) . '">' . $this->Html->image('product/small/' . $images['Productimage']['imagename'], array('border' => 0, 'class' => 'xyz')) . '</a>';
         } else {
             $image = 'No Image Found';
         }

@@ -39,6 +39,8 @@
                     $product = ClassRegistry::init('Product')->find('all', array('conditions' => array('subcategory_id' => $subcategories['Subcategory']['subcategory_id'], 'category_id' => $categories['Category']['category_id'], 'status' => 'Active'), 'limit' => 4));
 
                     $productcount = ClassRegistry::init('Product')->find('all', array('conditions' => array('subcategory_id' => $subcategories['Subcategory']['subcategory_id'], 'category_id' => $categories['Category']['category_id'], 'status' => 'Active')));
+                    if(empty($product))
+                        continue;
                     ?> 
                     <?php //if($i<=2) { ?>
 

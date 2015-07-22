@@ -74,7 +74,7 @@
         </thead>
         <tbody>
         <?php if(empty($product))
-        echo '<tr><td colspan="5" align="center">'.__('No records found').'</td></tr>';
+        echo '<tr><td colspan="12" align="center">'.__('No records found').'</td></tr>';
         else{
         $i=$this->Paginator->counter('{:start}');
         foreach ($product as $product): 

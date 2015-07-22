@@ -65,14 +65,59 @@ class ProductsController extends AppController {
                 $this->set('vendor', $vendor);
                 $search['vendor_id'] = $vendor['Vendor']['vendor_id'];
             }if ($this->request->query('productname') != '') {
-                $search['product_name'] = $this->request->query('productname');
+//                $search['product_name'] = $this->request->query('productname');
+                $search = array_merge($search, array('Product.product_name Like "%'.$this->request->query('productname').'%"'));
             }
             if ($this->request->query('productcode') != '') {
-                $search['product_code'] = $this->request->query('productcode');
+                $search = array_merge($search, array('Product.product_code Like "%'.$this->request->query('productcode').'%"'));
+//                $search['product_code'] = $this->request->query('productcode');
             }
             if ($this->request->query('searchcategory') != '') {
                 //print_r($this->request->query('searchcategory'));exit;
                 $search['category_id'] = $this->request->query('searchcategory');
+            }
+
+            $this->paginate = array('conditions' => $search, 'order' => 'product_id DESC');
+            $this->set('product', $this->Paginator->paginate('Product'));
+        } else {
+            $this->paginate = array('conditions' => array('status !=' => 'Trash'), 'order' => 'product_id DESC');
+            $this->set('product', $this->Paginator->paginate('Product'));
+        }
+        $vendorstatus = $this->Vendor->find('all', array('conditions' => array('status' => 'Active')));
+        $this->set('vendorstatus', $vendorstatus);
+        $category = $this->Category->find('all', array('conditions' => array('status !=' => 'Trash')));
+        $this->set('category', $category);
+    }
+
+    public function admin_search() {
+        $this->checkadmin();
+        $this->Product->recursive = 0;
+
+        if (isset($this->request->data['searchfilter'])) {
+            $search = array();
+            if ($this->request->data['productname'] != '') {
+                $search[] = 'productname=' . $this->request->data['productname'];
+            }
+            if ($this->request->data['productcode'] != '') {
+                $search[] = 'productcode=' . $this->request->data['productcode'];
+            }
+            if (!empty($search)) {
+                $this->redirect(array('action' => 'search?search=1&' . implode('&', $search)));
+            } else {
+                $this->redirect(array('action' => 'search'));
+            }
+        }
+
+        if ($this->request->query('search') != '') {
+            $search = array();
+            $search = array('status !=' => 'Trash');
+            if ($this->request->query('productname') != '') {
+//                $search['product_name'] = $this->request->query('productname');
+                $search = array_merge($search, array('Product.product_name Like "%'.$this->request->query('productname').'%"'));
+            }
+            if ($this->request->query('productcode') != '') {
+                $search = array_merge($search, array('Product.product_code Like "%'.$this->request->query('productcode').'%"'));
+//                $search['product_code'] = $this->request->query('productcode');
             }
             $this->paginate = array('conditions' => $search, 'order' => 'product_id DESC');
             $this->set('product', $this->Paginator->paginate('Product'));

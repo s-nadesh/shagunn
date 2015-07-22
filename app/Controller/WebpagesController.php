@@ -1043,6 +1043,7 @@ class WebpagesController extends AppController {
         } elseif ($product['Product']['making_charge_calc'] == 'INR') {
             $making = $making_charge;
         }
+        $making = floatval($making);
         $vat = round(($sub_total + $making) * ($product['Product']['vat_cst'] / 100), 0, PHP_ROUND_HALF_DOWN);
         $total = $sub_total + $making + $vat;
 

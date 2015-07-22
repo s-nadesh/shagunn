@@ -155,7 +155,7 @@ $price.='<table cellpadding="0" cellspacing="0" border="0" width="100%">
                                 	<td><strong>Making Charges</strong></td>
                                 	<td>&nbsp;</td>
                                 	<td>&nbsp;</td>
-                                	<td ><span  style="float:left;">Rs.</span><span style="float:right;"> '.($json['making_charge']>1000?indian_number_format($json['making_charge']):$json['making_charge']).'</span></td>
+                                	<td ><span  style="float:left;">Rs.</span><span style="float:right;"> '.($json['making_charge']>1000?indian_number_format($json['making_charge']):indian_number_format($json['making_charge'])).'</span></td>
                                 </tr>
                             	<tr>
                                 	<td><strong>VAT</strong></td>

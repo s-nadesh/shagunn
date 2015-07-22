@@ -468,7 +468,7 @@
                                 </div>
                                 <p style="height:133px;">
                                     <?php if (!empty($images['Productimage']['imagename'])) { ?>
-                                        <a href="<?php echo BASE_URL; ?><?php echo str_replace(' ', '_', strtolower(trim($category['Category']['category']))) . "/" . $subcat . "/" . $products['Product']['product_id'] . "/" . $Product_product_name; ?>"><img src="<?php echo BASE_URL . 'img/product/small/' . $images['Productimage']['imagename']; ?>"/></a>
+                                        <a href="<?php echo BASE_URL; ?><?php echo str_replace(' ', '_', strtolower(trim($category['Category']['category']) . "/" . $subcat . "/" . $products['Product']['product_id'] . "/" . $Product_product_name)); ?>"><img src="<?php echo BASE_URL . 'img/product/small/' . $images['Productimage']['imagename']; ?>"/></a>
                                     <?php } else { ?><?php echo 'No Image Found'; ?><?php } ?> 
                                 </p>
 
@@ -505,7 +505,7 @@
                                     <p align="center">
 
 
-                                        <a href="<?php echo BASE_URL; ?><?php echo str_replace(' ', '_', strtolower(trim($category['Category']['category']))) . "/" . $subcat . "/" . $products['Product']['product_id'] . "/" . $Product_product_name; ?><?php
+                                        <a href="<?php echo BASE_URL; ?><?php echo str_replace(' ', '_', strtolower(trim($category['Category']['category']) . "/" . $subcat . "/" . $products['Product']['product_id'] . "/" . $Product_product_name)); ?><?php
                                         if (isset($_REQUEST['goldpurity'])) {
                                             echo '?purity=' . $_REQUEST['goldpurity'];
                                         }
@@ -545,7 +545,8 @@
                                     <p  style="height:133px;">
                                         <?php if (!empty($images['Productimage']['imagename'])) {
                                             ?>
-                                            <a href="<?php echo BASE_URL; ?><?php echo $category['Category']['category'] . "/" . $subcat . "/" . $products['Product']['product_id'] . "/" . $Product_product_name; ?><?php
+                                        
+                                            <a href="<?php echo str_replace(' ', '_', strtolower(trim($category['Category']['category']) . "/" . $subcat . "/" . $products['Product']['product_id'] . "/" . $Product_product_name)); ?><?php
                                             if (isset($_REQUEST['goldpurity'])) {
                                                 echo '?purity=' . $_REQUEST['goldpurity'];
                                             }
