@@ -48,7 +48,7 @@ ul,li,h1,h2,h3,h4,h5,h6,a{margin: 0; padding: 0;list-style: none; text-decoratio
 }
 
 header{
-    height: 170px;
+    height: 90px;
     width: 100%;
 }
 
@@ -126,7 +126,7 @@ header{
     font-size: 18px;
     color: #e2ba35;
 	float:right;
-	font-family:"Oswald";
+	font-family:"Droid Serif",Georgia,serif;
 }
 
 .shop_info_menu{
@@ -773,6 +773,7 @@ header{
     margin-left: 5%;
     margin-top: 50px;
     float: left;
+	text-align:justify;
 }
 
 .testimonial_menu_testimonial h3 {
@@ -866,7 +867,7 @@ header{
     height: 25px;
     width: 100%;
     text-align: center;
-    font-weight: 700;
+    /*font-weight: 700;*/
     line-height: 25px;
     font-size: 20px;
     -webkit-transition: all ease 0.5s;
@@ -1083,7 +1084,7 @@ header{
     float: left;
 }
 .footer_card {
-    width:8%;
+    width:5%;
     height: 250px;
     float: left;
 }
@@ -1283,6 +1284,15 @@ a#viewall_jewellery{
 a#viewall_jewellery:hover{	
 background:#f6e9c3; 
 box-shadow: 0px 0px 5px 2px #999;
+}
+a#viewall_jewellery.hide_viewall{
+	background:none;
+        cursor: none;
+}
+a#viewall_jewellery.hide_viewall:hover{	
+background:none; 
+box-shadow: none;
+        cursor: default;
 }
 .header_menu ul li ul{
 	top:2px !important;	
@@ -2341,7 +2351,7 @@ width:205px;
 }
 
 .footer li{
-    display: inline-table;
+    /*display: inline-table;*/
 }
 
 #offers_navmenu{

@@ -4,7 +4,7 @@
 ?>
 <script type="text/javascript" src="http://www.jquery4u.com/demos/jquery-quick-pagination/js/jquery.quick.pagination.min.js"></script>
 <div class="main">
-    <header> &nbsp; </header>
+    <p>&nbsp;</p>
     <div style="clear:both;">&nbsp;</div>
 
     <!--- New HTML Start -->
@@ -96,10 +96,15 @@
                 <div style="float:left; margin-right:15px;"> <a href="#"><?php echo $this->Html->image('result_divider.jpg', array("alt" => "Image")); ?></a> </div>
                 <div style="float:left; margin-top:8px;">
 
-                    <a class="grid" style="cursor:pointer;" rel="grid"><?php echo $this->Html->image('result_icn1.jpg', array("alt" => "Image")); ?></a>&nbsp;&nbsp; 
+                    <a class="grid" style="cursor:pointer;" rel="grid" id="girdview_id"><?php echo $this->Html->image('result_icn1.jpg', array("alt" => "Image","title" => "Demo")); ?></a>&nbsp;&nbsp; 
 
-                    <a class="list hide" style="cursor:pointer;" rel="list"><?php echo $this->Html->image('result_icn2.jpg', array("alt" => "Image")); ?></a> 
-                </div> 
+                    <a class="list hide" style="cursor:pointer;" rel="list" id="listview_id"><?php echo $this->Html->image('result_icn2.jpg', array("alt" => "Image","title" => "Demo")); ?></a> 
+					<div style="position:relative;">
+						<div id="showgrid_id" style="position:absolute; top:-45px; display:none;">Grid View</div>
+						<div id="showlist_id" style="position:absolute; top:-45px; display:none;">List View</div>
+					</div>
+                </div>
+				
                 <div style="clear:both;"></div>
             </div>
         </div>
@@ -468,7 +473,7 @@
                                 </div>
                                 <p style="height:133px;">
                                     <?php if (!empty($images['Productimage']['imagename'])) { ?>
-                                        <a href="<?php echo BASE_URL; ?><?php echo str_replace(' ', '_', strtolower(trim($category['Category']['category']) . "/" . $subcat . "/" . $products['Product']['product_id'] . "/" . $Product_product_name)); ?>"><img src="<?php echo BASE_URL . 'img/product/small/' . $images['Productimage']['imagename']; ?>"/></a>
+                                        <a href="<?php echo BASE_URL; ?><?php echo str_replace(' ', '_', strtolower(trim($category['Category']['category']))) . "/" . $subcat . "/" . $products['Product']['product_id'] . "/" . $Product_product_name; ?>"><img src="<?php echo BASE_URL . 'img/product/small/' . $images['Productimage']['imagename']; ?>"/></a>
                                     <?php } else { ?><?php echo 'No Image Found'; ?><?php } ?> 
                                 </p>
 
@@ -505,7 +510,7 @@
                                     <p align="center">
 
 
-                                        <a href="<?php echo BASE_URL; ?><?php echo str_replace(' ', '_', strtolower(trim($category['Category']['category']) . "/" . $subcat . "/" . $products['Product']['product_id'] . "/" . $Product_product_name)); ?><?php
+                                        <a href="<?php echo BASE_URL; ?><?php echo str_replace(' ', '_', strtolower(trim($category['Category']['category']))) . "/" . $subcat . "/" . $products['Product']['product_id'] . "/" . $Product_product_name; ?><?php
                                         if (isset($_REQUEST['goldpurity'])) {
                                             echo '?purity=' . $_REQUEST['goldpurity'];
                                         }
@@ -545,8 +550,7 @@
                                     <p  style="height:133px;">
                                         <?php if (!empty($images['Productimage']['imagename'])) {
                                             ?>
-                                        
-                                            <a href="<?php echo str_replace(' ', '_', strtolower(trim($category['Category']['category']) . "/" . $subcat . "/" . $products['Product']['product_id'] . "/" . $Product_product_name)); ?><?php
+                                            <a href="<?php echo BASE_URL; ?><?php echo $category['Category']['category'] . "/" . $subcat . "/" . $products['Product']['product_id'] . "/" . $Product_product_name; ?><?php
                                             if (isset($_REQUEST['goldpurity'])) {
                                                 echo '?purity=' . $_REQUEST['goldpurity'];
                                             }
@@ -791,6 +795,21 @@
     </script>
     <script>
         $(document).ready(function () {
+			$("#listview_id").hover(function () {
+				//alert("list here....");
+				$("#showlist_id").show();
+			},function (){
+				$("#showlist_id").hide();
+			});
+			
+			$("#girdview_id").hover(function () {
+				//alert("grid here....");
+				$("#showgrid_id").show();
+			},function (){
+				$("#showgrid_id").hide();
+			});
+			
+			
             $('.grid').click(function () {
                 $('.gridproduct').show();
                 $('.listproduct').hide();
