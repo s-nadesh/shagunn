@@ -1,5 +1,5 @@
 <?php
-
+    
 if (!empty($product)) {
 
 
@@ -80,7 +80,7 @@ if (!empty($product)) {
           <div style="border-bottom:1px solid #ccc; float:left; width:100%; padding-bottom:5px;">
             <div style="float:left; color:#dba715; font-size:18px; font-weight:bold;">&nbsp;</div>
             <div style="float:right;">';
-//		 $productdiv.='<p style="height:133px;">'.$image.'</p> <p align="center">'.substr($products['Product']['product_name'],0,25).(strlen($products['Product']['product_name'])>25?'...':'').'</p>
+//       $productdiv.='<p style="height:133px;">'.$image.'</p> <p align="center">'.substr($products['Product']['product_name'],0,25).(strlen($products['Product']['product_name'])>25?'...':'').'</p>
 //          <div style="border-bottom:1px solid #ccc; float:left; width:100%; padding-bottom:5px;">
 //            <div style="float:left; color:#dba715; font-size:18px; font-weight:bold;">&nbsp;</div>
 //            <div style="float:right;">';
@@ -101,9 +101,9 @@ if (!empty($product)) {
           </div>
           <div style="clear:both;"></div>
           <div style="border-bottom:1px solid #ccc; float:left; width:100%;">
-            <p align="center">			
+            <p align="center">          
              <a href="' . str_replace(' ', '_', strtolower(BASE_URL . $category['Category']['category'] . "/" . $subcat . "/" . $products['Product']['product_id'] . "/" . $Product_product_name . $urls)) . '"><input name="" type="submit" value="" class="addBtn" ></a>
-<a href="' . BASE_URL . 'webpages/whislist/' . $category['Category']['link'] . '/' . $products['Product']['product_id'] . '/' . (!empty($images) ? $images['Productimage']['image_id'] : '') . '">			 <input name="" type="button" value="" class="wish_list_btn"></a>
+<a href="' . BASE_URL . 'webpages/whislist/' . $category['Category']['link'] . '/' . $products['Product']['product_id'] . '/' . (!empty($images) ? $images['Productimage']['image_id'] : '') . '">           <input name="" type="button" value="" class="wish_list_btn"></a>
             </p>
           </div> </div></div>';
         $productdiv.='<div class="listproduct">
@@ -120,12 +120,12 @@ if (!empty($product)) {
         }
 
         $productdiv.='<p style="height:133px;">' . $image . '</p>
-			</div><div style="float:left; width:570px; height:40px;">
-          	<h3>' . $products['Product']['product_name'] . '</h3>
+            </div><div style="float:left; width:570px; height:40px;">
+            <h3>' . $products['Product']['product_name'] . '</h3>
           </div>
 
           <div style="float:left; width:570px; height:50px;">
-          	<h1>Rs. ' . indian_number_format($products[0]['totprice']) . ' </h1>
+            <h1>Rs. ' . indian_number_format($products[0]['totprice']) . ' </h1>
           </div>';
         if (isset($_REQUEST['goldpurity'])) {
             $goldpurity = $_REQUEST['goldpurity'];
@@ -134,17 +134,32 @@ if (!empty($product)) {
             $goldpurity = $purity['Productmetal']['value'];
         }
 
-        $productdiv.='<div style="float:left; width:570px; height:50px;">
-          	  <strong>Metal :</strong> ' . $goldpurity . 'K ' . $products['Product']['metal_color'] . ' Gold ';
-        if ($products['Product']['stone'] == "Yes") {
+        $productdiv.='<div style="float:left; width:570px; height:50px;">';
+        // $productdiv.='<strong>Metal :</strong> ' . $goldpurity . 'K ' . $products['Product']['metal_color'] . ' Gold ';
+        /*if ($products['Product']['stone'] == "Yes") {
             $stone_details = ClassRegistry::init('Productdiamond')->find('first', array('conditions' => array('product_id' => $products['Product']['product_id']), 'group' => array('clarity', 'color'), 'order' => "FIELD(`clarity`,'SI','VS','VVS'),FIELD(`color`,'IJ','GH','EF')"));
             if (!empty($stone_details)) {
                 $productdiv.='| Stone:' . $stone_details['Productdiamond']['clarity'] . '-' . $stone_details['Productdiamond']['color'];
             }
+        }*/
+
+$reviewcount=ClassRegistry::init('Rating')->find('count',array('conditions'=>array('product_id'=>$products['Product']['product_id'])));
+      
+      $rating=ClassRegistry::init('Rating')->find('all',array('fields' =>array('SUM(Rating.rate) as total'),'conditions'=>array('product_id'=>$products['Product']['product_id']), 'group' => array( 'Rating.product_id')));
+      
+       foreach($rating as $rating) {
+        foreach($rating as $rating) {
+          $count=$rating['total']/$reviewcount;
+          $count=round($count,2);
         }
+        }
+    
+            $productdiv.='<div style="float:left; width:570px; height:50px;"><span class="b-star"><span style="width:'.(!empty($rating)?$count*20:'0').'%" class="rstar"></span></span></div>';
+
         $productdiv.='</div><div style="float:left; width:270px;">
-               <a href="' . BASE_URL . $category['Category']['category'] . "/" . $subcat . "/" . $products['Product']['product_id'] . "/" . $Product_product_name . $urls . '"><input name="" type="submit" value="" class="addBtn" ></a>
- <a href="' . BASE_URL . 'webpages/whislist/' . $category['Category']['link'] . '/' . $products['Product']['product_id'] . '/' . (!empty($images) ? $images['Productimage']['image_id'] : '') . '">
+               <a href="' . BASE_URL . $category['Category']['category'] . "/" . $subcat . "/" . $products['Product']['product_id'] . "/" . $Product_product_name . $urls . '">
+               <input name="" type="submit" value="" class="addBtn" ></a>
+ <a href="' . BASE_URL . 'webpages/whislist/' . $category['Category']['link'] . '/' . $products['Product']['product_id'] . '/' . (!empty($images) ? $images['Productimage']['image_id'] : '') . '"><input name="" type="button" value="" class="wish_list_btn"></a>
           </div> 
           <div style="clear:both;"></div>
          </div>
@@ -152,10 +167,11 @@ if (!empty($product)) {
         </form>';
     }
     $flag = 'Yes';
-    $array = array_merge(array('productdiv' => $productdiv, 'flag' => $flag, 'count' => count($product)));
+    $array = array_merge(array('productcount'=>$productcount,'productdiv' => $productdiv, 'flag' => $flag, 'count' => count($product)));
 } else {
     $flag = 'No';
     $array = array_merge(array('flag' => $flag));
 }
+
 echo json_encode($array);
 ?>

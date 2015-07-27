@@ -1,6 +1,8 @@
 <?php
 //echo $this->Html->css(array('page'));
 // echo $this->Html->script(array('script'));		
+//if($productcount)
+//echo "<noscript> Initial ".$productcount."<noscript>";
 ?>
 <script type="text/javascript" src="http://www.jquery4u.com/demos/jquery-quick-pagination/js/jquery.quick.pagination.min.js"></script>
 <div class="main">
@@ -53,9 +55,22 @@
                 if (!empty($sub_cats)) {
                     echo ' - ' . $sub_cats['Subcategory']['subcategory'];
                 }
-            } else {
-                echo 'All Jewellery';
+            } elseif ($_SERVER['REQUEST_URI'] == "/product?jewellery=diamond"){
+                echo 'Diamiond Jewellery';
             }
+			
+			elseif ($_SERVER['REQUEST_URI'] == "/product?jewellery=gemstone"){
+                echo 'Gemstone Jewellery';
+            }
+			
+			elseif ($_SERVER['REQUEST_URI'] == "/product?jewellery=plain_gold"){
+                echo 'Plain Gold Jewellery';
+            }
+			else{
+			
+			echo "All Jewellery";
+			
+			}
             ?></h2></p>
         <div style="border-bottom:2px solid #dba715; border-top:2px solid #dba715; width:100%; float:left; margin-bottom:10px;">
             <div style="float:left; margin:10px 0px 0px 20px;">Search Criteria</div>
@@ -566,26 +581,45 @@
                                 <div style="float:left; width:570px; height:40px;">
                                     <h3><?php echo $products['Product']['product_name']; ?></h3>
                                 </div>
+								
+								
 
                                 <div style="float:left; width:570px; height:50px;">
                                     <h1 class="total_amount_<?php echo $products['Product']['product_id']?>"></h1>
                                 </div>
 
+
+
+
                                 <div style="float:left; width:570px; height:50px;">
-                                    <?php
-                                    if (isset($_REQUEST['goldpurity'])) {
-                                        $goldpurity = $_REQUEST['goldpurity'];
-                                    } else {
-                                        $purity = ClassRegistry::init('Productmetal')->find('first', array('conditions' => array('product_id' => $products['Product']['product_id'], 'type' => 'purity'), 'order' => 'value ASC'));
-                                        $goldpurity = $purity['Productmetal']['value'];
-                                    }
-                                    ?>
-                                    <strong>Metal :</strong> <?php echo $goldpurity; ?>K <?php echo $products['Product']['metal_color']; ?> Gold <?php
-                                    if ($products['Product']['stone'] == "Yes") {
-                                        $stone_details = ClassRegistry::init('Productdiamond')->find('first', array('conditions' => array('product_id' => $products['Product']['product_id']), 'group' => array('clarity', 'color'), 'order' => "FIELD(`clarity`,'SI','VS','VVS'),FIELD(`color`,'IJ','GH','EF')"));
-                                        echo '| Stone:' . $stone_details['Productdiamond']['clarity'] . '-' . $stone_details['Productdiamond']['color'];
-                                    }
-                                    ?> 
+                                 
+									
+									 <div style="width:100%; padding-bottom:5px;">
+                                    <div style="float:left; color:#dba715; font-size:18px; font-weight:bold;">&nbsp;</div>
+                                    <div style="float:left;">
+                                        <?php
+                                        $reviewcount = ClassRegistry::init('Rating')->find('count', array('conditions' => array('product_id' => $products['Product']['product_id'])));
+
+                                        $rating = ClassRegistry::init('Rating')->find('all', array('fields' => array('SUM(Rating.rate) as total'), 'conditions' => array('product_id' => $products['Product']['product_id']), 'group' => array('Rating.product_id')));
+
+                                        foreach ($rating as $rating) {
+                                            foreach ($rating as $rating) {
+                                                $count = $rating['total'] / $reviewcount;
+                                                $count = round($count, 2);
+                                            }
+                                        }
+                                        ?>
+
+                                        <span class="b-star"><span style="width:<?php
+                                            if (!empty($rating)) {
+                                                echo $count * 20;
+                                            } else {
+                                                echo '0';
+                                            }
+                                            ?>%" class="rstar"></span></span>
+                                    </div>
+                                </div>
+                                <div style="clear:both;"></div>
                                 </div>
 
                                 <div style="float:left; width:270px;">
@@ -594,7 +628,8 @@
                                         echo '?purity=' . $_REQUEST['goldpurity'];
                                     }
                                     ?>"><input name="" type="submit" value="" class="addBtn" ></a>             
-                                    <a href="<?php echo BASE_URL; ?>/whislist/<?php
+                                   
+								    <a href="<?php echo BASE_URL; ?>webpages/whislist/<?php
                                     if (!empty($this->params['pass']['0'])) {
                                         echo $this->params['pass']['0'];
                                     }
@@ -603,6 +638,8 @@
                                            echo $images['Productimage']['image_id'];
                                        }
                                        ?>">  <input name="" type="button" value="" class="wish_list_btn"></a>
+									   
+									   
                                 </div>
                                 <div style="clear:both;"></div>
                             </div>
@@ -782,7 +819,13 @@
                             });
 
 
+                        },
+                        error:function(){
+                            $('#flag').val('0');
                         }
+
+
+
 
                     });
 

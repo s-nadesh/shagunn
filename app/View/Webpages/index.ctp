@@ -1,5 +1,4 @@
 <div class="main">
-  <header> &nbsp; </header>
   <div class="banner_slide">
     <ul id="demo1">
      <?php foreach($banner as $banners) { ?>
@@ -11,9 +10,11 @@
     <?php }} if(empty($banners)) {
                      echo $this->Html->image('icons/slide1_new.png',array('border'=>0,'alt'=>'logo') ); }?>
            <div class="slide-desc">
-          <h2><?php echo $banners['Banner']['title'];?></h2>
-          <p><?php echo $banners['Banner']['description'];?><br>
-            <a class="more" href="<?php echo $banners['Banner']['link'];?>">more</a></p>
+          
+		  <h2><a href="<?php echo $banners['Banner']['link'];?>"><?php echo $banners['Banner']['title'];?></a></h2>
+          <p><a href="<?php echo $banners['Banner']['link'];?>"><?php echo $banners['Banner']['description'];?></a>
+		  
+            <!--<a class="more" href="<?php echo $banners['Banner']['link'];?>">more</a>--></p>
         </div>
       </li>
         <?php } ?>
@@ -93,7 +94,7 @@
     if(!empty($collection_type_bel) || !empty($collection_type_ech) || !empty($collection_type_emr) || !empty($collection_type_sap) || !empty($collection_type_ship)){
     
    ?>
-  <div class="products">
+<div class="products">
     <div class="products1">
   
       <ul>
@@ -102,7 +103,7 @@
 		  ?>
         <a href="<?php echo BASE_URL;?>product?collection=<?php echo str_replace(' ','_',strtolower(trim($collectiontype_val_name1['Collectiontype']['collection_name'])));?>">
         <li>
-          <div class="products_top" style="background-image: url(<?php echo  BASE_URL; ?>img/product/small/<?php echo $collection_type_ech_img['Productimage']['imagename']?>)"; ></div>
+          <div class="products_top" style="background-image: url(<?php echo  BASE_URL; ?>img/product/big/<?php echo $collection_type_ech_img['Productimage']['imagename']?>); background-size:cover;"; ></div>
           <div class="products_bottom">
             <h2><?php echo $collectiontype_val_name1['Collectiontype']['collection_name']?></h2>
           </div>
@@ -113,7 +114,7 @@
 			$collection_type_sap_img=ClassRegistry::init('Productimage')->find('first', array('conditions' => array('product_id' =>$collection_type_sap['Product']['product_id']))); 
 			 ?><a href="<?php echo BASE_URL;?>product?collection=<?php echo str_replace(' ','_',strtolower(trim($collectiontype_val_name2['Collectiontype']['collection_name'])));?>">
         <li>
-          <div class="products_top" style="background-image: url(<?php echo  BASE_URL; ?>img/product/small/<?php echo $collection_type_sap_img['Productimage']['imagename']?>)";></div>
+          <div class="products_top" style="background-image: url(<?php echo  BASE_URL; ?>img/product/big/<?php echo $collection_type_sap_img['Productimage']['imagename']?>); background-size:cover;";></div>
           <div class="products_bottom">
             <h2><?php echo $collectiontype_val_name2['Collectiontype']['collection_name']?></h2>
           </div>
@@ -123,7 +124,7 @@
 			 $collection_type_emr_img=ClassRegistry::init('Productimage')->find('first', array('conditions' => array('product_id' =>$collection_type_emr['Product']['product_id'])));
 			 ?> <a href="<?php echo BASE_URL;?>product?collection=<?php echo str_replace(' ','_',strtolower(trim($collectiontype_val_name3['Collectiontype']['collection_name'])));?>">
         <li>
-          <div class="products_top" style="background-image: url(<?php echo  BASE_URL; ?>img/product/small/<?php echo $collection_type_emr_img['Productimage']['imagename']?>)";></div>
+          <div class="products_top" style="background-image: url(<?php echo  BASE_URL; ?>img/product/big/<?php echo $collection_type_emr_img['Productimage']['imagename']?>); background-size:cover;";></div>
           <div class="products_bottom">
             <h2><?php echo $collectiontype_val_name3['Collectiontype']['collection_name']?></h2>
           </div>
@@ -140,7 +141,7 @@
         <a href="<?php echo BASE_URL;?>product?collection=<?php echo str_replace(' ','_',strtolower(trim($collectiontype_val_name4['Collectiontype']['collection_name'])));?>">
         <li>
           
-          <div class="products2_img" style="background-image: url(<?php echo  BASE_URL; ?>img/product/small/<?php echo $collection_type_bel_img['Productimage']['imagename']?>)";></div>
+          <div class="products2_img" style="background-image: url(<?php echo  BASE_URL; ?>img/product/big/<?php echo $collection_type_bel_img['Productimage']['imagename']?>); background-size:cover;";></div>
           <!--<h2>Best Discount</h2>-->
           <a href="<?php echo BASE_URL;?>product?collection=<?php echo str_replace(' ','_',strtolower(trim($collectiontype_val_name4['Collectiontype']['collection_name'])));?>">
           <h1><?php echo $collectiontype_val_name4['Collectiontype']['collection_name']?></h1>
@@ -152,9 +153,10 @@
 			   $collection_type_ship_img=ClassRegistry::init('Productimage')->find('first', array('conditions' => array('product_id' =>$collection_type_ship['Product']['product_id'])));
 			 ?>
          <a href="<?php echo BASE_URL;?>product?collection=<?php echo str_replace(' ','_',strtolower(trim($collectiontype_val_name5['Collectiontype']['collection_name'])));?>">
+
         <li>
          
-          <div class="products2_img" style="background-image: url(<?php echo  BASE_URL; ?>img/product/small/<?php echo $collection_type_ship_img['Productimage']['imagename']?>)"; ></div>
+          <div class="products2_img" style="background-image: url(<?php echo  BASE_URL; ?>img/product/big/<?php echo $collection_type_ship_img['Productimage']['imagename']?>); background-size:cover;"; ></div>
          <!-- <h2>Prompt Delivery</h2>-->
           <a href="<?php echo BASE_URL;?>product?collection=<?php echo str_replace(' ','_',strtolower(trim($collectiontype_val_name5['Collectiontype']['collection_name'])));?>">
           <!--<div class="products2_shop_now">SHOP</div>-->
@@ -256,9 +258,9 @@
     
   <div style="clear:both;"></div>
   <div class="shadow"><?php echo  $this->Html->image("shadow.png",array("alt" => "index")); ?></div>
-  <div class="best_seller">
-    <h1>Best Seller</h1>
-  </div>
+      
+	<h1 align="center" style="color:#b29232;">Best Seller</h1>
+ 
   <div style="clear:both;"></div>
    <?php
 /*$bestsells=ClassRegistry::init('Shoppingcarts')->find('all', array('conditions'=>array('Product.status'=>'Active'),'fields'=>array('Product.*','Shoppingcarts.*'),
@@ -288,16 +290,16 @@ $bestsells=ClassRegistry::init('Product')->find('all',array('conditions'=>array(
 	  $category = ClassRegistry::init('Category')->find('first', array('conditions' => array('category_id'=>$bestsellproduct['Product']['category_id'])));
 		if(!empty($bestsellproduct['Product']['subcategory_id'])){	 
 			$subcategory=ClassRegistry::init('Subcategory')->find('first', array('conditions' => array('subcategory_id' =>$bestsellproduct['Product']['subcategory_id'])));
-			$subcat=str_replace(' ','_',$subcategory['Subcategory']['subcategory']);
+			$subcat=str_replace(' ','_',trim($subcategory['Subcategory']['subcategory']));
 		}else{
 			$subcat='all_items';
 		}
-	$Product_product_name=str_replace(" ","_",$bestsellproduct['Product']['product_name']); 
+	$Product_product_name=str_replace(" ","_",trim($bestsellproduct['Product']['product_name'])); 
 	$productimage=ClassRegistry::init('Productimage')->find('first', array('conditions' => array('product_id' =>$bestsellproduct['Product']['product_id'])));
   if(isset($productimage['Productimage']['imagename']))
   {
   ?>
-     <div class="slide"><a href="<?php echo BASE_URL;?><?php echo str_replace(' ','_',$category['Category']['category'])."/".$subcat."/".$bestsellproduct['Product']['product_id']."/".$Product_product_name;?>"><?php echo  $this->Html->image('product/small/'.$productimage['Productimage']['imagename'],array("alt" => "index",'height'=>'120','weight'=>'100')); ?></a></div>
+     <div class="slide"><a href="<?php echo BASE_URL;?><?php echo str_replace(' ','_',trim($category['Category']['category']))."/".$subcat."/".$bestsellproduct['Product']['product_id']."/".$Product_product_name;?>"><?php echo  $this->Html->image('product/small/'.$productimage['Productimage']['imagename'],array("alt" => "index",'height'=>'120','weight'=>'100')); ?></a></div>
      
    <?php } } ?>
    
@@ -308,48 +310,53 @@ $bestsells=ClassRegistry::init('Product')->find('all',array('conditions'=>array(
  $product=ClassRegistry::init('Product')->find('all', array('conditions' => array('status' =>'Active'),'order'=>'product_id DESC','limit'=>12));
 //pr($product);exit;
   ?>
-  <div class="best_seller">
-    <h1>New Arrivals</h1>
-  </div>
+  
+   
+	<h1 align="center" style="color:#b29232;">New Arrivals</h1>
+  
   <div style="clear:both;"></div>
   <div class="slider1">
   <?php foreach($product as $images) {	 
 	  $category = ClassRegistry::init('Category')->find('first', array('conditions' => array('category_id'=>$images['Product']['category_id'])));
 		if(!empty($images['Product']['subcategory_id'])){	 
 			$subcategory=ClassRegistry::init('Subcategory')->find('first', array('conditions' => array('subcategory_id' =>$images['Product']['subcategory_id'])));
-			$subcat=str_replace(' ','_',$subcategory['Subcategory']['subcategory']);
+			$subcat=str_replace(' ','_',trim($subcategory['Subcategory']['subcategory']));
 		}else{
 			$subcat='all_items';
 		}
 $productimage=ClassRegistry::init('Productimage')->find('first', array('conditions' => array('product_id' =>$images['Product']['product_id'])));
- $Product_product_name=str_replace(" ","_",$images['Product']['product_name']);
+ $Product_product_name=str_replace(" ","_",trim($images['Product']['product_name']));
  if(isset($productimage['Productimage']['imagename']))
   { 
   ?>
-     <div class="slide"><a href="<?php echo BASE_URL;?><?php echo str_replace(' ','_',$category['Category']['category'])."/".$subcat."/".$images['Product']['product_id']."/".$Product_product_name;?>"><?php echo  $this->Html->image('product/small/'.$productimage['Productimage']['imagename'],array("alt" => "index",'height'=>'120','weight'=>'100')); ?></a></div>
+     <div class="slide"><a href="<?php echo BASE_URL;?><?php echo str_replace(' ','_',trim($category['Category']['category']))."/".$subcat."/".$images['Product']['product_id']."/".$Product_product_name;?>"><?php echo  $this->Html->image('product/small/'.$productimage['Productimage']['imagename'],array("alt" => "index",'height'=>'120','weight'=>'100')); ?></a></div>
    <?php }
    } ?>
   </div>
    <div style="clear:both; margin:10px 0"></div>
   <div class="shadow"><?php echo  $this->Html->image("shadow.png",array("alt" => "index")); ?></div>
   <h1 align="center" style="color:#b29232;">What our Customer Says</h1>
+  <div class="slider4">
   <div class="testimonial">
   <?php
   foreach($test as $test) {
   
   ?>
-      <div class="testimonial_menu1">
+			
+			  <div class="testimonial_menu1">
                     <div class="testimonial_menu_img" style="background-image: url(<?php echo $this->webroot; ?>img/testimonial/<?php echo $test['Testimonial']['image']; ?>);"></div>
                     <div class="testimonial_menu_testimonial">
                         <p>"<?php echo $test['Testimonial']['content'];?>"</p>
                         
                     </div>
                 </div>
+			
                 <?php } ?> 
-
+		
+  </div>
   </div>
  <?php echo $this->Element('newsletter');?>
-  <div class="shadow"><?php echo  $this->Html->image("shadow.png",array("alt" => "index")); ?></div>
+  
   <?php
   $storeId=array('24','25','26','27','28','29'); 
   $staticpagesfeature=ClassRegistry::init('Staticpage')->find('all',array('conditions'=>array('staticpage_id'=>$storeId)));

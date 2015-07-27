@@ -32,8 +32,8 @@
         <title>Home | <?php echo SITE_NAME; ?></title>
         <!--<link href='http://fonts.googleapis.com/css?family=Merriweather:900|Cinzel:700' rel='stylesheet' type='text/css'>-->
         <?php
-        echo $this->Html->css(array('webindex', 'webcss/main', 'webcss/jquery-ui', 'src/skdslider', 'webcss/jquery.jqzoom', 'webcss/jquery.bxslider', 'webcss/colorbox', 'jQuery.validation/validationEngine.jquery', 'message', 'jquery.fancybox-1.3.4', 'lightgallery/lightGallery', 'minicart/css/style'));
-        echo $this->Html->script(array('jquery-1.11.1.min', 'webjs/jquery.1.8.2.min', 'webjs/jquery-ui', 'src/skdslider.min', 'webjs/fadeSlideShow', 'src/jquery.jqzoom-core', 'webjs/fadeSlideShow', 'webjs/jquery.bxslider.min', 'webjs/jquery.colorbox', 'jQuery.validation/jquery.validationEngine', 'jQuery.validation/languages/jquery.validationEngine-en', 'integer', 'jquery.fancybox-1.3.4.pack', 'lightgallery/lightGallery', 'flycart/prefixfree.min'));
+        echo $this->Html->css(array('webindex', 'webcss/main', 'webcss/jquery-ui', 'src/skdslider', 'webcss/jquery.jqzoom', 'webcss/jquery.bxslider', 'webcss/colorbox', 'jQuery.validation/validationEngine.jquery', 'message', 'jquery.fancybox-1.3.4', 'lightgallery/lightGallery'));
+        echo $this->Html->script(array('jquery-1.11.1.min', 'webjs/jquery.1.8.2.min', 'webjs/jquery-ui', 'src/skdslider.min', 'webjs/fadeSlideShow', 'src/jquery.jqzoom-core', 'webjs/fadeSlideShow', 'webjs/jquery.bxslider.min', 'webjs/jquery.colorbox', 'jQuery.validation/jquery.validationEngine', 'jQuery.validation/languages/jquery.validationEngine-en', 'integer', 'jquery.fancybox-1.3.4.pack', 'lightgallery/lightGallery'));
         ?>
         <link rel="icon" href="/img/icons/fav.png" />
 
@@ -76,7 +76,8 @@
                     slideWidth: 320,
                     minSlides: 4,
                     maxSlides: 4,
-                    moveSlides: 4
+                    moveSlides: 4,
+					auto: true
                 });
                 $('.slider2').bxSlider({
                     responsive: false,
@@ -96,6 +97,16 @@
                     maxSlides: 4,
                     moveSlides: 4
                 });
+				
+				$('.slider4').bxSlider({
+                    responsive: false,
+                    pager: false,
+                    slideMargin: 0,
+                    minSlides: 4,
+                    maxSlides: 4,
+                    moveSlides: 4
+                });
+				
                 $(".group2").colorbox({rel: 'group2', transition: "fade"});
                 $(".youtube").colorbox({iframe: true, innerWidth: 640, innerHeight: 390});
 
@@ -125,12 +136,6 @@
 
                 $(".menutabs").tabs({event: "mouseover"}).addClass("ui-tabs-vertical ui-helper-clearfix");
                 $(".menutabs li").removeClass("ui-corner-top").addClass("ui-corner-left");
-
-                $('#nav > #offer_header').hover(function () {
-//                    console.log($(this).find('#offers_navmenu  ul'));
-                    $(this).find('#tabs8').addClass('offer_top');
-                }, function () {
-                });
             });
 
 
@@ -150,81 +155,8 @@
                  collapsible: true
                  });*/
 
-                $('.add-to-cart').on('click', function () {
-                    var cart = $('.shopping-cart');
-                    var imgtodrag = $(this).closest('.item').find("img").eq(0);
-//                    var imgtodrag = $(this).parent('.item').find("img").eq(0);
-                    if (imgtodrag) {
-                        var imgclone = imgtodrag.clone()
-                                .offset({
-                                    top: imgtodrag.offset().top,
-                                    left: imgtodrag.offset().left
-                                })
-                                .css({
-                                    'opacity': '0.5',
-                                    'position': 'absolute',
-                                    'height': '150px',
-                                    'width': '150px',
-                                    'z-index': '100'
-                                })
-                                .appendTo($('body'))
-                                .animate({
-                                    'top': cart.offset().top + 10,
-                                    'left': cart.offset().left + 10,
-                                    'width': 75,
-                                    'height': 75
-                                }, 1000, 'easeInOutExpo');
 
-                        setTimeout(function () {
-                            cart.effect("shake", {
-                                times: 2
-                            }, 200);
-                        }, 1500);
 
-                        imgclone.animate({
-                            'width': 0,
-                            'height': 0
-                        }, function () {
-                            $(this).detach()
-                        });
-                    }
-                    _form = $(this).closest('form');
-
-                    _data = _form.serialize();
-                    $.ajax({
-                        type: "POST",
-                        url: "<?php echo BASE_URL; ?>shoppingcarts/minicart",
-                        data: _data,
-                        dataType: 'html',
-                        success: function (data) {
-                            $('#loginForm').html(data);
-                            _qty = 0;
-                            $('.minicart_qty').each(function(){
-                                _qty = $(this).data('qty') + _qty;
-                            });
-                            $('#top_qty').html('Cart ('+_qty+')');
-                        }
-                    });
-                    return false;
-                });
-
-                var button = $('#loginButton');
-                var box = $('#loginBox');
-                var form = $('#loginForm');
-                button.removeAttr('href');
-                button.mouseup(function (login) {
-                    box.toggle();
-                    button.toggleClass('active');
-                });
-                form.mouseup(function () {
-                    return false;
-                });
-                $(this).mouseup(function (login) {
-                    if (!($(login.target).parent('#loginButton').length > 0)) {
-                        button.removeClass('active');
-                        box.hide();
-                    }
-                });
             });
 
 
