@@ -233,6 +233,17 @@ class WebpagesController extends AppController {
                         }
                         $conditions['Product.subcategory_id'] = $search_cat;
                     } else {
+                        //added by prakash
+//                        $result = preg_split('/(?<=\d)(?=[a-z])|(?<=[a-z])(?=\d)/i', $_GET['search']);
+//                        $cat = $result[0];
+//                        $productcode = $result[1];
+//                        if(!empty($cat)){
+//                            $cat = $this->Category->findByCategoryCode($cat);
+//                            if(!empty($cat))
+//                                $conditions['category_id'] = $cat['Category']['category_id'];
+//                        }
+                        //end
+                        $conditions['product_code LIKE'] = '%' . $productcode . '%';
                         $conditions['product_name LIKE'] = '%' . $_GET['search'] . '%';
                     }
                 }

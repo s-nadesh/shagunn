@@ -65,12 +65,16 @@ class ProductsController extends AppController {
                 $this->set('vendor', $vendor);
                 $search['vendor_id'] = $vendor['Vendor']['vendor_id'];
             }if ($this->request->query('productname') != '') {
-//                $search['product_name'] = $this->request->query('productname');
-                $search = array_merge($search, array('Product.product_name Like "%'.$this->request->query('productname').'%"'));
+                $search = array_merge($search, array('Product.product_name Like "%' . $this->request->query('productname') . '%"'));
             }
             if ($this->request->query('productcode') != '') {
-                $search = array_merge($search, array('Product.product_code Like "%'.$this->request->query('productcode').'%"'));
-//                $search['product_code'] = $this->request->query('productcode');
+                $result = preg_split('/(?<=\d)(?=[a-z])|(?<=[a-z])(?=\d)/i', $this->request->query('productcode'));
+                $cat = $result[0];
+                $productcode = $result[1];
+                $cat = $this->Category->findByCategoryCode($cat);
+                if(!empty($cat))
+                    $search['category_id'] = $cat['Category']['category_id'];
+                $search = array_merge($search, array('Product.product_code Like "%' . $productcode . '%"'));
             }
             if ($this->request->query('searchcategory') != '') {
                 //print_r($this->request->query('searchcategory'));exit;
@@ -113,10 +117,10 @@ class ProductsController extends AppController {
             $search = array('status !=' => 'Trash');
             if ($this->request->query('productname') != '') {
 //                $search['product_name'] = $this->request->query('productname');
-                $search = array_merge($search, array('Product.product_name Like "%'.$this->request->query('productname').'%"'));
+                $search = array_merge($search, array('Product.product_name Like "%' . $this->request->query('productname') . '%"'));
             }
             if ($this->request->query('productcode') != '') {
-                $search = array_merge($search, array('Product.product_code Like "%'.$this->request->query('productcode').'%"'));
+                $search = array_merge($search, array('Product.product_code Like "%' . $this->request->query('productcode') . '%"'));
 //                $search['product_code'] = $this->request->query('productcode');
             }
             $this->paginate = array('conditions' => $search, 'order' => 'product_id DESC');
@@ -773,7 +777,7 @@ class ProductsController extends AppController {
         $header_row = array("S.No", "Product Nmae", "Product Code", "Link", "Category", "Sub Category", "Vendor", "vendor product code",
             "Metal", "Metal Color", "Product weight", "Stone", "Special Work", "Gemstone", "Special Work Description",
             "Special work charge", "Vendor Making Charges Calculation", "vendor_making_charge", "vat_cst", "vendor_delivery_tat", "product_delivery_tat", "status",
-            "Diamond", "Stone Clarity & Color","Stone Carat", "no_of_diamonds", "stone_shape", "stone weight",
+            "Diamond", "Stone Clarity & Color", "Stone Carat", "no_of_diamonds", "stone_shape", "stone weight",
             "setting_type", "Gemstone ", "size ", "Shape ", "Stone weight ", "no of Stone ", "Setting type ", "Size ", "Purity",
             "Product Type", "Collection Type", "Product View type", "Best Seller", "Making Charges Calculation", "Making Charge", "Height", "Width", "Stock");
 
@@ -785,7 +789,7 @@ class ProductsController extends AppController {
 
             $product = $this->Productdiamond->find('all', array('conditions' => array('product_id' => $results['Product']['product_id']), array(/* 'limit' => '1' */)));
             $product_count = $this->Productdiamond->find('count', array('conditions' => array('product_id' => $results['Product']['product_id'])));
-            $productgem = $this->Productgemstone->find('all', array('conditions' => array('product_id' => $results['Product']['product_id']), array(/*'limit' => '1'*/)));
+            $productgem = $this->Productgemstone->find('all', array('conditions' => array('product_id' => $results['Product']['product_id']), array(/* 'limit' => '1' */)));
             $productgem_count = $this->Productgemstone->find('count', array('conditions' => array('product_id' => $results['Product']['product_id'])));
             $productmetal = $this->Productmetal->find('all', array('conditions' => array('product_id' => $results['Product']['product_id'], 'type' => 'Size')));
             $productmetal_count = $this->Productmetal->find('count', array('conditions' => array('product_id' => $results['Product']['product_id'], 'type' => 'Size')));
@@ -1004,7 +1008,7 @@ class ProductsController extends AppController {
                 $b_seller = 'Yes';
             }
 
-            
+
             $row = array_merge($row, array($p_type));
             $row = array_merge($row, array($col_type));
             $row = array_merge($row, array($p_v_type));

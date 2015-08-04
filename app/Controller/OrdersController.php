@@ -146,6 +146,7 @@ class OrdersController extends AppController {
                     $this->Order->saveAll($this->request->data);
                     $this->redirect(array('action' => 'payment', 'controller' => 'orders'));
                 } elseif ($_REQUEST['cod_status'] == 'CHQ/DD') {
+                    $this->request->data['Order']['org_invoice'] = $this->generate_invoice_number();
                     $this->Order->saveAll($this->request->data);
                     $order1 = $this->Order->find('first', array('conditions' => array('order_id' => $this->Session->read('Order'))));
                     $user = $this->User->find('first', array('conditions' => array('user_id' => $this->Session->read('User.user_id'))));

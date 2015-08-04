@@ -17,7 +17,7 @@ class FranchiseesController extends AppController {
      * @var array
      */
     public $components = array('Paginator', 'Session');
-    public $uses = array('User', 'Adminuser', 'State', 'Accounttype', 'Proof', 'Nomination', 'Bankdetail', 'Payment', 'Outlet', 'Franchiseeproof', 'Officeuse', 'Otherdetail', 'Franchiseebrokerage', 'Cities', 'States');
+    public $uses = array('User', 'Adminuser', 'State', 'Accounttype', 'Proof', 'Nomination', 'Bankdetail', 'Payment', 'Outlet', 'Franchiseeproof', 'Officeuse', 'Otherdetail', 'Franchiseebrokerage');
     public $layout = 'admin';
 
     /**
@@ -62,7 +62,8 @@ class FranchiseesController extends AppController {
         $search = array('user_type' => '1', 'status !=' => 'Trash');
         if ($this->request->query('search') != '') {
             if (($this->request->query('cdate') != '') && ($this->request->query('edate') != '')) {
-                $search = array('created_date BETWEEN \'' . $this->request->query('cdate') . '\' AND \'' . $this->request->query('edate') . '\'');
+                $search = array_merge($search,array('created_date BETWEEN \'' . date('Y-m-d', strtotime($this->request->query('cdate'))) . '\' AND \'' . date('Y-m-d', strtotime($this->request->query('edate'))) . '\''));
+//                $search = array('created_date BETWEEN \'' . $this->request->query('cdate') . '\' AND \'' . $this->request->query('edate') . '\'');
             } elseif ($this->request->query('cdate') != '') {
                 $search['created_date'] = $this->request->query('cdate');
             } elseif ($this->request->query('edate') != '') {
@@ -269,9 +270,6 @@ class FranchiseesController extends AppController {
 
         $nomination = $this->Nomination->find('first', array('conditions' => array('user_id' => $this->params['pass']['0'])));
         $this->set('nomination', $nomination);
-
-        $state_city = $this->States->find('list', array('conditions' => array('status' => 'Active'), 'fields' => array('state_id', 'state')));
-        $this->set('state_city', $state_city);
 
         $bank = $this->Bankdetail->find('first', array('conditions' => array('user_id' => $this->params['pass']['0'])));
         $this->set('bank', $bank);
@@ -545,34 +543,6 @@ class FranchiseesController extends AppController {
             fputcsv($csv_file, $row, ',', '"');
         }
         fclose($csv_file);
-    }
-
-    public function register_state() {
-        if ($this->request->is('ajax')) {
-            $this->layout = '';
-            $this->render(false);
-            $id = $this->request->data;
-            $city = $this->Cities->find('all', array('conditions' => array('state_id' => $id)));
-            if (!empty($city)) {
-                echo json_encode($city);
-            } else {
-                echo '[]';
-            }
-        }
-    }
-
-    public function select_city() {
-        if ($this->request->is('ajax')) {
-            $this->layout = '';
-            $this->render(false);
-            $id = $this->request->data;
-            $city = $this->City->find('all', array('conditions' => array('state_id' => $id)));
-            if (!empty($city)) {
-                echo json_encode($city);
-            } else {
-                echo '[]';
-            }
-        }
     }
 
 }

@@ -124,7 +124,7 @@ if (!class_exists('sendsms')) {
             if (in_array($to_check, $arrayto))
                 $this->to = $to;
             else
-                echo "invalid number";
+//                echo "invalid number";
 
             if ($time == 'null')
                 $time = '';

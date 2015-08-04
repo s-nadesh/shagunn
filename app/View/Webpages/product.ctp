@@ -56,7 +56,7 @@
                     echo ' - ' . $sub_cats['Subcategory']['subcategory'];
                 }
             } elseif ($_SERVER['REQUEST_URI'] == "/product?jewellery=diamond"){
-                echo 'Diamiond Jewellery';
+                echo 'Diamond Jewellery';
             }
 			
 			elseif ($_SERVER['REQUEST_URI'] == "/product?jewellery=gemstone"){
@@ -415,6 +415,7 @@
 
                 <?php
                 if (!empty($product)) {
+					//print_r($product);
                     foreach ($product as $products) {
                         /* $mc=round($products['0']['metalprice']*$products['Product']['mc']/100);
                           $vat=round(($products['0']['metalprice']+$products['0']['stoneprice']+$products['0']['gemstoneprice']+round($products['0']['metalprice']*$products['Product']['mc']/100))*$products['Product']['vat']/100);
@@ -648,16 +649,18 @@
 
                     <?php } ?>
 
-                <?php } else {
+                <?php } else { 
                     ?>
-                    <div class="no_more_image"> <div style="float:left; width:100%; padding:8px 0px 8px 0px; color:#ad8000; text-align:center; margin-top:30px; border-bottom:2px solid #dba715; background-color:#e7cb5d;" id="loadingimgae">No More Jewellery Available to view</div></div>
+                <div class="no_more_image"> <div style="float:left; width:100%; padding:8px 0px 8px 0px; color:#ad8000; text-align:center; margin-top:30px; border-bottom:2px solid #dba715; background-color:#e7cb5d;" id="loadingimgae">Coming Soon</div></div>
 
                 <?php }
                 ?>
             </div>
-            <?php if (!empty($product)) { ?>
+            <?php if (!empty($product)) { 
+                $message = !in_array($category['Category']['category'], array('Gold Coins', 'Gold Coin')) ? 'Jewellery' : 'Coins';
+                ?>
                 <div class="no_more_image" style="display:none;">
-                    <div style="float:left; width:100%; padding:8px 0px 8px 0px; color:#ad8000; text-align:center; margin-top:30px; border-bottom:2px solid #dba715; background-color:#e7cb5d;" id="loadingimgae">No More Jewellery Available to view</div>
+                    <div style="float:left; width:100%; padding:8px 0px 8px 0px; color:#ad8000; text-align:center; margin-top:30px; border-bottom:2px solid #dba715; background-color:#e7cb5d;" id="loadingimgae">No More <?php echo $message; ?> Available to view</div>
                 </div>        
             <?php } ?>
         </div>
@@ -815,7 +818,9 @@
                             
                             //added by prakash
                             $('.hidden_div').each(function(){
-                                calprice($(this).data('productid'));
+                                if($('.total_amount_'+$(this).data('productid')).html() == ''){
+                                    calprice($(this).data('productid'));
+                                }
                             });
 
 
