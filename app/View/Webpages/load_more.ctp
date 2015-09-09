@@ -125,7 +125,7 @@ if (!empty($product)) {
           </div>
 
           <div style="float:left; width:570px; height:50px;">
-            <h1>Rs. ' . indian_number_format($products[0]['totprice']) . ' </h1>
+            <h1 class="total_amount_'.$products['Product']['product_id'].'"></h1>
           </div>';
         if (isset($_REQUEST['goldpurity'])) {
             $goldpurity = $_REQUEST['goldpurity'];
